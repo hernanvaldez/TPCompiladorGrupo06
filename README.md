@@ -4,7 +4,7 @@ Trabajo Practico Compilador para la materia Lenguajes y Compiladores - 1er Cuatr
 
 Secuencias de comandos para ejecucion:
 
-flex Lexico.l
-bison -dyv Sintactico.y
-gcc lex.yy.c y.tab.c -o compilador
-.\compilador.exe prueba.txt 
+> flex Lexico.l
+> bison -dyv Sintactico.y
+> gcc lex.yy.c y.tab.c -o compilador
+> .\compilador.exe prueba.txt 
