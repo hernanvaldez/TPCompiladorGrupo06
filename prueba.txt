@@ -1,0 +1,42 @@
+DECVAR
+	a,var1 : INTEGER
+	c,d,base : FLOAT
+	b,e : STRING
+	
+ENDDEC
+
+a=var1= 34
+
+b = "@sdADaSjfladfg"
+a=5
+b = "@sdADaSjfla%dfg"
+b = "asldk fh sjf"
+c = 99.99
+d = 99.
+base = .9999
+
+WHILE(a < 35 || a > 35)
+{
+	IF( a != 35){
+		a=33
+WRITE "a"
+	}ELSE{
+		a=4
+	}
+	a=37 
+	a=33
+	a=35 
+WRITE "a"
+}
+
+
+
+-/ Esto es un comentario /-
+IF (a == 35 )
+{b = "correcto"} -/ asignación string /-
+
+WRITE "Hola mundo" -/ donde “Hola mundo” debe ser una cte string /-
+READ base -/ donde base es una variable /-
+WRITE var1 -/ donde var1 es una variable numérica definida previamente /-
+
+
