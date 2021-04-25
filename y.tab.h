@@ -60,21 +60,24 @@
      MAYOR = 276,
      IGUAL = 277,
      DISTINTO = 278,
-     COMA = 279,
-     PUNTO_COMA = 280,
-     DOS_PUNTOS = 281,
-     PARA = 282,
-     PARC = 283,
-     LLA = 284,
-     LLC = 285,
-     READ = 286,
-     WRITE = 287,
-     ID = 288,
-     CTE_REAL = 289,
-     CTE_ENTERA = 290,
-     CTE_STRING = 291,
-     NO_ELSE = 292,
-     ELSE = 293
+     INLIST = 279,
+     COMA = 280,
+     PUNTO_COMA = 281,
+     DOS_PUNTOS = 282,
+     CORCHA = 283,
+     CORCHC = 284,
+     PARA = 285,
+     PARC = 286,
+     LLA = 287,
+     LLC = 288,
+     READ = 289,
+     WRITE = 290,
+     ID = 291,
+     CTE_REAL = 292,
+     CTE_ENTERA = 293,
+     CTE_STRING = 294,
+     NO_ELSE = 295,
+     ELSE = 296
    };
 #endif
 /* Tokens.  */
@@ -99,21 +102,24 @@
 #define MAYOR 276
 #define IGUAL 277
 #define DISTINTO 278
-#define COMA 279
-#define PUNTO_COMA 280
-#define DOS_PUNTOS 281
-#define PARA 282
-#define PARC 283
-#define LLA 284
-#define LLC 285
-#define READ 286
-#define WRITE 287
-#define ID 288
-#define CTE_REAL 289
-#define CTE_ENTERA 290
-#define CTE_STRING 291
-#define NO_ELSE 292
-#define ELSE 293
+#define INLIST 279
+#define COMA 280
+#define PUNTO_COMA 281
+#define DOS_PUNTOS 282
+#define CORCHA 283
+#define CORCHC 284
+#define PARA 285
+#define PARC 286
+#define LLA 287
+#define LLC 288
+#define READ 289
+#define WRITE 290
+#define ID 291
+#define CTE_REAL 292
+#define CTE_ENTERA 293
+#define CTE_STRING 294
+#define NO_ELSE 295
+#define ELSE 296
 
 
 
@@ -123,7 +129,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 14 "Sintactico.y"
+#line 56 "Sintactico.y"
 
 	int int_val;
 	float float_val;
@@ -132,7 +138,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 136 "y.tab.h"
+#line 142 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

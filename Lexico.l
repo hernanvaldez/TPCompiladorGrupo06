@@ -33,6 +33,7 @@ COMENTARIO		\-\/.*\/\-
 "WHILE"			{ return WHILE;}
 "IF"			{ return IF;}
 "ELSE"			{ return ELSE;}
+"INLIST"		{ return INLIST;}
 "&&"			{ return AND;}
 "||"			{ return OR;}
 "NOT"			{ return NOT;}
@@ -44,6 +45,8 @@ COMENTARIO		\-\/.*\/\-
 "-"				{ return OP_RESTA;}
 "*"				{ return OP_MULT;}
 "/"				{ return OP_DIV;}
+"["				{ return CORCHA;}
+"]"				{ return CORCHC;}
 "("				{ return PARA;}
 ")"				{ return PARC;}
 "{"				{ return LLA;}

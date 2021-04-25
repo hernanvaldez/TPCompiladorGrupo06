@@ -26,16 +26,25 @@ WRITE "a"
 	a=37 
 	a=33
 	a=35 
-WRITE "a"
+WRITE "b"
+}
+
+IF(INLIST(a;[7*5;a/1]))
+{
+WRITE "condicion inlist"
+}
+
+IF(a ==45)
+{
+	WRITE "Hola mundo" -/ donde “Hola mundo” debe ser una cte string /-
+	-/ Esto es un comentario /-
+	IF (a == 35 )
+	{b = "correcto"} -/ asignación string /-
+}ELSE{
+	WRITE "Chau mundo"
 }
 
 
-
--/ Esto es un comentario /-
-IF (a == 35 )
-{b = "correcto"} -/ asignación string /-
-
-WRITE "Hola mundo" -/ donde “Hola mundo” debe ser una cte string /-
 READ base -/ donde base es una variable /-
 WRITE var1 -/ donde var1 es una variable numérica definida previamente /-
 
