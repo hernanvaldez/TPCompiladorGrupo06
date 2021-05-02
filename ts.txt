@@ -7,8 +7,12 @@ base                                                                            
 b                                                                                        0                                  
 e                                                                                        0                                  
 34                                  const_Integer    34                                  0                                  
-"@sdADaSjfladfg"                    const_String     @sdADaSjfladfg                      14                                 
+2                                   const_Integer    2                                   0                                  
 5                                   const_Integer    5                                   0                                  
+4                                   const_Integer    4                                   0                                  
+7                                   const_Integer    7                                   0                                  
+3                                   const_Integer    3                                   0                                  
+"@sdADaSjfladfg"                    const_String     @sdADaSjfladfg                      14                                 
 "@sdADaSjfla%dfg"                   const_String     @sdADaSjfla%dfg                     15                                 
 "asldk fh sjf"                      const_String     asldk_fh_sjf                        12                                 
 99.99                               const_Float      99.99                               0                                  
@@ -17,11 +21,8 @@ e                                                                               
 35                                  const_Integer    35                                  0                                  
 33                                  const_Integer    33                                  0                                  
 "a"                                 const_String     a                                   1                                  
-4                                   const_Integer    4                                   0                                  
-37                                  const_Integer    37                                  0                                  
-"b"                                 const_String     b                                   1                                  
-7                                   const_Integer    7                                   0                                  
 1                                   const_Integer    1                                   0                                  
+"b"                                 const_String     b                                   1                                  
 "condicion inlist"                  const_String     condicion_inlist                    16                                 
 45                                  const_Integer    45                                  0                                  
 "Hola mundo"                        const_String     Hola_mundo                          10                                 

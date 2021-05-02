@@ -40,6 +40,7 @@
 
 	void crear_lista(t_lista *p);
 	int insertarEnListaEnOrdenSinDuplicados(t_lista *l_ts, t_info *d, t_cmp);
+	int BuscarEnLista(t_lista *pl, char* cadena );
 
 	void crear_ts(t_lista *l_ts);
 	int insertar_en_ts(t_lista *l_ts, t_info *d);
@@ -92,7 +93,7 @@
 %%		
 
 inicio: 
-	programa                                    {printf("termino compilacion\n");};
+	programa                                    {printf("Compilacion Exitosa\n");};
  
 programa:
 	seccion_declaracion bloque_cod              {printf("regla 1\n");}
@@ -192,18 +193,19 @@ comparador:
 expresion:
 	expresion OP_SUMA termino                   {printf("regla 44\n");}
 	| expresion OP_RESTA termino                {printf("regla 45\n");}
-	| termino                                   {printf("regla 46\n");};
+	| termino                                   {printf("regla 46\n");}
+	| OP_RESTA termino                          {printf("regla 47\n");};
 	
 termino:
-	termino OP_MULT factor                      {printf("regla 47\n");}
-	| termino OP_DIV factor                     {printf("regla 48\n");}
-	| factor                                    {printf("regla 49\n");};
+	termino OP_MULT factor                      {printf("regla 48\n");}
+	| termino OP_DIV factor                     {printf("regla 49\n");}
+	| factor                                    {printf("regla 50\n");};
 	
 factor:
-	PARA expresion PARC                         {printf("Expresion entre Parentesis regla 50\n");}
+	PARA expresion PARC                         {printf("Expresion entre Parentesis regla 51\n");}
 	| ID                                        {
 	                                            BuscarEnLista(&lista_ts, yylval.string_val);
-	                                            printf("factor ID: %s\n",yylval.string_val);printf("ID regla 51\n");}
+	                                            printf("factor ID: %s\n",yylval.string_val);printf("ID regla 52\n");}
 												
 	| CTE_ENTERA                                {
 	                                            // strcpy(d.clave, guion_cadena(yytext));
@@ -212,7 +214,7 @@ factor:
 	                                            strcpy(dato.tipodato, "const_Integer");
 	                                            dato.longitud = 0;
 	                                            insertar_en_ts(&lista_ts, &dato);
-	                                            printf("CTE_ENTERA regla 52\n");}
+	                                            printf("CTE_ENTERA regla 53\n");}
 												
 	| CTE_REAL                                  {
 	                                            strcpy(dato.nombre, yytext);
@@ -220,7 +222,7 @@ factor:
 	                                            strcpy(dato.tipodato, "const_Float");
 	                                            dato.longitud = 0;
 	                                            insertar_en_ts(&lista_ts, &dato);
-	                                            printf("CTE_REAL regla 53\n");}
+	                                            printf("CTE_REAL regla 54\n");}
 	
 	| CTE_STRING                                {				
 	                                            dato.longitud = strlen(yytext)-2;
@@ -229,12 +231,12 @@ factor:
 	                                            strcpy(dato.valor, yytext);												
 	                                            strcpy(dato.tipodato, "const_String");												
 	                                            insertar_en_ts(&lista_ts, &dato);
-	                                            printf("CTE_STRING regla 54\n");};
+	                                            printf("CTE_STRING regla 55\n");};
 	
 salida:
 	WRITE ID                                    {
 	                                            BuscarEnLista(&lista_ts, yylval.string_val);
-	                                            printf("WRITE ID regla 55\n");}
+	                                            printf("WRITE ID regla 56\n");}
 	| WRITE CTE_STRING                          {
 	                                            dato.longitud = strlen(yytext)-2;
 	                                            strcpy(dato.nombre, yytext);
@@ -242,12 +244,12 @@ salida:
 	                                            strcpy(dato.valor, yytext);												
 	                                            strcpy(dato.tipodato, "const_String");
 	                                            insertar_en_ts(&lista_ts, &dato);
-	                                            printf("WRITE CTE_STRING regla 56\n");};
+	                                            printf("WRITE CTE_STRING regla 57\n");};
 	
 entrada:
 	READ ID                                     {
 	                                            BuscarEnLista(&lista_ts, yylval.string_val);
-	                                            printf("READ ID regla 57\n");};
+	                                            printf("READ ID regla 58\n");};
 
 %%
 
