@@ -1570,42 +1570,42 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 99 "Sintactico.y"
-    {printf("regla 1\n");}
+    {printf("Regla 1: programa -> seccion_declaracion bloque_cod\n");}
     break;
 
   case 4:
 
 /* Line 1455 of yacc.c  */
 #line 100 "Sintactico.y"
-    {printf("regla 2\n");}
+    {printf("Regla 2: programa -> bloque_cod\n");}
     break;
 
   case 5:
 
 /* Line 1455 of yacc.c  */
 #line 105 "Sintactico.y"
-    {printf("TERMINA DECVAR regla 3\n");}
+    {printf("Regla 3: seccion_declaracion -> DECVAR bloque_dec ENDDEC\n");}
     break;
 
   case 6:
 
 /* Line 1455 of yacc.c  */
 #line 108 "Sintactico.y"
-    {printf("regla 4\n");}
+    {printf("Regla 4: bloque_dec -> bloque_dec declaracion\n");}
     break;
 
   case 7:
 
 /* Line 1455 of yacc.c  */
 #line 109 "Sintactico.y"
-    {printf("regla 5\n");}
+    {printf("Regla 5: bloque_dec -> declaracion\n");}
     break;
 
   case 8:
 
 /* Line 1455 of yacc.c  */
 #line 112 "Sintactico.y"
-    {printf("regla 6\n");}
+    {printf("Regla 6: declaracion -> lista_id DOS_PUNTOS t_dato\n");}
     break;
 
   case 9:
@@ -1618,7 +1618,7 @@ yyreduce:
 	                                            strcpy(dato.tipodato, "");
 	                                            dato.longitud = 0;
 	                                            insertar_en_ts(&lista_ts, &dato);
-	                                            printf("Declaracion: %s\n",yylval.string_val );printf("regla 7\n");}
+	                                            printf("Declaracion: %s\n",yylval.string_val );printf("Regla 7: lista_id -> lista_id COMA ID\n");}
     break;
 
   case 10:
@@ -1631,308 +1631,308 @@ yyreduce:
 	                                            strcpy(dato.tipodato, "");
 	                                            dato.longitud = 0;
 	                                            insertar_en_ts(&lista_ts, &dato);
-	                                            printf("Declaracion: %s\n",yylval.string_val);printf("regla 8\n");}
+	                                            printf("Declaracion: %s\n",yylval.string_val);printf("Regla 8: lista_id -> ID\n");}
     break;
 
   case 11:
 
 /* Line 1455 of yacc.c  */
 #line 131 "Sintactico.y"
-    {printf("TIPO ENTERO regla 9\n");}
+    {printf("Regla 9: t_dato -> ENTERO\n");}
     break;
 
   case 12:
 
 /* Line 1455 of yacc.c  */
 #line 132 "Sintactico.y"
-    {printf("TIPO REAL regla 10\n");}
+    {printf("Regla 10: t_dato -> REAL\n");}
     break;
 
   case 13:
 
 /* Line 1455 of yacc.c  */
 #line 133 "Sintactico.y"
-    {printf("TIPO STRING regla 11\n");}
+    {printf("Regla 11: t_dato -> STRING\n");}
     break;
 
   case 14:
 
 /* Line 1455 of yacc.c  */
 #line 138 "Sintactico.y"
-    {printf("bloque_cod sentencia regla 12\n");}
+    {printf("Regla 12: bloque_cod -> bloque_cod sentencia\n");}
     break;
 
   case 15:
 
 /* Line 1455 of yacc.c  */
 #line 139 "Sintactico.y"
-    {printf("sentencia regla 13\n");}
+    {printf("Regla 13: bloque_cod -> sentencia\n");}
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
 #line 142 "Sintactico.y"
-    {printf("asignacion regla 14\n");}
+    {printf("Regla 14: sentencia -> asignacion\n");}
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
 #line 143 "Sintactico.y"
-    {printf("seleccion regla 15\n");}
+    {printf("Regla 15: sentencia -> seleccion\n");}
     break;
 
   case 18:
 
 /* Line 1455 of yacc.c  */
 #line 144 "Sintactico.y"
-    {printf("iteracion regla 16\n");}
+    {printf("Regla 16: sentencia -> iteracion\n");}
     break;
 
   case 19:
 
 /* Line 1455 of yacc.c  */
 #line 145 "Sintactico.y"
-    {printf("salida regla 17\n");}
+    {printf("Regla 17: sentencia -> salida\n");}
     break;
 
   case 20:
 
 /* Line 1455 of yacc.c  */
 #line 146 "Sintactico.y"
-    {printf("entrada regla 18\n");}
+    {printf("Regla 18: sentencia -> entrada\n");}
     break;
 
   case 21:
 
 /* Line 1455 of yacc.c  */
 #line 149 "Sintactico.y"
-    {printf("regla 19\n");}
+    {printf("Regla 19: asignacion -> ID OP_ASIG expresion\n");}
     break;
 
   case 22:
 
 /* Line 1455 of yacc.c  */
 #line 150 "Sintactico.y"
-    {printf("regla 20\n");}
+    {printf("Regla 20: asignacion -> ID OP_ASIG asignacion\n");}
     break;
 
   case 23:
 
 /* Line 1455 of yacc.c  */
 #line 153 "Sintactico.y"
-    {printf("IF regla 21\n");}
+    {printf("Regla 21: seleccion -> bloque_if\n");}
     break;
 
   case 24:
 
 /* Line 1455 of yacc.c  */
 #line 154 "Sintactico.y"
-    {printf("IF ELSE regla 22\n");}
+    {printf("Regla 22: seleccion -> bloque_if bloque_else\n");}
     break;
 
   case 25:
 
 /* Line 1455 of yacc.c  */
 #line 157 "Sintactico.y"
-    {printf("regla 23\n");}
+    {printf("Regla 23: bloque_if -> IF PARA condicion PARC sentencia\n");}
     break;
 
   case 26:
 
 /* Line 1455 of yacc.c  */
 #line 158 "Sintactico.y"
-    {printf("regla 24\n");}
+    {printf("Regla 24: bloque_if -> IF PARA condicion PARC LLA bloque_cod LLC\n");}
     break;
 
   case 27:
 
 /* Line 1455 of yacc.c  */
 #line 161 "Sintactico.y"
-    {printf("regla 25\n");}
+    {printf("Regla 25: bloque_else -> ELSE sentencia\n");}
     break;
 
   case 28:
 
 /* Line 1455 of yacc.c  */
 #line 162 "Sintactico.y"
-    {printf("regla 26\n");}
+    {printf("Regla 26: bloque_else -> ELSE LLA bloque_cod LLC\n");}
     break;
 
   case 29:
 
 /* Line 1455 of yacc.c  */
 #line 165 "Sintactico.y"
-    {printf("WHILE regla 27\n");}
+    {printf("Regla 27: iteracion -> WHILE PARA condicion PARC sentencia\n");}
     break;
 
   case 30:
 
 /* Line 1455 of yacc.c  */
 #line 166 "Sintactico.y"
-    {printf("WHILE regla 28\n");}
+    {printf("Regla 28: iteracion -> WHILE PARA condicion PARC LLA bloque_cod LLC\n");}
     break;
 
   case 31:
 
 /* Line 1455 of yacc.c  */
 #line 169 "Sintactico.y"
-    {printf("regla 29\n");}
+    {printf("Regla 29: condicion -> comparacion\n");}
     break;
 
   case 32:
 
 /* Line 1455 of yacc.c  */
 #line 170 "Sintactico.y"
-    {printf("AND regla 30\n");}
+    {printf("Regla 30: condicion -> comparacion AND comparacion\n");}
     break;
 
   case 33:
 
 /* Line 1455 of yacc.c  */
 #line 171 "Sintactico.y"
-    {printf("OR regla 31\n");}
+    {printf("Regla 31: condicion -> comparacion OR comparacion\n");}
     break;
 
   case 34:
 
 /* Line 1455 of yacc.c  */
 #line 172 "Sintactico.y"
-    {printf("NOT regla 32\n");}
+    {printf("Regla 32: condicion -> NOT comparacion\n");}
     break;
 
   case 35:
 
 /* Line 1455 of yacc.c  */
 #line 175 "Sintactico.y"
-    {printf("comparacion regla 33\n");}
+    {printf("Regla 33: comparacion -> expresion comparador expresion\n");}
     break;
 
   case 36:
 
 /* Line 1455 of yacc.c  */
 #line 176 "Sintactico.y"
-    {printf("inlist regla 34\n");}
+    {printf("Regla 34: comparacion -> inlist\n");}
     break;
 
   case 37:
 
 /* Line 1455 of yacc.c  */
 #line 179 "Sintactico.y"
-    {printf("INLIST regla 35\n");}
+    {printf("Regla 35: inlist -> INLIST PARA ID PUNTO_COMA CORCHA lista_expr CORCHC PARC\n");}
     break;
 
   case 38:
 
 /* Line 1455 of yacc.c  */
 #line 182 "Sintactico.y"
-    {printf("lista_expr+ regla 36\n");}
+    {printf("Regla 36: lista_expr -> lista_expr PUNTO_COMA expresion\n");}
     break;
 
   case 39:
 
 /* Line 1455 of yacc.c  */
 #line 183 "Sintactico.y"
-    {printf("lista_expr regla 37\n");}
+    {printf("Regla 37: lista_expr -> expresion\n");}
     break;
 
   case 40:
 
 /* Line 1455 of yacc.c  */
 #line 186 "Sintactico.y"
-    {printf("MENOR_IGUAL regla 38\n");}
+    {printf("Regla 38: comparador -> MENOR_IGUAL\n");}
     break;
 
   case 41:
 
 /* Line 1455 of yacc.c  */
 #line 187 "Sintactico.y"
-    {printf("MAYOR_IGUAL regla 39\n");}
+    {printf("Regla 39: comparador -> MAYOR_IGUAL\n");}
     break;
 
   case 42:
 
 /* Line 1455 of yacc.c  */
 #line 188 "Sintactico.y"
-    {printf("MENOR regla 40\n");}
+    {printf("Regla 40: comparador -> MENOR\n");}
     break;
 
   case 43:
 
 /* Line 1455 of yacc.c  */
 #line 189 "Sintactico.y"
-    {printf("MAYOR regla 41\n");}
+    {printf("Regla 41: comparador -> MAYOR\n");}
     break;
 
   case 44:
 
 /* Line 1455 of yacc.c  */
 #line 190 "Sintactico.y"
-    {printf("IGUAL regla 42\n");}
+    {printf("Regla 42: comparador -> IGUAL\n");}
     break;
 
   case 45:
 
 /* Line 1455 of yacc.c  */
 #line 191 "Sintactico.y"
-    {printf("DISTINTO regla 43\n");}
+    {printf("Regla 43: comparador -> DISTINTO\n");}
     break;
 
   case 46:
 
 /* Line 1455 of yacc.c  */
 #line 194 "Sintactico.y"
-    {printf("regla 44\n");}
+    {printf("Regla 44: expresion -> expresion OP_SUMA termino\n");}
     break;
 
   case 47:
 
 /* Line 1455 of yacc.c  */
 #line 195 "Sintactico.y"
-    {printf("regla 45\n");}
+    {printf("Regla 45: expresion -> expresion OP_RESTA termino\n");}
     break;
 
   case 48:
 
 /* Line 1455 of yacc.c  */
 #line 196 "Sintactico.y"
-    {printf("regla 46\n");}
+    {printf("Regla 46: expresion -> termino\n");}
     break;
 
   case 49:
 
 /* Line 1455 of yacc.c  */
 #line 197 "Sintactico.y"
-    {printf("regla 47\n");}
+    {printf("Regla 47: expresion -> OP_RESTA termino\n");}
     break;
 
   case 50:
 
 /* Line 1455 of yacc.c  */
 #line 200 "Sintactico.y"
-    {printf("regla 48\n");}
+    {printf("Regla 48: termino -> termino OP_MULT factor\n");}
     break;
 
   case 51:
 
 /* Line 1455 of yacc.c  */
 #line 201 "Sintactico.y"
-    {printf("regla 49\n");}
+    {printf("Regla 49: termino -> termino OP_DIV factor\n");}
     break;
 
   case 52:
 
 /* Line 1455 of yacc.c  */
 #line 202 "Sintactico.y"
-    {printf("regla 50\n");}
+    {printf("Regla 50: termino -> factor\n");}
     break;
 
   case 53:
 
 /* Line 1455 of yacc.c  */
 #line 205 "Sintactico.y"
-    {printf("Expresion entre Parentesis regla 51\n");}
+    {printf("Regla 51: factor -> PARA expresion PARC\n");}
     break;
 
   case 54:
@@ -1941,7 +1941,7 @@ yyreduce:
 #line 206 "Sintactico.y"
     {
 	                                            BuscarEnLista(&lista_ts, yylval.string_val);
-	                                            printf("factor ID: %s\n",yylval.string_val);printf("ID regla 52\n");}
+	                                            printf("factor ID: %s\n",yylval.string_val);printf("Regla 52: factor -> ID\n");}
     break;
 
   case 55:
@@ -1955,7 +1955,7 @@ yyreduce:
 	                                            strcpy(dato.tipodato, "const_Integer");
 	                                            dato.longitud = 0;
 	                                            insertar_en_ts(&lista_ts, &dato);
-	                                            printf("CTE_ENTERA regla 53\n");}
+	                                            printf("Regla 53: factor -> CTE_ENTERA\n");}
     break;
 
   case 56:
@@ -1968,7 +1968,7 @@ yyreduce:
 	                                            strcpy(dato.tipodato, "const_Float");
 	                                            dato.longitud = 0;
 	                                            insertar_en_ts(&lista_ts, &dato);
-	                                            printf("CTE_REAL regla 54\n");}
+	                                            printf("Regla 54: factor -> CTE_REAL\n");}
     break;
 
   case 57:
@@ -1982,7 +1982,7 @@ yyreduce:
 	                                            strcpy(dato.valor, yytext);												
 	                                            strcpy(dato.tipodato, "const_String");												
 	                                            insertar_en_ts(&lista_ts, &dato);
-	                                            printf("CTE_STRING regla 55\n");}
+	                                            printf("Regla 55: factor -> CTE_STRING\n");}
     break;
 
   case 58:
@@ -1991,7 +1991,7 @@ yyreduce:
 #line 237 "Sintactico.y"
     {
 	                                            BuscarEnLista(&lista_ts, yylval.string_val);
-	                                            printf("WRITE ID regla 56\n");}
+	                                            printf("Regla 56: salida -> WRITE ID\n");}
     break;
 
   case 59:
@@ -2005,7 +2005,7 @@ yyreduce:
 	                                            strcpy(dato.valor, yytext);												
 	                                            strcpy(dato.tipodato, "const_String");
 	                                            insertar_en_ts(&lista_ts, &dato);
-	                                            printf("WRITE CTE_STRING regla 57\n");}
+	                                            printf("Regla 57: salida -> WRITE CTE_STRING\n");}
     break;
 
   case 60:
@@ -2014,7 +2014,7 @@ yyreduce:
 #line 250 "Sintactico.y"
     {
 	                                            BuscarEnLista(&lista_ts, yylval.string_val);
-	                                            printf("READ ID regla 58\n");}
+	                                            printf("Regla 58: entrada -> READ ID\n");}
     break;
 
 

@@ -96,20 +96,20 @@ inicio:
 	programa                                    {printf("Compilacion Exitosa\n");};
  
 programa:
-	seccion_declaracion bloque_cod              {printf("regla 1\n");}
-	|	bloque_cod                              {printf("regla 2\n");};
+	seccion_declaracion bloque_cod              {printf("Regla 1: programa -> seccion_declaracion bloque_cod\n");}
+	|	bloque_cod                              {printf("Regla 2: programa -> bloque_cod\n");};
 
  /* Declaracion de variables */
 
 seccion_declaracion:
-	DECVAR bloque_dec ENDDEC                    {printf("TERMINA DECVAR regla 3\n");};        
+	DECVAR bloque_dec ENDDEC                    {printf("Regla 3: seccion_declaracion -> DECVAR bloque_dec ENDDEC\n");};        
 
 bloque_dec:
-	bloque_dec declaracion                      {printf("regla 4\n");}        
-	| declaracion                               {printf("regla 5\n");};
+	bloque_dec declaracion                      {printf("Regla 4: bloque_dec -> bloque_dec declaracion\n");}        
+	| declaracion                               {printf("Regla 5: bloque_dec -> declaracion\n");};
 
 declaracion:
-	lista_id DOS_PUNTOS t_dato                  {printf("regla 6\n");};
+	lista_id DOS_PUNTOS t_dato                  {printf("Regla 6: declaracion -> lista_id DOS_PUNTOS t_dato\n");};
 
 lista_id:	
 	lista_id COMA ID                            {
@@ -118,94 +118,94 @@ lista_id:
 	                                            strcpy(dato.tipodato, "");
 	                                            dato.longitud = 0;
 	                                            insertar_en_ts(&lista_ts, &dato);
-	                                            printf("Declaracion: %s\n",yylval.string_val );printf("regla 7\n");}
+	                                            printf("Declaracion: %s\n",yylval.string_val );printf("Regla 7: lista_id -> lista_id COMA ID\n");}
 	| ID                                        {
 	                                            strcpy(dato.nombre, yylval.string_val);
 	                                            strcpy(dato.valor, "");
 	                                            strcpy(dato.tipodato, "");
 	                                            dato.longitud = 0;
 	                                            insertar_en_ts(&lista_ts, &dato);
-	                                            printf("Declaracion: %s\n",yylval.string_val);printf("regla 8\n");};
+	                                            printf("Declaracion: %s\n",yylval.string_val);printf("Regla 8: lista_id -> ID\n");};
 	
 t_dato:
-	ENTERO                                      {printf("TIPO ENTERO regla 9\n");}
-	| REAL                                      {printf("TIPO REAL regla 10\n");}
-	| STRING                                    {printf("TIPO STRING regla 11\n");};
+	ENTERO                                      {printf("Regla 9: t_dato -> ENTERO\n");}
+	| REAL                                      {printf("Regla 10: t_dato -> REAL\n");}
+	| STRING                                    {printf("Regla 11: t_dato -> STRING\n");};
 
  /* codigo */
 
 bloque_cod:
-	bloque_cod sentencia                        {printf("bloque_cod sentencia regla 12\n");}
-	| sentencia                                 {printf("sentencia regla 13\n");};
+	bloque_cod sentencia                        {printf("Regla 12: bloque_cod -> bloque_cod sentencia\n");}
+	| sentencia                                 {printf("Regla 13: bloque_cod -> sentencia\n");};
 
 sentencia:
-	asignacion                                  {printf("asignacion regla 14\n");}
-	| seleccion                                 {printf("seleccion regla 15\n");}
-	| iteracion                                 {printf("iteracion regla 16\n");}
-	| salida                                    {printf("salida regla 17\n");}
-	| entrada                                   {printf("entrada regla 18\n");};
+	asignacion                                  {printf("Regla 14: sentencia -> asignacion\n");}
+	| seleccion                                 {printf("Regla 15: sentencia -> seleccion\n");}
+	| iteracion                                 {printf("Regla 16: sentencia -> iteracion\n");}
+	| salida                                    {printf("Regla 17: sentencia -> salida\n");}
+	| entrada                                   {printf("Regla 18: sentencia -> entrada\n");};
 	
 asignacion:
-	ID OP_ASIG expresion                        {printf("regla 19\n");}
-	| ID OP_ASIG asignacion                     {printf("regla 20\n");};
+	ID OP_ASIG expresion                        {printf("Regla 19: asignacion -> ID OP_ASIG expresion\n");}
+	| ID OP_ASIG asignacion                     {printf("Regla 20: asignacion -> ID OP_ASIG asignacion\n");};
 	
  seleccion:
-	bloque_if 				%prec NO_ELSE       {printf("IF regla 21\n");}
-	| bloque_if bloque_else                     {printf("IF ELSE regla 22\n");};
+	bloque_if 				%prec NO_ELSE       {printf("Regla 21: seleccion -> bloque_if\n");}
+	| bloque_if bloque_else                     {printf("Regla 22: seleccion -> bloque_if bloque_else\n");};
 
 bloque_if:
-	IF PARA condicion PARC sentencia            {printf("regla 23\n");}
-	| IF PARA condicion PARC LLA bloque_cod LLC {printf("regla 24\n");};
+	IF PARA condicion PARC sentencia            {printf("Regla 23: bloque_if -> IF PARA condicion PARC sentencia\n");}
+	| IF PARA condicion PARC LLA bloque_cod LLC {printf("Regla 24: bloque_if -> IF PARA condicion PARC LLA bloque_cod LLC\n");};
 
 bloque_else:
-	ELSE sentencia                              {printf("regla 25\n");}
-	| ELSE LLA bloque_cod LLC                   {printf("regla 26\n");};
+	ELSE sentencia                              {printf("Regla 25: bloque_else -> ELSE sentencia\n");}
+	| ELSE LLA bloque_cod LLC                   {printf("Regla 26: bloque_else -> ELSE LLA bloque_cod LLC\n");};
 
 iteracion:
-	WHILE PARA condicion PARC sentencia             {printf("WHILE regla 27\n");}
-	| WHILE PARA condicion PARC LLA bloque_cod LLC  {printf("WHILE regla 28\n");};
+	WHILE PARA condicion PARC sentencia             {printf("Regla 27: iteracion -> WHILE PARA condicion PARC sentencia\n");}
+	| WHILE PARA condicion PARC LLA bloque_cod LLC  {printf("Regla 28: iteracion -> WHILE PARA condicion PARC LLA bloque_cod LLC\n");};
 	
 condicion:
-	comparacion                                 {printf("regla 29\n");}
-	| comparacion AND comparacion               {printf("AND regla 30\n");}
-	| comparacion OR comparacion                {printf("OR regla 31\n");}
-	| NOT comparacion                           {printf("NOT regla 32\n");};
+	comparacion                                 {printf("Regla 29: condicion -> comparacion\n");}
+	| comparacion AND comparacion               {printf("Regla 30: condicion -> comparacion AND comparacion\n");}
+	| comparacion OR comparacion                {printf("Regla 31: condicion -> comparacion OR comparacion\n");}
+	| NOT comparacion                           {printf("Regla 32: condicion -> NOT comparacion\n");};
 	
 comparacion:
-	expresion comparador expresion              {printf("comparacion regla 33\n");}
-	| inlist                                    {printf("inlist regla 34\n");};
+	expresion comparador expresion              {printf("Regla 33: comparacion -> expresion comparador expresion\n");}
+	| inlist                                    {printf("Regla 34: comparacion -> inlist\n");};
 
 inlist:
-	INLIST PARA ID PUNTO_COMA CORCHA lista_expr CORCHC PARC         {printf("INLIST regla 35\n");};
+	INLIST PARA ID PUNTO_COMA CORCHA lista_expr CORCHC PARC         {printf("Regla 35: inlist -> INLIST PARA ID PUNTO_COMA CORCHA lista_expr CORCHC PARC\n");};
 	
 lista_expr:
-	lista_expr PUNTO_COMA expresion             {printf("lista_expr+ regla 36\n");}
-	| expresion                                 {printf("lista_expr regla 37\n");};
+	lista_expr PUNTO_COMA expresion             {printf("Regla 36: lista_expr -> lista_expr PUNTO_COMA expresion\n");}
+	| expresion                                 {printf("Regla 37: lista_expr -> expresion\n");};
 
 comparador:
-	MENOR_IGUAL                                 {printf("MENOR_IGUAL regla 38\n");}
-	| MAYOR_IGUAL                               {printf("MAYOR_IGUAL regla 39\n");}
-	| MENOR                                     {printf("MENOR regla 40\n");}
-	| MAYOR                                     {printf("MAYOR regla 41\n");}
-	| IGUAL                                     {printf("IGUAL regla 42\n");}
-	| DISTINTO                                  {printf("DISTINTO regla 43\n");};
+	MENOR_IGUAL                                 {printf("Regla 38: comparador -> MENOR_IGUAL\n");}
+	| MAYOR_IGUAL                               {printf("Regla 39: comparador -> MAYOR_IGUAL\n");}
+	| MENOR                                     {printf("Regla 40: comparador -> MENOR\n");}
+	| MAYOR                                     {printf("Regla 41: comparador -> MAYOR\n");}
+	| IGUAL                                     {printf("Regla 42: comparador -> IGUAL\n");}
+	| DISTINTO                                  {printf("Regla 43: comparador -> DISTINTO\n");};
 	
 expresion:
-	expresion OP_SUMA termino                   {printf("regla 44\n");}
-	| expresion OP_RESTA termino                {printf("regla 45\n");}
-	| termino                                   {printf("regla 46\n");}
-	| OP_RESTA termino                          {printf("regla 47\n");};
+	expresion OP_SUMA termino                   {printf("Regla 44: expresion -> expresion OP_SUMA termino\n");}
+	| expresion OP_RESTA termino                {printf("Regla 45: expresion -> expresion OP_RESTA termino\n");}
+	| termino                                   {printf("Regla 46: expresion -> termino\n");}
+	| OP_RESTA termino                          {printf("Regla 47: expresion -> OP_RESTA termino\n");};
 	
 termino:
-	termino OP_MULT factor                      {printf("regla 48\n");}
-	| termino OP_DIV factor                     {printf("regla 49\n");}
-	| factor                                    {printf("regla 50\n");};
+	termino OP_MULT factor                      {printf("Regla 48: termino -> termino OP_MULT factor\n");}
+	| termino OP_DIV factor                     {printf("Regla 49: termino -> termino OP_DIV factor\n");}
+	| factor                                    {printf("Regla 50: termino -> factor\n");};
 	
 factor:
-	PARA expresion PARC                         {printf("Expresion entre Parentesis regla 51\n");}
+	PARA expresion PARC                         {printf("Regla 51: factor -> PARA expresion PARC\n");}
 	| ID                                        {
 	                                            BuscarEnLista(&lista_ts, yylval.string_val);
-	                                            printf("factor ID: %s\n",yylval.string_val);printf("ID regla 52\n");}
+	                                            printf("factor ID: %s\n",yylval.string_val);printf("Regla 52: factor -> ID\n");}
 												
 	| CTE_ENTERA                                {
 	                                            // strcpy(d.clave, guion_cadena(yytext));
@@ -214,7 +214,7 @@ factor:
 	                                            strcpy(dato.tipodato, "const_Integer");
 	                                            dato.longitud = 0;
 	                                            insertar_en_ts(&lista_ts, &dato);
-	                                            printf("CTE_ENTERA regla 53\n");}
+	                                            printf("Regla 53: factor -> CTE_ENTERA\n");}
 												
 	| CTE_REAL                                  {
 	                                            strcpy(dato.nombre, yytext);
@@ -222,7 +222,7 @@ factor:
 	                                            strcpy(dato.tipodato, "const_Float");
 	                                            dato.longitud = 0;
 	                                            insertar_en_ts(&lista_ts, &dato);
-	                                            printf("CTE_REAL regla 54\n");}
+	                                            printf("Regla 54: factor -> CTE_REAL\n");}
 	
 	| CTE_STRING                                {				
 	                                            dato.longitud = strlen(yytext)-2;
@@ -231,12 +231,12 @@ factor:
 	                                            strcpy(dato.valor, yytext);												
 	                                            strcpy(dato.tipodato, "const_String");												
 	                                            insertar_en_ts(&lista_ts, &dato);
-	                                            printf("CTE_STRING regla 55\n");};
+	                                            printf("Regla 55: factor -> CTE_STRING\n");};
 	
 salida:
 	WRITE ID                                    {
 	                                            BuscarEnLista(&lista_ts, yylval.string_val);
-	                                            printf("WRITE ID regla 56\n");}
+	                                            printf("Regla 56: salida -> WRITE ID\n");}
 	| WRITE CTE_STRING                          {
 	                                            dato.longitud = strlen(yytext)-2;
 	                                            strcpy(dato.nombre, yytext);
@@ -244,12 +244,12 @@ salida:
 	                                            strcpy(dato.valor, yytext);												
 	                                            strcpy(dato.tipodato, "const_String");
 	                                            insertar_en_ts(&lista_ts, &dato);
-	                                            printf("WRITE CTE_STRING regla 57\n");};
+	                                            printf("Regla 57: salida -> WRITE CTE_STRING\n");};
 	
 entrada:
 	READ ID                                     {
 	                                            BuscarEnLista(&lista_ts, yylval.string_val);
-	                                            printf("READ ID regla 58\n");};
+	                                            printf("Regla 58: entrada -> READ ID\n");};
 
 %%
 
