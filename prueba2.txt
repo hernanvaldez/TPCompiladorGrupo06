@@ -1,0 +1,12 @@
+DECVAR
+	a,var1 : INTEGER
+	c,d,base : FLOAT
+	b,e,q,w : STRING
+	
+ENDDEC
+
+-/operador/-
+
+-/operadorÜ/-
+
+a=0
