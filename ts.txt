@@ -6,6 +6,8 @@ d                                                                               
 base                                                                                     0                                  
 b                                                                                        0                                  
 e                                                                                        0                                  
+q                                                                                        0                                  
+w                                                                                        0                                  
 34                                  const_Integer    34                                  0                                  
 2                                   const_Integer    2                                   0                                  
 5                                   const_Integer    5                                   0                                  

@@ -13,6 +13,7 @@
 	
 	int yyerror(char* mensaje);
 
+	extern int yylineno;
 	extern char * yytext;
 
 	FILE  *yyin;
@@ -36,6 +37,9 @@
 	typedef t_nodo *t_lista;
 
 	typedef int (*t_cmp)(const void *, const void *);
+
+	// Declaracion funciones primera entrega
+
 	int compararPorNombre(const void *, const void *);
 
 	void crear_lista(t_lista *p);
@@ -273,7 +277,7 @@ int main(int argc,char *argv[])
 
 int yyerror(char* mensaje)
  {
-	printf("Error sintactico: %s\n", mensaje );
+	printf("Error sintactico en line %d: %s\n", yylineno, mensaje );
 	system ("Pause");
 	exit (1);
  }
