@@ -1,0 +1,5 @@
+DECVAR
+	a,b: INTEGER
+ENDDEC
+
+a = a - 3 * b

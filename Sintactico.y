@@ -56,6 +56,49 @@
 	t_lista lista_ts;
 	t_info dato;
 
+	// Estructuras para los tercetos //
+
+	typedef struct
+	{
+		int numeroTerceto;
+		char * primerElemento;
+		char * segundoElemento;
+		char * tercerElemento;
+	} t_info_terceto;
+
+	typedef struct s_nodo_terceto
+	{
+		t_info_terceto info;
+		struct s_nodo_terceto *pSig;
+	} t_nodo_terceto;
+
+	typedef t_nodo_terceto *t_lista_terceto;
+	t_lista_terceto lista_terceto;
+	t_info_terceto dato_terceto;
+	int contadorTercetos = 0;
+
+	// +++++++++++++++++ Indices +++++++++++++++++ //
+
+	// Expresion //
+
+	int expresionIndice;
+	int terminoIndice;
+	int factorIndice;
+
+	// Declaracion funciones segunda entrega //
+
+	// Lista
+
+	void crear_lista_terceto(t_lista_terceto *p);
+	int	insertar_en_lista_terceto(t_lista_terceto *p, const t_info_terceto *d);
+
+	// Tercetos
+
+	char* crearIndice(int); //Recibe un numero de terceto y lo combierte en un indice
+	int crearTerceto(char*, char*, char*); //Se mandan los 3 strings, y se guarda el terceto creado en la lista
+										   //La posicion en la lista se lo da contadorTercetos. Variable que aumenta en 1
+  	void guardarTercetosEnArchivo(t_lista_terceto *);								   
+
 %}
 
 %union {
@@ -195,39 +238,72 @@ comparador:
 	| DISTINTO                                  {printf("Regla 43: comparador -> DISTINTO\n");};
 	
 expresion:
-	expresion OP_SUMA termino                   {printf("Regla 44: expresion -> expresion OP_SUMA termino\n");}
-	| expresion OP_RESTA termino                {printf("Regla 45: expresion -> expresion OP_RESTA termino\n");}
-	| termino                                   {printf("Regla 46: expresion -> termino\n");}
-	| OP_RESTA termino                          {printf("Regla 47: expresion -> OP_RESTA termino\n");};
+	expresion OP_SUMA termino                   {
+													printf("Regla 44: expresion -> expresion OP_SUMA termino\n");
+													expresionIndice = crearTerceto("+",crearIndice(expresionIndice),crearIndice(terminoIndice));
+												}
+	| expresion OP_RESTA termino                {
+													printf("Regla 45: expresion -> expresion OP_RESTA termino\n");
+													expresionIndice = crearTerceto("-",crearIndice(expresionIndice),crearIndice(terminoIndice));
+												}
+	| termino                                   {
+													printf("Regla 46: expresion -> termino\n");
+													expresionIndice = terminoIndice;
+												}
+	| OP_RESTA termino                          {
+													printf("Regla 47: expresion -> OP_RESTA termino\n");
+													expresionIndice = crearTerceto("-",crearIndice(terminoIndice),"");
+												};
 	
 termino:
-	termino OP_MULT factor                      {printf("Regla 48: termino -> termino OP_MULT factor\n");}
-	| termino OP_DIV factor                     {printf("Regla 49: termino -> termino OP_DIV factor\n");}
-	| factor                                    {printf("Regla 50: termino -> factor\n");};
+	termino OP_MULT factor                      {
+													printf("Regla 48: termino -> termino OP_MULT factor\n");
+													terminoIndice = crearTerceto("*",crearIndice(terminoIndice),crearIndice(factorIndice));
+												}
+	| termino OP_DIV factor                     {
+													printf("Regla 49: termino -> termino OP_DIV factor\n");
+													terminoIndice = crearTerceto("/",crearIndice(terminoIndice),crearIndice(factorIndice));
+												}
+	| factor                                    {
+													printf("Regla 50: termino -> factor\n");
+													terminoIndice = factorIndice;
+												};
 	
 factor:
-	PARA expresion PARC                         {printf("Regla 51: factor -> PARA expresion PARC\n");}
+	PARA expresion PARC                         {
+													printf("Regla 51: factor -> PARA expresion PARC\n");
+													// CrearTerceto
+												}
+
 	| ID                                        {
 	                                            BuscarEnLista(&lista_ts, yylval.string_val);
-	                                            printf("factor ID: %s\n",yylval.string_val);printf("Regla 52: factor -> ID\n");}
-												
+	                                            printf("factor ID: %s\n",yylval.string_val);printf("Regla 52: factor -> ID\n");
+												factorIndice = crearTerceto($1,"","");
+												}
+
 	| CTE_ENTERA                                {
 	                                            // strcpy(d.clave, guion_cadena(yytext));
+												char aux [50];
 	                                            strcpy(dato.nombre, yytext);
 	                                            strcpy(dato.valor, yytext);
 	                                            strcpy(dato.tipodato, "const_Integer");
 	                                            dato.longitud = 0;
 	                                            insertar_en_ts(&lista_ts, &dato);
-	                                            printf("Regla 53: factor -> CTE_ENTERA\n");}
-												
+	                                            printf("Regla 53: factor -> CTE_ENTERA\n");
+												factorIndice = crearTerceto(itoa($1,aux,10),"","");
+												}
+
 	| CTE_REAL                                  {
+												char aux [50];
 	                                            strcpy(dato.nombre, yytext);
 	                                            strcpy(dato.valor, yytext);
 	                                            strcpy(dato.tipodato, "const_Float");
 	                                            dato.longitud = 0;
 	                                            insertar_en_ts(&lista_ts, &dato);
-	                                            printf("Regla 54: factor -> CTE_REAL\n");}
-	
+	                                            printf("Regla 54: factor -> CTE_REAL\n");
+												// factorIndice = crearTerceto($1,"",""); //Falta pasar $1 a char*
+												}
+
 	| CTE_STRING                                {				
 	                                            dato.longitud = strlen(yytext)-2;
 	                                            strcpy(dato.nombre, yytext);
@@ -266,10 +342,12 @@ int main(int argc,char *argv[])
   else
   {
 	crear_ts(&lista_ts);
+	crear_lista_terceto(&lista_terceto);
 
 	yyparse();
 
 	grabar_lista(&lista_ts);
+	guardarTercetosEnArchivo(&lista_terceto);
   	fclose(yyin);
   }
   return 0;
@@ -389,3 +467,60 @@ void quitar_comillas(char *pc){
 		*pc='\0';
 	}	
 }
+
+// Implementacion Funciones segunda entrega //
+
+void crear_lista_terceto(t_lista_terceto *p){
+	*p = NULL;
+}
+
+int insertar_en_lista_terceto(t_lista_terceto *p, const t_info_terceto *d)
+{
+    t_nodo_terceto* nue = (t_nodo_terceto *)malloc(sizeof(t_nodo_terceto));
+    if(!nue)
+        return SIN_MEMORIA;
+    nue->info = *d;
+    nue->pSig = NULL;
+    while(*p)
+        p = &(*p)->pSig;
+    *p = nue;
+    return 1;
+}
+
+char* crearIndice(int indice){
+	
+	char* resultado = (char*) malloc(sizeof(char)*7);
+	char numeroTexto [4];
+
+	strcpy(resultado,"[");
+	itoa(indice,numeroTexto,10);
+	strcat(resultado,numeroTexto);
+	strcat(resultado,"]");
+	return resultado;
+}
+
+int crearTerceto(char* primero, char* segundo, char* tercero){
+	t_info_terceto nuevo;
+	nuevo.primerElemento = malloc(sizeof(char)*strlen(primero)+1);
+	strcpy(nuevo.primerElemento,primero);
+	nuevo.segundoElemento = malloc(sizeof(char)*strlen(segundo)+1);
+	strcpy(nuevo.segundoElemento,segundo);
+	nuevo.tercerElemento = malloc(sizeof(char)*strlen(tercero)+1);
+	strcpy(nuevo.tercerElemento,tercero);
+	nuevo.numeroTerceto = contadorTercetos;
+	//printf("%d %s %s %s\n",nuevo.numeroTerceto,nuevo.primerElemento,nuevo.segundoElemento,nuevo.tercerElemento);
+	insertar_en_lista_terceto(&lista_terceto,&nuevo);
+  	contadorTercetos++;
+  	return nuevo.numeroTerceto;
+}
+
+void guardarTercetosEnArchivo(t_lista_terceto *pl){
+  FILE * pf = fopen("intermedia.txt","wt");
+
+  while(*pl) {
+		fprintf(pf,"%d (%s,%s,%s) \n", (*pl)->info.numeroTerceto, (*pl)->info.primerElemento, (*pl)->info.segundoElemento, (*pl)->info.tercerElemento);
+		pl=&(*pl)->pSig;
+  }
+  
+  fclose(pf);
+} 
