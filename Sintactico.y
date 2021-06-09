@@ -61,9 +61,9 @@
 	typedef struct
 	{
 		int numeroTerceto;
-		char * primerElemento;
-		char * segundoElemento;
-		char * tercerElemento;
+		char primerElemento[TAM];
+		char segundoElemento[TAM];
+		char tercerElemento[TAM];
 	} t_info_terceto;
 
 	typedef struct s_nodo_terceto
@@ -501,11 +501,8 @@ char* crearIndice(int indice){
 
 int crearTerceto(char* primero, char* segundo, char* tercero){
 	t_info_terceto nuevo;
-	nuevo.primerElemento = malloc(sizeof(char)*strlen(primero)+1);
 	strcpy(nuevo.primerElemento,primero);
-	nuevo.segundoElemento = malloc(sizeof(char)*strlen(segundo)+1);
 	strcpy(nuevo.segundoElemento,segundo);
-	nuevo.tercerElemento = malloc(sizeof(char)*strlen(tercero)+1);
 	strcpy(nuevo.tercerElemento,tercero);
 	nuevo.numeroTerceto = contadorTercetos;
 	//printf("%d %s %s %s\n",nuevo.numeroTerceto,nuevo.primerElemento,nuevo.segundoElemento,nuevo.tercerElemento);
