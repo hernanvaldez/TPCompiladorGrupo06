@@ -35,6 +35,9 @@
 	}t_nodo;
 
 	typedef t_nodo *t_lista;
+	
+	int contadorVariablesDeclaradas;
+	char tipoDeDato[20];
 
 	typedef int (*t_cmp)(const void *, const void *);
 
@@ -149,14 +152,22 @@ programa:
  /* Declaracion de variables */
 
 seccion_declaracion:
-	DECVAR bloque_dec ENDDEC                    {printf("Regla 3: seccion_declaracion -> DECVAR bloque_dec ENDDEC\n");};        
+	DECVAR bloque_dec ENDDEC                    {printf("Regla 3: seccion_declaracion -> DECVAR bloque_dec ENDDEC\n");}
+	| DECVAR ENDDEC                    			{
+													printf("Error sintactico en linea %d: DECVAR ENDDEC no puede estar vacio\n", yylineno );
+													system ("Pause");
+													exit (1);
+												};
 
 bloque_dec:
 	bloque_dec declaracion                      {printf("Regla 4: bloque_dec -> bloque_dec declaracion\n");}        
 	| declaracion                               {printf("Regla 5: bloque_dec -> declaracion\n");};
 
 declaracion:
-	lista_id DOS_PUNTOS t_dato                  {printf("Regla 6: declaracion -> lista_id DOS_PUNTOS t_dato\n");};
+	lista_id DOS_PUNTOS t_dato                  {
+												insertarTipoDeDato(&lista_ts, &contadorVariablesDeclaradas);
+												printf("Regla 6: declaracion -> lista_id DOS_PUNTOS t_dato\n");
+												};
 
 lista_id:	
 	lista_id COMA ID                            {
@@ -164,20 +175,40 @@ lista_id:
 	                                            strcpy(dato.valor, "");
 	                                            strcpy(dato.tipodato, "");
 	                                            dato.longitud = 0;
-	                                            insertar_en_ts(&lista_ts, &dato);
+	                                            if( DUPLICADO == insertar_en_ts(&lista_ts, &dato))
+												{
+													printf("Error semantico en linea %d: variable duplicada %s\n", yylineno, dato.nombre );
+													system ("Pause");
+													exit (1);
+												}
+												contadorVariablesDeclaradas++;
 	                                            printf("Declaracion: %s\n",yylval.string_val );printf("Regla 7: lista_id -> lista_id COMA ID\n");}
 	| ID                                        {
 	                                            strcpy(dato.nombre, yylval.string_val);
 	                                            strcpy(dato.valor, "");
 	                                            strcpy(dato.tipodato, "");
 	                                            dato.longitud = 0;
-	                                            insertar_en_ts(&lista_ts, &dato);
+	                                            if( DUPLICADO == insertar_en_ts(&lista_ts, &dato))
+												{
+													printf("Error semantico en linea %d: variable duplicada %s\n", yylineno, dato.nombre );
+													system ("Pause");
+													exit (1);
+												}
+												contadorVariablesDeclaradas=1;
 	                                            printf("Declaracion: %s\n",yylval.string_val);printf("Regla 8: lista_id -> ID\n");};
 	
 t_dato:
-	ENTERO                                      {printf("Regla 9: t_dato -> ENTERO\n");}
-	| REAL                                      {printf("Regla 10: t_dato -> REAL\n");}
-	| STRING                                    {printf("Regla 11: t_dato -> STRING\n");};
+	ENTERO                                      {
+												strcpy(tipoDeDato,"Integer");
+												printf("Regla 9: t_dato -> ENTERO\n");
+												}
+	| REAL                                      {strcpy(tipoDeDato,"Float");
+												printf("Regla 10: t_dato -> REAL\n");
+												}
+	| STRING                                    {
+												strcpy(tipoDeDato,"String");
+												printf("Regla 11: t_dato -> STRING\n");
+												};
 
  /* codigo */
 
@@ -369,13 +400,13 @@ int yyerror(char* mensaje)
 }
 
 int insertar_en_ts(t_lista *l_ts, t_info *d) {
-	insertarEnListaEnOrdenSinDuplicados(l_ts, d, compararPorNombre);
+	return insertarEnListaEnOrdenSinDuplicados(l_ts, d, compararPorNombre);
 	
 	// Un reinicio de la estructura dato para que vuelva a ser reutilizada sin problemas (quizas no hace falta) .
-	strcpy(d->nombre,"\0");
-	strcpy(d->tipodato,"\0");
-	strcpy(d->valor,"\0");	
-	d->longitud=0;
+	//strcpy(d->nombre,"\0");
+	//strcpy(d->tipodato,"\0");
+	//strcpy(d->valor,"\0");	
+	//d->longitud=0;
 }
 
 void crear_lista(t_lista *p) {
@@ -397,6 +428,16 @@ int insertarEnListaEnOrdenSinDuplicados(t_lista *pl, t_info *d, t_cmp comparar)
     nuevo->pSig=*pl;
     *pl=nuevo;
     return 1;
+}
+
+insertarTipoDeDato(t_lista *pl, int *cant)
+{
+	printf("funcion %s \n", tipoDeDato);
+	if( (*pl)->pSig != NULL )
+        insertarTipoDeDato( &(*pl)->pSig , cant);
+	if( (*cant) > 0)
+	strcpy((*pl)->info.tipodato,tipoDeDato);
+	(*cant)--;
 }
 
 int BuscarEnLista(t_lista *pl, char* cadena )

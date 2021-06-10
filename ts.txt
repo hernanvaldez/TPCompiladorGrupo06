@@ -1,4 +1,4 @@
 NOMBRE                              TIPO DE DATO     VALOR                               LONGITUD                           
-a                                                                                        0                                  
-b                                                                                        0                                  
+a                                   Integer                                              0                                  
+b                                   Integer                                              0                                  
 3                                   const_Integer    3                                   0                                  
