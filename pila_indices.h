@@ -22,7 +22,7 @@ typedef struct pila{
 void iniciarPila(t_pila *p);
 int pilaVacia(t_nodo_pila *p);
 t_nodo_pila *pilaLLena();
-void apilar(t_pila *p, int tipo, int indice);
+void apilar(t_pila *p, int indice, int tipo);
 int sacarDePila(t_pila *p);
 int verTipoTope(t_pila *p);
 int verIndiceTope(t_pila *p);
@@ -50,7 +50,7 @@ t_nodo_pila *pilaLLena()
  return q;
 }
 
-void apilar(t_pila *p, int tipo, int indice)
+void apilar(t_pila *p, int indice, int tipo)
 {
    t_nodo_pila *nuevo;
    if((nuevo=pilaLLena())==NULL)
@@ -76,7 +76,7 @@ int sacarDePila(t_pila *p)
  int indice;
  if(pilaVacia(p->prim))
  {
-	printf("Pila vacia");
+	printf("Pila vacia sacarDePila\n");
 	return 0;
  }
  else
@@ -93,7 +93,7 @@ int verTipoTope(t_pila *p)
 {
 	if(pilaVacia(p->prim))
  {
-	printf("Pila vacia");
+	printf("Pila vacia verTipoTope\n");
 	return 0;
  }
  return  (p->prim->info.tipo);
@@ -103,7 +103,7 @@ int verIndiceTope(t_pila *p)
 {
 	if(pilaVacia(p->prim))
  {
-	printf("Pila vacia");
+	printf("Pila vacia verIndiceTope\n");
 	return 0;
  }
  return  (p->prim->info.indice);

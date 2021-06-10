@@ -6,7 +6,8 @@
 	#include <math.h>
 	#include "y.tab.h"
 	#include "pila_indices.h"
-
+	#include "indice_compatible.h"
+	
 	#define TAM 35
 	#define DUPLICADO 2
 	#define SIN_MEMORIA 3
@@ -108,7 +109,9 @@
 	char* crearIndice(int); //Recibe un numero de terceto y lo combierte en un indice
 	int crearTerceto(char*, char*, char*); //Se mandan los 3 strings, y se guarda el terceto creado en la lista
 										   //La posicion en la lista se lo da contadorTercetos. Variable que aumenta en 1
-  	void guardarTercetosEnArchivo(t_lista_terceto *);								   
+  	void guardarTercetosEnArchivo(t_lista_terceto *);	
+
+	int verCompatible(char *op,int izq, int der);
 
 %}
 
@@ -279,39 +282,39 @@ comparador:
 expresion:
 	expresion OP_SUMA termino                   {
 													printf("Regla 44: expresion -> expresion OP_SUMA termino\n");
-													apilar( &expresionIndice, verTipoTope(&terminoIndice) , crearTerceto("+",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&terminoIndice))));
+													apilar( &expresionIndice , crearTerceto("+",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&terminoIndice))), verCompatible("+",verTipoTope(&expresionIndice),verTipoTope(&terminoIndice)) );
 													//expresionIndice = crearTerceto("+",crearIndice(expresionIndice),crearIndice(terminoIndice));
 												}
 	| expresion OP_RESTA termino                {
 													printf("Regla 45: expresion -> expresion OP_RESTA termino\n");
-													apilar( &expresionIndice, verTipoTope(&terminoIndice) , crearTerceto("-",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&terminoIndice))));
+													apilar( &expresionIndice , crearTerceto("-",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&terminoIndice))), verCompatible("-",verTipoTope(&expresionIndice),verTipoTope(&terminoIndice)));
 													//expresionIndice = crearTerceto("-",crearIndice(expresionIndice),crearIndice(terminoIndice));
 												}
 	| termino                                   {
 													printf("Regla 46: expresion -> termino\n");
-													apilar( &expresionIndice, verTipoTope(&terminoIndice) , sacarDePila(&terminoIndice));
+													apilar( &expresionIndice , sacarDePila(&terminoIndice), verTipoTope(&terminoIndice));
 													//expresionIndice = terminoIndice;
 												}
 	| OP_RESTA termino                          {
 													printf("Regla 47: expresion -> OP_RESTA termino\n");
-													apilar( &expresionIndice, verTipoTope(&terminoIndice) , crearTerceto("*",crearIndice(sacarDePila(&terminoIndice)),"-1"));
+													apilar( &expresionIndice , crearTerceto("*",crearIndice(sacarDePila(&terminoIndice)),"-1"), verCompatible("-",verTipoTope(&factorIndice),CONST_INTEGER));
 													//expresionIndice = crearTerceto("-",crearIndice(terminoIndice),"");
 												};
 	
 termino:
 	termino OP_MULT factor                      {
 													printf("Regla 48: termino -> termino OP_MULT factor\n");
-													apilar( &terminoIndice, verTipoTope(&factorIndice) , crearTerceto("*",crearIndice(sacarDePila(&terminoIndice)),crearIndice(sacarDePila(&factorIndice))));
+													apilar( &terminoIndice , crearTerceto("*",crearIndice(sacarDePila(&terminoIndice)),crearIndice(sacarDePila(&factorIndice))), verCompatible("*",verTipoTope(&terminoIndice),verTipoTope(&factorIndice)));
 													//terminoIndice = crearTerceto("*",crearIndice(terminoIndice),crearIndice(factorIndice));
 												}
 	| termino OP_DIV factor                     {
 													printf("Regla 49: termino -> termino OP_DIV factor\n");
-													apilar( &terminoIndice, verTipoTope(&factorIndice) , crearTerceto("/",crearIndice(sacarDePila(&terminoIndice)),crearIndice(sacarDePila(&factorIndice))));
+													apilar( &terminoIndice , crearTerceto("/",crearIndice(sacarDePila(&terminoIndice)),crearIndice(sacarDePila(&factorIndice))), verCompatible("/",verTipoTope(&terminoIndice),verTipoTope(&factorIndice)));
 													//terminoIndice = crearTerceto("/",crearIndice(terminoIndice),crearIndice(factorIndice));
 												}
 	| factor                                    {
 													printf("Regla 50: termino -> factor\n");
-													apilar( &terminoIndice, verTipoTope(&factorIndice) , sacarDePila(&factorIndice));
+													apilar( &terminoIndice , sacarDePila(&factorIndice), verTipoTope(&factorIndice));
 													//terminoIndice = factorIndice;
 												};
 	
@@ -322,10 +325,10 @@ factor:
 												}
 
 	| ID                                        {
-	                                            BuscarEnLista(&lista_ts, yylval.string_val);
+	                                            //BuscarEnLista(&lista_ts, yylval.string_val);
 	                                            printf("factor ID: %s\n",yylval.string_val);
 												printf("Regla 52: factor -> ID\n");
-												apilar( &factorIndice, VAR_INTEGER , crearTerceto(yylval.string_val,"",""));
+												apilar( &factorIndice, crearTerceto(yylval.string_val,"",""), BuscarEnLista(&lista_ts, yylval.string_val) );
 												//factorIndice = crearTerceto($1,"","");
 												}
 
@@ -338,7 +341,7 @@ factor:
 	                                            dato.longitud = 0;
 	                                            insertar_en_ts(&lista_ts, &dato);
 	                                            printf("Regla 53: factor -> CTE_ENTERA\n");
-												apilar( &factorIndice, CONST_INTEGER , crearTerceto(yytext,"",""));
+												apilar( &factorIndice, crearTerceto(yytext,"",""), CONST_INTEGER );
 												}
 
 	| CTE_REAL                                  {
@@ -349,7 +352,7 @@ factor:
 	                                            dato.longitud = 0;
 	                                            insertar_en_ts(&lista_ts, &dato);
 	                                            printf("Regla 54: factor -> CTE_REAL\n");
-												apilar( &factorIndice, CONST_FLOAT , crearTerceto(yytext,"",""));
+												apilar( &factorIndice , crearTerceto(yytext,"",""), CONST_FLOAT);
 												// factorIndice = crearTerceto($1,"",""); //Falta pasar $1 a char*
 												}
 
@@ -361,7 +364,7 @@ factor:
 	                                            strcpy(dato.tipodato, "const_String");												
 	                                            insertar_en_ts(&lista_ts, &dato);
 	                                            printf("Regla 55: factor -> CTE_STRING\n");
-												apilar( &factorIndice, CONST_STRING , crearTerceto(yytext,"",""));
+												apilar( &factorIndice , crearTerceto(yytext,"",""), CONST_STRING);
 												};
 	
 salida:
@@ -470,7 +473,18 @@ int BuscarEnLista(t_lista *pl, char* cadena )
         pl=&(*pl)->pSig;
     if(cmp==0)
 	{
-        return ID_EN_LISTA;
+		if((strcmp("Integer",(*pl)->info.tipodato))==0)
+		{
+			return VAR_INTEGER;
+		}
+		if((strcmp("Float",(*pl)->info.tipodato))==0)
+		{
+			return VAR_FLOAT;
+		}
+		if((strcmp("String",(*pl)->info.tipodato))==0)
+		{
+			return VAR_STRING;
+		}
 	}
 	printf("\nVariable sin declarar: %s \n",cadena);
     exit(1);
@@ -533,6 +547,7 @@ void quitar_comillas(char *pc){
 
 // Implementacion Funciones segunda entrega //
 
+
 void crear_lista_terceto(t_lista_terceto *p){
 	*p = NULL;
 }
@@ -584,3 +599,37 @@ void guardarTercetosEnArchivo(t_lista_terceto *pl){
   
   fclose(pf);
 } 
+
+int verCompatible(char *op,int izq, int der)
+{
+	int tipo;
+	if(strcmp(op, "+" ) == 0 )
+	{
+		tipo = MAT_SUMA[izq][der];
+		
+	}
+	if(strcmp(op, "-" ) == 0 )
+	{
+		tipo = MAT_RESTA[izq][der];
+	}
+	if(strcmp(op, "*" ) == 0 )
+	{
+		tipo = MAT_MULT[izq][der];
+	}
+	if(strcmp(op, "/" ) == 0 )
+	{
+		tipo = MAT_DIV[izq][der];
+	}
+	if(strcmp(op, "=" ) == 0 )
+	{
+		tipo = MAT_ASIG[izq][der];
+	}
+	
+	if( tipo == 0 )
+	{
+		printf("Error semantico en linea %d: operacion %s con tipos incompatibles\n", yylineno, op );
+		system ("Pause");
+		exit (1);
+	}	
+	return tipo;
+}

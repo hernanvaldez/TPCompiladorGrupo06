@@ -77,7 +77,8 @@
 	#include <math.h>
 	#include "y.tab.h"
 	#include "pila_indices.h"
-
+	#include "indice_compatible.h"
+	
 	#define TAM 35
 	#define DUPLICADO 2
 	#define SIN_MEMORIA 3
@@ -179,12 +180,14 @@
 	char* crearIndice(int); //Recibe un numero de terceto y lo combierte en un indice
 	int crearTerceto(char*, char*, char*); //Se mandan los 3 strings, y se guarda el terceto creado en la lista
 										   //La posicion en la lista se lo da contadorTercetos. Variable que aumenta en 1
-  	void guardarTercetosEnArchivo(t_lista_terceto *);								   
+  	void guardarTercetosEnArchivo(t_lista_terceto *);	
+
+	int verCompatible(char *op,int izq, int der);
 
 
 
 /* Line 189 of yacc.c  */
-#line 188 "y.tab.c"
+#line 191 "y.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -301,7 +304,7 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 115 "Sintactico.y"
+#line 118 "Sintactico.y"
 
 	int int_val;
 	float float_val;
@@ -310,7 +313,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 314 "y.tab.c"
+#line 317 "y.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -322,7 +325,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 326 "y.tab.c"
+#line 329 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -632,13 +635,13 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   154,   154,   157,   158,   163,   164,   171,   172,   175,
-     181,   194,   209,   213,   216,   224,   225,   228,   229,   230,
-     231,   232,   235,   236,   239,   240,   243,   244,   247,   248,
-     251,   252,   255,   256,   257,   258,   261,   262,   265,   268,
-     269,   272,   273,   274,   275,   276,   277,   280,   285,   290,
-     295,   302,   307,   312,   319,   324,   332,   344,   356,   368,
-     371,   381
+       0,   157,   157,   160,   161,   166,   167,   174,   175,   178,
+     184,   197,   212,   216,   219,   227,   228,   231,   232,   233,
+     234,   235,   238,   239,   242,   243,   246,   247,   250,   251,
+     254,   255,   258,   259,   260,   261,   264,   265,   268,   271,
+     272,   275,   276,   277,   278,   279,   280,   283,   288,   297,
+     302,   309,   314,   319,   326,   331,   339,   351,   363,   375,
+     378,   388
 };
 #endif
 
@@ -1627,35 +1630,35 @@ yyreduce:
         case 2:
 
 /* Line 1455 of yacc.c  */
-#line 154 "Sintactico.y"
+#line 157 "Sintactico.y"
     {printf("Compilacion Exitosa\n");}
     break;
 
   case 3:
 
 /* Line 1455 of yacc.c  */
-#line 157 "Sintactico.y"
+#line 160 "Sintactico.y"
     {printf("Regla 1: programa -> seccion_declaracion bloque_cod\n");}
     break;
 
   case 4:
 
 /* Line 1455 of yacc.c  */
-#line 158 "Sintactico.y"
+#line 161 "Sintactico.y"
     {printf("Regla 2: programa -> bloque_cod\n");}
     break;
 
   case 5:
 
 /* Line 1455 of yacc.c  */
-#line 163 "Sintactico.y"
+#line 166 "Sintactico.y"
     {printf("Regla 3: seccion_declaracion -> DECVAR bloque_dec ENDDEC\n");}
     break;
 
   case 6:
 
 /* Line 1455 of yacc.c  */
-#line 164 "Sintactico.y"
+#line 167 "Sintactico.y"
     {
 													printf("Error sintactico en linea %d: DECVAR ENDDEC no puede estar vacio\n", yylineno );
 													system ("Pause");
@@ -1666,21 +1669,21 @@ yyreduce:
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 171 "Sintactico.y"
+#line 174 "Sintactico.y"
     {printf("Regla 4: bloque_dec -> bloque_dec declaracion\n");}
     break;
 
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 172 "Sintactico.y"
+#line 175 "Sintactico.y"
     {printf("Regla 5: bloque_dec -> declaracion\n");}
     break;
 
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 175 "Sintactico.y"
+#line 178 "Sintactico.y"
     {
 												insertarTipoDeDato(&lista_ts, &contadorVariablesDeclaradas);
 												printf("Regla 6: declaracion -> lista_id DOS_PUNTOS t_dato\n");
@@ -1690,7 +1693,7 @@ yyreduce:
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 181 "Sintactico.y"
+#line 184 "Sintactico.y"
     {
 	                                            strcpy(dato.nombre, yylval.string_val);
 	                                            strcpy(dato.valor, "");
@@ -1709,7 +1712,7 @@ yyreduce:
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 194 "Sintactico.y"
+#line 197 "Sintactico.y"
     {
 	                                            strcpy(dato.nombre, yylval.string_val);
 	                                            strcpy(dato.valor, "");
@@ -1728,7 +1731,7 @@ yyreduce:
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 209 "Sintactico.y"
+#line 212 "Sintactico.y"
     {
 												strcpy(tipoDeDato,"Integer");
 												printf("Regla 9: t_dato -> ENTERO\n");
@@ -1738,7 +1741,7 @@ yyreduce:
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 213 "Sintactico.y"
+#line 216 "Sintactico.y"
     {strcpy(tipoDeDato,"Float");
 												printf("Regla 10: t_dato -> REAL\n");
 												}
@@ -1747,7 +1750,7 @@ yyreduce:
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 216 "Sintactico.y"
+#line 219 "Sintactico.y"
     {
 												strcpy(tipoDeDato,"String");
 												printf("Regla 11: t_dato -> STRING\n");
@@ -1757,234 +1760,234 @@ yyreduce:
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 224 "Sintactico.y"
+#line 227 "Sintactico.y"
     {printf("Regla 12: bloque_cod -> bloque_cod sentencia\n");}
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 225 "Sintactico.y"
+#line 228 "Sintactico.y"
     {printf("Regla 13: bloque_cod -> sentencia\n");}
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 228 "Sintactico.y"
+#line 231 "Sintactico.y"
     {printf("Regla 14: sentencia -> asignacion\n");}
     break;
 
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 229 "Sintactico.y"
+#line 232 "Sintactico.y"
     {printf("Regla 15: sentencia -> seleccion\n");}
     break;
 
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 230 "Sintactico.y"
+#line 233 "Sintactico.y"
     {printf("Regla 16: sentencia -> iteracion\n");}
     break;
 
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 231 "Sintactico.y"
+#line 234 "Sintactico.y"
     {printf("Regla 17: sentencia -> salida\n");}
     break;
 
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 232 "Sintactico.y"
+#line 235 "Sintactico.y"
     {printf("Regla 18: sentencia -> entrada\n");}
     break;
 
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 235 "Sintactico.y"
+#line 238 "Sintactico.y"
     {printf("Regla 19: asignacion -> ID OP_ASIG expresion\n");}
     break;
 
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 236 "Sintactico.y"
+#line 239 "Sintactico.y"
     {printf("Regla 20: asignacion -> ID OP_ASIG asignacion\n");}
     break;
 
   case 24:
 
 /* Line 1455 of yacc.c  */
-#line 239 "Sintactico.y"
+#line 242 "Sintactico.y"
     {printf("Regla 21: seleccion -> bloque_if\n");}
     break;
 
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 240 "Sintactico.y"
+#line 243 "Sintactico.y"
     {printf("Regla 22: seleccion -> bloque_if bloque_else\n");}
     break;
 
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 243 "Sintactico.y"
+#line 246 "Sintactico.y"
     {printf("Regla 23: bloque_if -> IF PARA condicion PARC sentencia\n");}
     break;
 
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 244 "Sintactico.y"
+#line 247 "Sintactico.y"
     {printf("Regla 24: bloque_if -> IF PARA condicion PARC LLA bloque_cod LLC\n");}
     break;
 
   case 28:
 
 /* Line 1455 of yacc.c  */
-#line 247 "Sintactico.y"
+#line 250 "Sintactico.y"
     {printf("Regla 25: bloque_else -> ELSE sentencia\n");}
     break;
 
   case 29:
 
 /* Line 1455 of yacc.c  */
-#line 248 "Sintactico.y"
+#line 251 "Sintactico.y"
     {printf("Regla 26: bloque_else -> ELSE LLA bloque_cod LLC\n");}
     break;
 
   case 30:
 
 /* Line 1455 of yacc.c  */
-#line 251 "Sintactico.y"
+#line 254 "Sintactico.y"
     {printf("Regla 27: iteracion -> WHILE PARA condicion PARC sentencia\n");}
     break;
 
   case 31:
 
 /* Line 1455 of yacc.c  */
-#line 252 "Sintactico.y"
+#line 255 "Sintactico.y"
     {printf("Regla 28: iteracion -> WHILE PARA condicion PARC LLA bloque_cod LLC\n");}
     break;
 
   case 32:
 
 /* Line 1455 of yacc.c  */
-#line 255 "Sintactico.y"
+#line 258 "Sintactico.y"
     {printf("Regla 29: condicion -> comparacion\n");}
     break;
 
   case 33:
 
 /* Line 1455 of yacc.c  */
-#line 256 "Sintactico.y"
+#line 259 "Sintactico.y"
     {printf("Regla 30: condicion -> comparacion AND comparacion\n");}
     break;
 
   case 34:
 
 /* Line 1455 of yacc.c  */
-#line 257 "Sintactico.y"
+#line 260 "Sintactico.y"
     {printf("Regla 31: condicion -> comparacion OR comparacion\n");}
     break;
 
   case 35:
 
 /* Line 1455 of yacc.c  */
-#line 258 "Sintactico.y"
+#line 261 "Sintactico.y"
     {printf("Regla 32: condicion -> NOT comparacion\n");}
     break;
 
   case 36:
 
 /* Line 1455 of yacc.c  */
-#line 261 "Sintactico.y"
+#line 264 "Sintactico.y"
     {printf("Regla 33: comparacion -> expresion comparador expresion\n");}
     break;
 
   case 37:
 
 /* Line 1455 of yacc.c  */
-#line 262 "Sintactico.y"
+#line 265 "Sintactico.y"
     {printf("Regla 34: comparacion -> inlist\n");}
     break;
 
   case 38:
 
 /* Line 1455 of yacc.c  */
-#line 265 "Sintactico.y"
+#line 268 "Sintactico.y"
     {printf("Regla 35: inlist -> INLIST PARA ID PUNTO_COMA CORCHA lista_expr CORCHC PARC\n");}
     break;
 
   case 39:
 
 /* Line 1455 of yacc.c  */
-#line 268 "Sintactico.y"
+#line 271 "Sintactico.y"
     {printf("Regla 36: lista_expr -> lista_expr PUNTO_COMA expresion\n");}
     break;
 
   case 40:
 
 /* Line 1455 of yacc.c  */
-#line 269 "Sintactico.y"
+#line 272 "Sintactico.y"
     {printf("Regla 37: lista_expr -> expresion\n");}
     break;
 
   case 41:
 
 /* Line 1455 of yacc.c  */
-#line 272 "Sintactico.y"
+#line 275 "Sintactico.y"
     {printf("Regla 38: comparador -> MENOR_IGUAL\n");}
     break;
 
   case 42:
 
 /* Line 1455 of yacc.c  */
-#line 273 "Sintactico.y"
+#line 276 "Sintactico.y"
     {printf("Regla 39: comparador -> MAYOR_IGUAL\n");}
     break;
 
   case 43:
 
 /* Line 1455 of yacc.c  */
-#line 274 "Sintactico.y"
+#line 277 "Sintactico.y"
     {printf("Regla 40: comparador -> MENOR\n");}
     break;
 
   case 44:
 
 /* Line 1455 of yacc.c  */
-#line 275 "Sintactico.y"
+#line 278 "Sintactico.y"
     {printf("Regla 41: comparador -> MAYOR\n");}
     break;
 
   case 45:
 
 /* Line 1455 of yacc.c  */
-#line 276 "Sintactico.y"
+#line 279 "Sintactico.y"
     {printf("Regla 42: comparador -> IGUAL\n");}
     break;
 
   case 46:
 
 /* Line 1455 of yacc.c  */
-#line 277 "Sintactico.y"
+#line 280 "Sintactico.y"
     {printf("Regla 43: comparador -> DISTINTO\n");}
     break;
 
   case 47:
 
 /* Line 1455 of yacc.c  */
-#line 280 "Sintactico.y"
+#line 283 "Sintactico.y"
     {
 													printf("Regla 44: expresion -> expresion OP_SUMA termino\n");
-													apilar( &expresionIndice, verTipoTope(&terminoIndice) , crearTerceto("+",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&terminoIndice))));
+													apilar( &expresionIndice , crearTerceto("+",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&terminoIndice))), verCompatible("+",verTipoTope(&expresionIndice),verTipoTope(&terminoIndice)) );
 													//expresionIndice = crearTerceto("+",crearIndice(expresionIndice),crearIndice(terminoIndice));
 												}
     break;
@@ -1992,10 +1995,14 @@ yyreduce:
   case 48:
 
 /* Line 1455 of yacc.c  */
-#line 285 "Sintactico.y"
+#line 288 "Sintactico.y"
     {
 													printf("Regla 45: expresion -> expresion OP_RESTA termino\n");
-													apilar( &expresionIndice, verTipoTope(&terminoIndice) , crearTerceto("-",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&terminoIndice))));
+													printf("TIPO %d\n",verTipoTope(&expresionIndice));
+													printf("TIPO %d\n",verTipoTope(&terminoIndice));
+													apilar( &expresionIndice , crearTerceto("-",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&terminoIndice))), verCompatible("-",verTipoTope(&expresionIndice),verTipoTope(&terminoIndice)));
+													printf("TIPO %d\n",verTipoTope(&expresionIndice));
+													printf("TIPO %d\n",verTipoTope(&terminoIndice));
 													//expresionIndice = crearTerceto("-",crearIndice(expresionIndice),crearIndice(terminoIndice));
 												}
     break;
@@ -2003,10 +2010,10 @@ yyreduce:
   case 49:
 
 /* Line 1455 of yacc.c  */
-#line 290 "Sintactico.y"
+#line 297 "Sintactico.y"
     {
 													printf("Regla 46: expresion -> termino\n");
-													apilar( &expresionIndice, verTipoTope(&terminoIndice) , sacarDePila(&terminoIndice));
+													apilar( &expresionIndice , sacarDePila(&terminoIndice), verTipoTope(&terminoIndice));
 													//expresionIndice = terminoIndice;
 												}
     break;
@@ -2014,10 +2021,10 @@ yyreduce:
   case 50:
 
 /* Line 1455 of yacc.c  */
-#line 295 "Sintactico.y"
+#line 302 "Sintactico.y"
     {
 													printf("Regla 47: expresion -> OP_RESTA termino\n");
-													apilar( &expresionIndice, verTipoTope(&terminoIndice) , crearTerceto("*",crearIndice(sacarDePila(&terminoIndice)),"-1"));
+													apilar( &expresionIndice , crearTerceto("*",crearIndice(sacarDePila(&terminoIndice)),"-1"), verCompatible("-",verTipoTope(&factorIndice),CONST_INTEGER));
 													//expresionIndice = crearTerceto("-",crearIndice(terminoIndice),"");
 												}
     break;
@@ -2025,10 +2032,10 @@ yyreduce:
   case 51:
 
 /* Line 1455 of yacc.c  */
-#line 302 "Sintactico.y"
+#line 309 "Sintactico.y"
     {
 													printf("Regla 48: termino -> termino OP_MULT factor\n");
-													apilar( &terminoIndice, verTipoTope(&factorIndice) , crearTerceto("*",crearIndice(sacarDePila(&terminoIndice)),crearIndice(sacarDePila(&factorIndice))));
+													apilar( &terminoIndice , crearTerceto("*",crearIndice(sacarDePila(&terminoIndice)),crearIndice(sacarDePila(&factorIndice))), verCompatible("*",verTipoTope(&terminoIndice),verTipoTope(&factorIndice)));
 													//terminoIndice = crearTerceto("*",crearIndice(terminoIndice),crearIndice(factorIndice));
 												}
     break;
@@ -2036,10 +2043,10 @@ yyreduce:
   case 52:
 
 /* Line 1455 of yacc.c  */
-#line 307 "Sintactico.y"
+#line 314 "Sintactico.y"
     {
 													printf("Regla 49: termino -> termino OP_DIV factor\n");
-													apilar( &terminoIndice, verTipoTope(&factorIndice) , crearTerceto("/",crearIndice(sacarDePila(&terminoIndice)),crearIndice(sacarDePila(&factorIndice))));
+													apilar( &terminoIndice , crearTerceto("/",crearIndice(sacarDePila(&terminoIndice)),crearIndice(sacarDePila(&factorIndice))), verCompatible("/",verTipoTope(&terminoIndice),verTipoTope(&factorIndice)));
 													//terminoIndice = crearTerceto("/",crearIndice(terminoIndice),crearIndice(factorIndice));
 												}
     break;
@@ -2047,10 +2054,10 @@ yyreduce:
   case 53:
 
 /* Line 1455 of yacc.c  */
-#line 312 "Sintactico.y"
+#line 319 "Sintactico.y"
     {
 													printf("Regla 50: termino -> factor\n");
-													apilar( &terminoIndice, verTipoTope(&factorIndice) , sacarDePila(&factorIndice));
+													apilar( &terminoIndice , sacarDePila(&factorIndice), verTipoTope(&factorIndice));
 													//terminoIndice = factorIndice;
 												}
     break;
@@ -2058,7 +2065,7 @@ yyreduce:
   case 54:
 
 /* Line 1455 of yacc.c  */
-#line 319 "Sintactico.y"
+#line 326 "Sintactico.y"
     {
 													printf("Regla 51: factor -> PARA expresion PARC\n");
 													// CrearTerceto
@@ -2068,12 +2075,12 @@ yyreduce:
   case 55:
 
 /* Line 1455 of yacc.c  */
-#line 324 "Sintactico.y"
+#line 331 "Sintactico.y"
     {
-	                                            BuscarEnLista(&lista_ts, yylval.string_val);
+	                                            //BuscarEnLista(&lista_ts, yylval.string_val);
 	                                            printf("factor ID: %s\n",yylval.string_val);
 												printf("Regla 52: factor -> ID\n");
-												apilar( &factorIndice, VAR_INTEGER , crearTerceto(yylval.string_val,"",""));
+												apilar( &factorIndice, crearTerceto(yylval.string_val,"",""), BuscarEnLista(&lista_ts, yylval.string_val) );
 												//factorIndice = crearTerceto($1,"","");
 												}
     break;
@@ -2081,7 +2088,7 @@ yyreduce:
   case 56:
 
 /* Line 1455 of yacc.c  */
-#line 332 "Sintactico.y"
+#line 339 "Sintactico.y"
     {
 	                                            // strcpy(d.clave, guion_cadena(yytext));
 												char aux [50];
@@ -2091,14 +2098,14 @@ yyreduce:
 	                                            dato.longitud = 0;
 	                                            insertar_en_ts(&lista_ts, &dato);
 	                                            printf("Regla 53: factor -> CTE_ENTERA\n");
-												apilar( &factorIndice, CONST_INTEGER , crearTerceto(yytext,"",""));
+												apilar( &factorIndice, crearTerceto(yytext,"",""), CONST_INTEGER );
 												}
     break;
 
   case 57:
 
 /* Line 1455 of yacc.c  */
-#line 344 "Sintactico.y"
+#line 351 "Sintactico.y"
     {
 												char aux [50];
 	                                            strcpy(dato.nombre, yytext);
@@ -2107,7 +2114,7 @@ yyreduce:
 	                                            dato.longitud = 0;
 	                                            insertar_en_ts(&lista_ts, &dato);
 	                                            printf("Regla 54: factor -> CTE_REAL\n");
-												apilar( &factorIndice, CONST_FLOAT , crearTerceto(yytext,"",""));
+												apilar( &factorIndice , crearTerceto(yytext,"",""), CONST_FLOAT);
 												// factorIndice = crearTerceto($1,"",""); //Falta pasar $1 a char*
 												}
     break;
@@ -2115,7 +2122,7 @@ yyreduce:
   case 58:
 
 /* Line 1455 of yacc.c  */
-#line 356 "Sintactico.y"
+#line 363 "Sintactico.y"
     {				
 	                                            dato.longitud = strlen(yytext)-2;
 	                                            strcpy(dato.nombre, yytext);
@@ -2124,14 +2131,14 @@ yyreduce:
 	                                            strcpy(dato.tipodato, "const_String");												
 	                                            insertar_en_ts(&lista_ts, &dato);
 	                                            printf("Regla 55: factor -> CTE_STRING\n");
-												apilar( &factorIndice, CONST_STRING , crearTerceto(yytext,"",""));
+												apilar( &factorIndice , crearTerceto(yytext,"",""), CONST_STRING);
 												}
     break;
 
   case 59:
 
 /* Line 1455 of yacc.c  */
-#line 368 "Sintactico.y"
+#line 375 "Sintactico.y"
     {
 	                                            BuscarEnLista(&lista_ts, yylval.string_val);
 	                                            printf("Regla 56: salida -> WRITE ID\n");}
@@ -2140,7 +2147,7 @@ yyreduce:
   case 60:
 
 /* Line 1455 of yacc.c  */
-#line 371 "Sintactico.y"
+#line 378 "Sintactico.y"
     {
 	                                            dato.longitud = strlen(yytext)-2;
 	                                            strcpy(dato.nombre, yytext);
@@ -2154,7 +2161,7 @@ yyreduce:
   case 61:
 
 /* Line 1455 of yacc.c  */
-#line 381 "Sintactico.y"
+#line 388 "Sintactico.y"
     {
 	                                            BuscarEnLista(&lista_ts, yylval.string_val);
 	                                            printf("Regla 58: entrada -> READ ID\n");}
@@ -2163,7 +2170,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 2167 "y.tab.c"
+#line 2174 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2375,7 +2382,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 385 "Sintactico.y"
+#line 392 "Sintactico.y"
 
 
 int main(int argc,char *argv[])
@@ -2464,7 +2471,18 @@ int BuscarEnLista(t_lista *pl, char* cadena )
         pl=&(*pl)->pSig;
     if(cmp==0)
 	{
-        return ID_EN_LISTA;
+		if((strcmp("Integer",(*pl)->info.tipodato))==0)
+		{
+			return VAR_INTEGER;
+		}
+		if((strcmp("Float",(*pl)->info.tipodato))==0)
+		{
+			return VAR_FLOAT;
+		}
+		if((strcmp("String",(*pl)->info.tipodato))==0)
+		{
+			return VAR_STRING;
+		}
 	}
 	printf("\nVariable sin declarar: %s \n",cadena);
     exit(1);
@@ -2527,6 +2545,7 @@ void quitar_comillas(char *pc){
 
 // Implementacion Funciones segunda entrega //
 
+
 void crear_lista_terceto(t_lista_terceto *p){
 	*p = NULL;
 }
@@ -2578,3 +2597,37 @@ void guardarTercetosEnArchivo(t_lista_terceto *pl){
   
   fclose(pf);
 } 
+
+int verCompatible(char *op,int izq, int der)
+{
+	int tipo;
+	if(strcmp(op, "+" ) == 0 )
+	{
+		tipo = MAT_SUMA[izq][der];
+		
+	}
+	if(strcmp(op, "-" ) == 0 )
+	{
+		tipo = MAT_RESTA[izq][der];
+	}
+	if(strcmp(op, "*" ) == 0 )
+	{
+		tipo = MAT_MULT[izq][der];
+	}
+	if(strcmp(op, "/" ) == 0 )
+	{
+		tipo = MAT_DIV[izq][der];
+	}
+	if(strcmp(op, "=" ) == 0 )
+	{
+		tipo = MAT_ASIG[izq][der];
+	}
+	
+	if( tipo == 0 )
+	{
+		printf("Error semantico en linea %d: operacion %s con tipos incompatibles\n", yylineno, op );
+		system ("Pause");
+		exit (1);
+	}	
+	return tipo;
+}
