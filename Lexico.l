@@ -15,11 +15,15 @@
 
 DIGITO			[0-9]
 LETRA			[a-zA-Z]
+SIMBOLO			[" "|\t|"#"|"$"|"%"|"?"|"¿"|"°"|","|";"|"!"|"¡"|"\\"|"@"|"."|":"|"_"|"\-"|"\/"|"="|"“"|"”"|"("|")"]
 ID				{LETRA}({LETRA}|{DIGITO})*
 CTE_ENTERA		{DIGITO}+
 CTE_REAL		{DIGITO}+"."{DIGITO}*|{DIGITO}*"."{DIGITO}+
-CTE_STRING		\".*\"
-COMENTARIO		\-\/.*\/\-
+CTE_STRING		\"({LETRA}|{DIGITO}|{SIMBOLO})*\"
+/*CTE_STRING		\".*\" */
+COMENTARIO		\-\/({LETRA}|{DIGITO}|{SIMBOLO})*\/\-
+COMENT_ERROR	\-\/
+/*COMENTARIO		\-\/.*\/\- */
 
 %%
 
@@ -87,9 +91,11 @@ COMENTARIO		\-\/.*\/\-
 					}
 
 {COMENTARIO}
+{COMENT_ERROR}		{mensaje_error("Caracter invalido");}
 " "
 "\n"
 "\t"
+.		{mensaje_error("Caracter invalido");}
 
 %%
 
