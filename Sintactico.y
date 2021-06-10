@@ -5,11 +5,19 @@
 	#include <string.h>
 	#include <math.h>
 	#include "y.tab.h"
+	#include "pila_indices.h"
 
 	#define TAM 35
 	#define DUPLICADO 2
 	#define SIN_MEMORIA 3
 	#define ID_EN_LISTA 4
+	
+	#define VAR_INTEGER 1
+	#define CONST_INTEGER 2
+	#define VAR_FLOAT 3
+	#define CONST_FLOAT 4
+	#define VAR_STRING 5
+	#define CONST_STRING 6
 	
 	int yyerror(char* mensaje);
 
@@ -84,9 +92,9 @@
 
 	// Expresion //
 
-	int expresionIndice;
-	int terminoIndice;
-	int factorIndice;
+	t_pila expresionIndice;
+	t_pila terminoIndice;
+	t_pila factorIndice;
 
 	// Declaracion funciones segunda entrega //
 
@@ -271,33 +279,40 @@ comparador:
 expresion:
 	expresion OP_SUMA termino                   {
 													printf("Regla 44: expresion -> expresion OP_SUMA termino\n");
-													expresionIndice = crearTerceto("+",crearIndice(expresionIndice),crearIndice(terminoIndice));
+													apilar( &expresionIndice, verTipoTope(&terminoIndice) , crearTerceto("+",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&terminoIndice))));
+													//expresionIndice = crearTerceto("+",crearIndice(expresionIndice),crearIndice(terminoIndice));
 												}
 	| expresion OP_RESTA termino                {
 													printf("Regla 45: expresion -> expresion OP_RESTA termino\n");
-													expresionIndice = crearTerceto("-",crearIndice(expresionIndice),crearIndice(terminoIndice));
+													apilar( &expresionIndice, verTipoTope(&terminoIndice) , crearTerceto("-",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&terminoIndice))));
+													//expresionIndice = crearTerceto("-",crearIndice(expresionIndice),crearIndice(terminoIndice));
 												}
 	| termino                                   {
 													printf("Regla 46: expresion -> termino\n");
-													expresionIndice = terminoIndice;
+													apilar( &expresionIndice, verTipoTope(&terminoIndice) , sacarDePila(&terminoIndice));
+													//expresionIndice = terminoIndice;
 												}
 	| OP_RESTA termino                          {
 													printf("Regla 47: expresion -> OP_RESTA termino\n");
-													expresionIndice = crearTerceto("-",crearIndice(terminoIndice),"");
+													apilar( &expresionIndice, verTipoTope(&terminoIndice) , crearTerceto("*",crearIndice(sacarDePila(&terminoIndice)),"-1"));
+													//expresionIndice = crearTerceto("-",crearIndice(terminoIndice),"");
 												};
 	
 termino:
 	termino OP_MULT factor                      {
 													printf("Regla 48: termino -> termino OP_MULT factor\n");
-													terminoIndice = crearTerceto("*",crearIndice(terminoIndice),crearIndice(factorIndice));
+													apilar( &terminoIndice, verTipoTope(&factorIndice) , crearTerceto("*",crearIndice(sacarDePila(&terminoIndice)),crearIndice(sacarDePila(&factorIndice))));
+													//terminoIndice = crearTerceto("*",crearIndice(terminoIndice),crearIndice(factorIndice));
 												}
 	| termino OP_DIV factor                     {
 													printf("Regla 49: termino -> termino OP_DIV factor\n");
-													terminoIndice = crearTerceto("/",crearIndice(terminoIndice),crearIndice(factorIndice));
+													apilar( &terminoIndice, verTipoTope(&factorIndice) , crearTerceto("/",crearIndice(sacarDePila(&terminoIndice)),crearIndice(sacarDePila(&factorIndice))));
+													//terminoIndice = crearTerceto("/",crearIndice(terminoIndice),crearIndice(factorIndice));
 												}
 	| factor                                    {
 													printf("Regla 50: termino -> factor\n");
-													terminoIndice = factorIndice;
+													apilar( &terminoIndice, verTipoTope(&factorIndice) , sacarDePila(&factorIndice));
+													//terminoIndice = factorIndice;
 												};
 	
 factor:
@@ -308,8 +323,10 @@ factor:
 
 	| ID                                        {
 	                                            BuscarEnLista(&lista_ts, yylval.string_val);
-	                                            printf("factor ID: %s\n",yylval.string_val);printf("Regla 52: factor -> ID\n");
-												factorIndice = crearTerceto($1,"","");
+	                                            printf("factor ID: %s\n",yylval.string_val);
+												printf("Regla 52: factor -> ID\n");
+												apilar( &factorIndice, VAR_INTEGER , crearTerceto(yylval.string_val,"",""));
+												//factorIndice = crearTerceto($1,"","");
 												}
 
 	| CTE_ENTERA                                {
@@ -321,7 +338,7 @@ factor:
 	                                            dato.longitud = 0;
 	                                            insertar_en_ts(&lista_ts, &dato);
 	                                            printf("Regla 53: factor -> CTE_ENTERA\n");
-												factorIndice = crearTerceto(itoa($1,aux,10),"","");
+												apilar( &factorIndice, CONST_INTEGER , crearTerceto(yytext,"",""));
 												}
 
 	| CTE_REAL                                  {
@@ -332,6 +349,7 @@ factor:
 	                                            dato.longitud = 0;
 	                                            insertar_en_ts(&lista_ts, &dato);
 	                                            printf("Regla 54: factor -> CTE_REAL\n");
+												apilar( &factorIndice, CONST_FLOAT , crearTerceto(yytext,"",""));
 												// factorIndice = crearTerceto($1,"",""); //Falta pasar $1 a char*
 												}
 
@@ -342,7 +360,9 @@ factor:
 	                                            strcpy(dato.valor, yytext);												
 	                                            strcpy(dato.tipodato, "const_String");												
 	                                            insertar_en_ts(&lista_ts, &dato);
-	                                            printf("Regla 55: factor -> CTE_STRING\n");};
+	                                            printf("Regla 55: factor -> CTE_STRING\n");
+												apilar( &factorIndice, CONST_STRING , crearTerceto(yytext,"",""));
+												};
 	
 salida:
 	WRITE ID                                    {
@@ -374,6 +394,9 @@ int main(int argc,char *argv[])
   {
 	crear_ts(&lista_ts);
 	crear_lista_terceto(&lista_terceto);
+	iniciarPila(&expresionIndice);
+	iniciarPila(&terminoIndice);
+	iniciarPila(&factorIndice);
 
 	yyparse();
 
@@ -432,7 +455,6 @@ int insertarEnListaEnOrdenSinDuplicados(t_lista *pl, t_info *d, t_cmp comparar)
 
 insertarTipoDeDato(t_lista *pl, int *cant)
 {
-	printf("funcion %s \n", tipoDeDato);
 	if( (*pl)->pSig != NULL )
         insertarTipoDeDato( &(*pl)->pSig , cant);
 	if( (*cant) > 0)
