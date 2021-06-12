@@ -19,6 +19,7 @@
 	#define CONST_FLOAT 4
 	#define VAR_STRING 5
 	#define CONST_STRING 6
+	#define COMPARACION 7
 	
 	int yyerror(char* mensaje);
 
@@ -45,6 +46,7 @@
 
 	typedef t_nodo *t_lista;
 	
+	// Variables auxiliares para insertar el tipo de datos a las variables.
 	int contadorVariablesDeclaradas;
 	char tipoDeDato[20];
 
@@ -456,6 +458,9 @@ int insertarEnListaEnOrdenSinDuplicados(t_lista *pl, t_info *d, t_cmp comparar)
     return 1;
 }
 
+// Inserta el tipo de dato a las variables en la declaracion.
+// Recibe la tabla de simbolos, y la cantidad de variables que se insertaron.
+// Usa una variable global "char* tipoDeDato", para pasar el tipo de dato que corresponde.
 insertarTipoDeDato(t_lista *pl, int *cant)
 {
 	if( (*pl)->pSig != NULL )
@@ -465,6 +470,8 @@ insertarTipoDeDato(t_lista *pl, int *cant)
 	(*cant)--;
 }
 
+// Recibe la lista de tabla de simbolos y un id.
+// Busca el id si esta devuelve un int que representa el tipo de dato, y si no esta, termina la compilacion por variable sin declarar
 int BuscarEnLista(t_lista *pl, char* cadena )
 {
     int cmp;
@@ -600,6 +607,11 @@ void guardarTercetosEnArchivo(t_lista_terceto *pl){
   fclose(pf);
 } 
 
+
+//Recibe un char* que representa una operacion, y dos int sacados normalmente de las pilas de indices, que representan los tipos de dato de dos operandos.
+// Si la operacion es compatible ejemplo "int a = 5" devuelve un int que representa el tipo de dato resultado de la operacion,
+// en este caso "int = const_int" devuelve VAR_INTEGER.
+// Si la operacon no es compatible, ejemplo "string b = 4", termina la compilacion por tipos incompatibles.
 int verCompatible(char *op,int izq, int der)
 {
 	int tipo;
@@ -623,6 +635,10 @@ int verCompatible(char *op,int izq, int der)
 	if(strcmp(op, "=" ) == 0 )
 	{
 		tipo = MAT_ASIG[izq][der];
+	}
+	if(strcmp(op, "==" ) == 0 || strcmp(op, "!=" ) == 0 || strcmp(op, "<" ) == 0 || strcmp(op, ">" ) == 0 || strcmp(op, "<=" ) == 0 || strcmp(op, ">=" ) == 0)
+	{
+		tipo = MAT_CMP[izq][der];
 	}
 	
 	if( tipo == 0 )

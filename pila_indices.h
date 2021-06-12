@@ -3,7 +3,7 @@
 #include<stdlib.h>
 #include<string.h>
 
-
+// Estructura para pila de indices guarda numero de indice y tipo de dato asociado al indice
 typedef struct s_indice{
              int indice;
              int tipo;
@@ -50,6 +50,8 @@ t_nodo_pila *pilaLLena()
  return q;
 }
 
+
+// Apila un indice. Recibe una pila de indices, un indice, y un int que representa el tipo de dato que del indice.
 void apilar(t_pila *p, int indice, int tipo)
 {
    t_nodo_pila *nuevo;
@@ -70,6 +72,8 @@ void apilar(t_pila *p, int indice, int tipo)
     }
 
 }
+
+// Saca un elemento del tope de la pila y devuelve el indice que contiene
 int sacarDePila(t_pila *p)
 {
  t_nodo_pila *aux;
@@ -89,6 +93,7 @@ int sacarDePila(t_pila *p)
      }
 }
 
+// Devuelve un int que representa el tipo de dato del indice del tope de la pila
 int verTipoTope(t_pila *p)
 {
 	if(pilaVacia(p->prim))
