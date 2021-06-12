@@ -49,6 +49,7 @@
 	// Variables auxiliares para insertar el tipo de datos a las variables.
 	int contadorVariablesDeclaradas;
 	char tipoDeDato[20];
+	void insertarTipoDeDato(t_lista *pl, int *cant);
 
 	typedef int (*t_cmp)(const void *, const void *);
 
@@ -244,7 +245,7 @@ bloque_cod:
 
 sentencia:
 	asignacion                                  {printf("Regla 14: sentencia -> asignacion\n");
-												apilar( &sentenciaIndice, verTipoTope(&asignacionIndice) , sacarDePila(&asignacionIndice));}
+												apilar( &sentenciaIndice , sacarDePila(&asignacionIndice), verTipoTope(&asignacionIndice));}
 	| seleccion                                 {printf("Regla 15: sentencia -> seleccion\n");}
 	| iteracion                                 {printf("Regla 16: sentencia -> iteracion\n");}
 	| salida                                    {printf("Regla 17: sentencia -> salida\n");}
@@ -253,10 +254,10 @@ sentencia:
 asignacion:
 	ID OP_ASIG expresion                        {printf("Regla 19: asignacion -> ID OP_ASIG expresion\n");
 												// verTipoTope mando expresionIndice para completar la funcion
-												apilar( &asignacionIndice, verTipoTope(&expresionIndice) , crearTerceto("=",crearIndice(sacarDePila(&expresionIndice)),$1 ));	}
+												apilar( &asignacionIndice, crearTerceto("=",crearIndice(sacarDePila(&expresionIndice)),$1 ), verCompatible("=",BuscarEnLista(&lista_ts, $1 ),verTipoTope(&expresionIndice)) );	}
 	| ID OP_ASIG asignacion                     {printf("Regla 20: asignacion -> ID OP_ASIG asignacion\n");
 												// verTipoTope si esta bien
-												apilar( &asignacionIndice, verTipoTope(&asignacionIndice) , crearTerceto("=",crearIndice(sacarDePila(&asignacionIndice)),$1 ));
+												apilar( &asignacionIndice, crearTerceto("=",crearIndice(sacarDePila(&asignacionIndice)),$1 ),  verCompatible("=",BuscarEnLista(&lista_ts, $1 ),verTipoTope(&asignacionIndice)) );
 												};
 	
  seleccion:
@@ -286,9 +287,12 @@ condicion:
 	
 comparacion:
 	expresion comparador expresion              {printf("Regla 33: comparacion -> expresion comparador expresion\n");
-												apilar( &comparacionIndice, verTipoTope(&expresionIndice) , crearTerceto("CMP",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&expresionIndice)) ));
+												// uso esta pila como auxiliar para poder comparar las dos expresiones
+												apilar(&pilaDeNumerosDeTercetos, sacarDePila(&expresionIndice), verTipoTope(&expresionIndice));
+												
+												apilar( &comparacionIndice , crearTerceto("CMP",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&pilaDeNumerosDeTercetos)) ), verCompatible($2,verTipoTope(&expresionIndice),verTipoTope(&pilaDeNumerosDeTercetos)));
 												crearTerceto(varAssembleAux,"" ,"");
-												apilar(&pilaDeNumerosDeTercetos, 1, contadorTercetos-1);} 
+												apilar(&pilaDeNumerosDeTercetos, contadorTercetos-1, 0);} 
 												
 	| inlist                                    {printf("Regla 34: comparacion -> inlist\n");};
 
@@ -503,7 +507,7 @@ int insertarEnListaEnOrdenSinDuplicados(t_lista *pl, t_info *d, t_cmp comparar)
 // Inserta el tipo de dato a las variables en la declaracion.
 // Recibe la tabla de simbolos, y la cantidad de variables que se insertaron.
 // Usa una variable global "char* tipoDeDato", para pasar el tipo de dato que corresponde.
-insertarTipoDeDato(t_lista *pl, int *cant)
+void insertarTipoDeDato(t_lista *pl, int *cant)
 {
 	if( (*pl)->pSig != NULL )
         insertarTipoDeDato( &(*pl)->pSig , cant);
@@ -676,7 +680,7 @@ void guardarTercetosEnArchivo(t_lista_terceto *pl){
 // Si la operacon no es compatible, ejemplo "string b = 4", termina la compilacion por tipos incompatibles.
 int verCompatible(char *op,int izq, int der)
 {
-	int tipo;
+	int tipo=-1;
 	if(strcmp(op, "+" ) == 0 )
 	{
 		tipo = MAT_SUMA[izq][der];
@@ -706,6 +710,12 @@ int verCompatible(char *op,int izq, int der)
 	if( tipo == 0 )
 	{
 		printf("Error semantico en linea %d: operacion %s con tipos incompatibles\n", yylineno, op );
+		system ("Pause");
+		exit (1);
+	}	
+	if( tipo == -1 )
+	{
+		printf("Error semantico en linea %d: operacion %s incompatible\n", yylineno, op );
 		system ("Pause");
 		exit (1);
 	}	
