@@ -2,4 +2,7 @@ DECVAR
 	a,b: INTEGER
 ENDDEC
 
-a = a - 3 * b
+IF ( a < b ) a = b + 1 * 5 + 6 * 2
+
+
+

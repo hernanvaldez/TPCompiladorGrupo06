@@ -98,6 +98,20 @@
 	t_pila expresionIndice;
 	t_pila terminoIndice;
 	t_pila factorIndice;
+	t_pila asignacionIndice;
+
+	// Seleccion //
+
+	t_pila sentenciaIndice;
+	t_pila seleccionIndice;
+	t_pila bloqueIfIndice;
+	t_pila condicionIndice;
+	t_pila comparacionIndice;
+	t_pila comparadorIndice;
+
+	t_pila pilaDeNumerosDeTercetos;
+
+	char varAssembleAux[10];
 
 	// Declaracion funciones segunda entrega //
 
@@ -105,15 +119,14 @@
 
 	void crear_lista_terceto(t_lista_terceto *p);
 	int	insertar_en_lista_terceto(t_lista_terceto *p, const t_info_terceto *d);
+	int buscarEnListaDeTercetosOrdenada(t_lista_terceto *pl, int indiceTerceto);
 
 	// Tercetos
 
 	char* crearIndice(int); //Recibe un numero de terceto y lo combierte en un indice
 	int crearTerceto(char*, char*, char*); //Se mandan los 3 strings, y se guarda el terceto creado en la lista
 										   //La posicion en la lista se lo da contadorTercetos. Variable que aumenta en 1
-  	void guardarTercetosEnArchivo(t_lista_terceto *);	
-
-	int verCompatible(char *op,int izq, int der);
+  	void guardarTercetosEnArchivo(t_lista_terceto *);								   
 
 %}
 
@@ -230,22 +243,31 @@ bloque_cod:
 	| sentencia                                 {printf("Regla 13: bloque_cod -> sentencia\n");};
 
 sentencia:
-	asignacion                                  {printf("Regla 14: sentencia -> asignacion\n");}
+	asignacion                                  {printf("Regla 14: sentencia -> asignacion\n");
+												apilar( &sentenciaIndice, verTipoTope(&asignacionIndice) , sacarDePila(&asignacionIndice));}
 	| seleccion                                 {printf("Regla 15: sentencia -> seleccion\n");}
 	| iteracion                                 {printf("Regla 16: sentencia -> iteracion\n");}
 	| salida                                    {printf("Regla 17: sentencia -> salida\n");}
 	| entrada                                   {printf("Regla 18: sentencia -> entrada\n");};
 	
 asignacion:
-	ID OP_ASIG expresion                        {printf("Regla 19: asignacion -> ID OP_ASIG expresion\n");}
-	| ID OP_ASIG asignacion                     {printf("Regla 20: asignacion -> ID OP_ASIG asignacion\n");};
+	ID OP_ASIG expresion                        {printf("Regla 19: asignacion -> ID OP_ASIG expresion\n");
+												// verTipoTope mando expresionIndice para completar la funcion
+												apilar( &asignacionIndice, verTipoTope(&expresionIndice) , crearTerceto("=",crearIndice(sacarDePila(&expresionIndice)),$1 ));	}
+	| ID OP_ASIG asignacion                     {printf("Regla 20: asignacion -> ID OP_ASIG asignacion\n");
+												// verTipoTope si esta bien
+												apilar( &asignacionIndice, verTipoTope(&asignacionIndice) , crearTerceto("=",crearIndice(sacarDePila(&asignacionIndice)),$1 ));
+												};
 	
  seleccion:
 	bloque_if 				%prec NO_ELSE       {printf("Regla 21: seleccion -> bloque_if\n");}
 	| bloque_if bloque_else                     {printf("Regla 22: seleccion -> bloque_if bloque_else\n");};
 
 bloque_if:
-	IF PARA condicion PARC sentencia            {printf("Regla 23: bloque_if -> IF PARA condicion PARC sentencia\n");}
+	IF PARA condicion PARC sentencia            {printf("Regla 23: bloque_if -> IF PARA condicion PARC sentencia\n");
+												/*Desapilar N° de terceto y completar con contTerceto+1*/
+												/* ESTOY PARADO ACA  */
+												buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&pilaDeNumerosDeTercetos));	}
 	| IF PARA condicion PARC LLA bloque_cod LLC {printf("Regla 24: bloque_if -> IF PARA condicion PARC LLA bloque_cod LLC\n");};
 
 bloque_else:
@@ -263,7 +285,11 @@ condicion:
 	| NOT comparacion                           {printf("Regla 32: condicion -> NOT comparacion\n");};
 	
 comparacion:
-	expresion comparador expresion              {printf("Regla 33: comparacion -> expresion comparador expresion\n");}
+	expresion comparador expresion              {printf("Regla 33: comparacion -> expresion comparador expresion\n");
+												apilar( &comparacionIndice, verTipoTope(&expresionIndice) , crearTerceto("CMP",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&expresionIndice)) ));
+												crearTerceto(varAssembleAux,"" ,"");
+												apilar(&pilaDeNumerosDeTercetos, 1, contadorTercetos-1);} 
+												
 	| inlist                                    {printf("Regla 34: comparacion -> inlist\n");};
 
 inlist:
@@ -273,13 +299,19 @@ lista_expr:
 	lista_expr PUNTO_COMA expresion             {printf("Regla 36: lista_expr -> lista_expr PUNTO_COMA expresion\n");}
 	| expresion                                 {printf("Regla 37: lista_expr -> expresion\n");};
 
-comparador:
-	MENOR_IGUAL                                 {printf("Regla 38: comparador -> MENOR_IGUAL\n");}
-	| MAYOR_IGUAL                               {printf("Regla 39: comparador -> MAYOR_IGUAL\n");}
-	| MENOR                                     {printf("Regla 40: comparador -> MENOR\n");}
-	| MAYOR                                     {printf("Regla 41: comparador -> MAYOR\n");}
-	| IGUAL                                     {printf("Regla 42: comparador -> IGUAL\n");}
-	| DISTINTO                                  {printf("Regla 43: comparador -> DISTINTO\n");};
+comparador:										// Utilice un charAux para guardar su respectivo branch
+	MENOR_IGUAL                                 {printf("Regla 38: comparador -> MENOR_IGUAL\n");
+												strcpy(varAssembleAux, "BGT");}
+	| MAYOR_IGUAL                               {printf("Regla 39: comparador -> MAYOR_IGUAL\n");
+												strcpy(varAssembleAux, "BLT");}
+	| MENOR                                     {printf("Regla 40: comparador -> MENOR\n");
+												strcpy(varAssembleAux, "BGE");}
+	| MAYOR                                     {printf("Regla 41: comparador -> MAYOR\n");
+												strcpy(varAssembleAux, "BLE");} 
+	| IGUAL                                     {printf("Regla 42: comparador -> IGUAL\n");
+												strcpy(varAssembleAux, "BNE");}
+	| DISTINTO                                  {printf("Regla 43: comparador -> DISTINTO\n");
+												strcpy(varAssembleAux, "BEQ");};
 	
 expresion:
 	expresion OP_SUMA termino                   {
@@ -402,6 +434,16 @@ int main(int argc,char *argv[])
 	iniciarPila(&expresionIndice);
 	iniciarPila(&terminoIndice);
 	iniciarPila(&factorIndice);
+	iniciarPila(&asignacionIndice);
+
+	iniciarPila(&sentenciaIndice);
+	iniciarPila(&seleccionIndice);
+	iniciarPila(&bloqueIfIndice);
+	iniciarPila(&condicionIndice);
+	iniciarPila(&comparacionIndice);
+	iniciarPila(&comparadorIndice);
+	
+	iniciarPila(&pilaDeNumerosDeTercetos);
 
 	yyparse();
 
@@ -554,7 +596,6 @@ void quitar_comillas(char *pc){
 
 // Implementacion Funciones segunda entrega //
 
-
 void crear_lista_terceto(t_lista_terceto *p){
 	*p = NULL;
 }
@@ -594,6 +635,27 @@ int crearTerceto(char* primero, char* segundo, char* tercero){
 	insertar_en_lista_terceto(&lista_terceto,&nuevo);
   	contadorTercetos++;
   	return nuevo.numeroTerceto;
+}
+
+int buscarEnListaDeTercetosOrdenada(t_lista_terceto *pl, int indiceTerceto)
+{
+    int cmp;
+    t_nodo_terceto *aux;
+	char segundoElem[TAM];
+	printf("-----------------INDICE TERCETO: %d\n",indiceTerceto);
+
+    while(*pl && (cmp = indiceTerceto - (*pl)->info.numeroTerceto) >0)
+        pl=&(*pl)->pSig;
+    if(*pl && cmp==0)
+    {
+		// Modifico terceto		
+        aux=*pl;        
+		strcpy(aux->info.segundoElemento, crearIndice(contadorTercetos));    
+
+        return 1;
+    }
+
+    return 0;
 }
 
 void guardarTercetosEnArchivo(t_lista_terceto *pl){
