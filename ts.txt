@@ -2,6 +2,9 @@ NOMBRE                              TIPO DE DATO     VALOR                      
 a                                   Integer                                              0                                  
 b                                   Integer                                              0                                  
 c                                   Integer                                              0                                  
+d                                   Integer                                              0                                  
+e                                   String                                               0                                  
+f                                   String                                               0                                  
 35                                  const_Integer    35                                  0                                  
 1                                   const_Integer    1                                   0                                  
 5                                   const_Integer    5                                   0                                  
@@ -9,4 +12,5 @@ c                                   Integer                                     
 2                                   const_Integer    2                                   0                                  
 47                                  const_Integer    47                                  0                                  
 33                                  const_Integer    33                                  0                                  
+"Prueba"                            const_String     Prueba                              6                                  
 "Prueba WRT"                        const_String     Prueba_WRT                          10                                 
