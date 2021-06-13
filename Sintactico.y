@@ -130,7 +130,9 @@
 	char* crearIndice(int); //Recibe un numero de terceto y lo convierte en un indice
 	int crearTerceto(char*, char*, char*); //Se mandan los 3 strings, y se guarda el terceto creado en la lista
 										   //La posicion en la lista se lo da contadorTercetos. Variable que aumenta en 1
-  	void guardarTercetosEnArchivo(t_lista_terceto *);								   
+  	void guardarTercetosEnArchivo(t_lista_terceto *);
+	char* negarBranch(char*);	//Recibe el tipo de BRANCH y lo invierte  	
+	int verCompatible(char *,int, int);							   
 
 %}
 
@@ -257,14 +259,15 @@ sentencia:
 asignacion:
 	ID OP_ASIG expresion                        {printf("Regla 19: asignacion -> ID OP_ASIG expresion\n");
 												// verTipoTope mando expresionIndice para completar la funcion
-												apilar( &asignacionIndice, crearTerceto("=",crearIndice(sacarDePila(&expresionIndice)),$1 ), verCompatible("=",BuscarEnLista(&lista_ts, $1 ),verTipoTope(&expresionIndice)) );	}
+												apilar( &asignacionIndice, crearTerceto("=",$1,crearIndice(sacarDePila(&expresionIndice))), verCompatible("=",BuscarEnLista(&lista_ts, $1 ),verTipoTope(&expresionIndice)) );	}
 	| ID OP_ASIG asignacion                     {printf("Regla 20: asignacion -> ID OP_ASIG asignacion\n");
 												// verTipoTope si esta bien
-												apilar( &asignacionIndice, crearTerceto("=",crearIndice(sacarDePila(&asignacionIndice)),$1 ),  verCompatible("=",BuscarEnLista(&lista_ts, $1 ),verTipoTope(&asignacionIndice)) );
+												apilar( &asignacionIndice, crearTerceto("=",$1,crearIndice(sacarDePila(&asignacionIndice))),  verCompatible("=",BuscarEnLista(&lista_ts, $1 ),verTipoTope(&asignacionIndice)) );
 												};
 	
  seleccion:	
- 	bloque_if 				%prec NO_ELSE       {
+ 	bloque_if %prec NO_ELSE       
+	 {
 													if(_flagAnd==1)
 													{
 														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
@@ -306,8 +309,13 @@ bloque_else:
 													};
 
 iteracion:
-	WHILE PARA condicion PARC sentencia             {printf("Regla 27: iteracion -> WHILE PARA condicion PARC sentencia\n");}
-	| WHILE PARA condicion PARC LLA bloque_cod LLC  {printf("Regla 28: iteracion -> WHILE PARA condicion PARC LLA bloque_cod LLC\n");};
+	WHILE PARA condicion PARC sentencia             {
+														
+														printf("Regla 27: iteracion -> WHILE PARA condicion PARC sentencia\n");}
+	| WHILE PARA condicion PARC LLA bloque_cod LLC  {
+														crearTerceto("BI",crearIndice(sacarDePila(&comparadorIndice)),"");
+														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
+														printf("Regla 28: iteracion -> WHILE PARA condicion PARC LLA bloque_cod LLC\n");};
 	
 condicion:
 	comparacion                                 {
@@ -339,15 +347,18 @@ condicion:
 													crearTerceto(varAssembleAux,"" ,"");
 													apilar(&comparacionIndice, contadorTercetos-1, 0);
 													printf("Regla 31: condicion -> comparacion OR comparacion\n");}
-	| NOT comparacion                           {printf("Regla 32: condicion -> NOT comparacion\n");};
+	| NOT comparacion                           {
+													crearTerceto(negarBranch(varAssembleAux),"" ,"");
+													apilar(&comparacionIndice, contadorTercetos-1, 0);
+													printf("Regla 32: condicion -> NOT comparacion\n");};
 	
 comparacion:
 	expresion comparador expresion              {printf("Regla 33: comparacion -> expresion comparador expresion\n");
 												// uso esta pila como auxiliar para poder comparar las dos expresiones
 												apilar(&pilaDeNumerosDeTercetos, sacarDePila(&expresionIndice), verTipoTope(&expresionIndice));
 												
-												//apilar( &comparacionIndice , crearTerceto("CMP",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&pilaDeNumerosDeTercetos)) ), verCompatible($2,verTipoTope(&expresionIndice),verTipoTope(&pilaDeNumerosDeTercetos)));
-												crearTerceto("CMP",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&pilaDeNumerosDeTercetos)));
+												apilar(&comparadorIndice,crearTerceto("CMP",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&pilaDeNumerosDeTercetos)) ), 0);
+												//crearTerceto("CMP",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&pilaDeNumerosDeTercetos)));
 												} 
 												
 	| inlist                                    {printf("Regla 34: comparacion -> inlist\n");};
@@ -776,4 +787,39 @@ int verCompatible(char *op,int izq, int der)
 		exit (1);
 	}	
 	return tipo;
+}
+
+char* negarBranch(char *branch)
+{
+	char* branchNOT = (char*) malloc(sizeof(char)*10);;
+	if(strcmp(branch,"BGT")==0)
+	{
+		strcpy(branchNOT,"BLE");
+	}
+
+	if(strcmp(branch,"BLT")==0)
+	{
+		strcpy(branchNOT,"BGE");
+	}
+
+	if(strcmp(branch,"BGE")==0)
+	{
+		strcpy(branchNOT,"BLT");
+	}
+
+	if(strcmp(branch,"BLE")==0)
+	{
+		strcpy(branchNOT,"BGT");
+	}
+
+	if(strcmp(branch,"BNE")==0)
+	{
+		strcpy(branchNOT,"BEQ");
+	}
+
+	if(strcmp(branch,"BEQ")==0)
+	{
+		strcpy(branchNOT,"BNE");
+	}
+	return branchNOT;
 }
