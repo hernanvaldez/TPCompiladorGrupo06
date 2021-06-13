@@ -104,6 +104,9 @@
 	t_pila terminoIndice;
 	t_pila factorIndice;
 	t_pila asignacionIndice;
+	
+	// Iteracion //
+	t_pila iteracionIndice;
 
 	// Seleccion //
 
@@ -306,16 +309,38 @@ bloque_else:
 													buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
 													printf("Regla 26: bloque_else -> ELSE LLA bloque_cod LLC\n");
 													};
-
+/*
 iteracion:
-	WHILE PARA condicion PARC sentencia             {
-														
-														printf("Regla 27: iteracion -> WHILE PARA condicion PARC sentencia\n");}
-	| WHILE PARA condicion PARC LLA bloque_cod LLC  {
-														crearTerceto("BI",crearIndice(sacarDePila(&comparadorIndice)),"");
+	WHILE 											{ apilar( &iteracionIndice , crearTerceto("ET","",""),0);}
+			PARA condicion PARC sentencia           {	
+														crearTerceto("BI",crearIndice(sacarDePila(&iteracionIndice)),"");
 														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
-														printf("Regla 28: iteracion -> WHILE PARA condicion PARC LLA bloque_cod LLC\n");};
-	
+														printf("Regla 27: iteracion -> WHILE PARA condicion PARC sentencia\n");
+													}
+	| WHILE 										{ apilar( &iteracionIndice , crearTerceto("ET","",""),0);}
+			PARA condicion PARC LLA bloque_cod LLC  {
+														crearTerceto("BI",crearIndice(sacarDePila(&iteracionIndice)),"");
+														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
+														printf("Regla 28: iteracion -> WHILE PARA condicion PARC LLA bloque_cod LLC\n");
+													};
+*/
+// Cambie la regla por conflictos reduce/reduce
+iteracion:
+	WHILE 											{ apilar( &iteracionIndice , crearTerceto("ET","",""),0);} // Crea una etiqueta, y apila indice para BI al final del while
+			bloque_while							;           	
+//// Agregue una regla para evitar conflictos en el while
+bloque_while:
+	PARA condicion PARC sentencia          			{	
+														crearTerceto("BI",crearIndice(sacarDePila(&iteracionIndice)),"");
+														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
+														printf("Regla 27: iteracion -> WHILE PARA condicion PARC sentencia\n");
+													}
+	| PARA condicion PARC LLA bloque_cod LLC  		{
+														crearTerceto("BI",crearIndice(sacarDePila(&iteracionIndice)),"");
+														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
+														printf("Regla 28: iteracion -> WHILE PARA condicion PARC LLA bloque_cod LLC\n");
+													};	
+////
 condicion:
 	comparacion                                 {
 													printf("Regla 29: condicion -> comparacion\n");
@@ -355,8 +380,13 @@ comparacion:
 	expresion comparador expresion              {printf("Regla 33: comparacion -> expresion comparador expresion\n");
 												// uso esta pila como auxiliar para poder comparar las dos expresiones
 												apilar(&pilaDeNumerosDeTercetos, sacarDePila(&expresionIndice), verTipoTope(&expresionIndice));
+												//Verifica que la comparacion sea compatible
+												verCompatible(varAssembleAux,verTipoTope(&expresionIndice),verTipoTope(&pilaDeNumerosDeTercetos)); 
+												//No apilo porque no le encontre uso
+												crearTerceto("CMP",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&pilaDeNumerosDeTercetos)) ); 
 												
-												apilar(&comparadorIndice,crearTerceto("CMP",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&pilaDeNumerosDeTercetos)) ), 0);
+												//Para el WHILE uso otra pila porque el comparador guarda mal el numero si se anidan sentencias de control
+												//apilar(&comparadorIndice,crearTerceto("CMP",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&pilaDeNumerosDeTercetos)) ), 0);
 												//crearTerceto("CMP",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&pilaDeNumerosDeTercetos)));
 												} 
 												
@@ -768,7 +798,7 @@ int verCompatible(char *op,int izq, int der)
 	{
 		tipo = MAT_ASIG[izq][der];
 	}
-	if(strcmp(op, "==" ) == 0 || strcmp(op, "!=" ) == 0 || strcmp(op, "<" ) == 0 || strcmp(op, ">" ) == 0 || strcmp(op, "<=" ) == 0 || strcmp(op, ">=" ) == 0)
+	if(strcmp(op, "BEQ" ) == 0 || strcmp(op, "BNE" ) == 0 || strcmp(op, "BLT" ) == 0 || strcmp(op, "BGT" ) == 0 || strcmp(op, "BLE" ) == 0 || strcmp(op, "BGE" ) == 0)
 	{
 		tipo = MAT_CMP[izq][der];
 	}
