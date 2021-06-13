@@ -1,8 +1,16 @@
 DECVAR
-	a,b: INTEGER
+	a,b,c: INTEGER
 ENDDEC
 
-IF ( a < b ) a = b + 1 * 5 + 6 * 2
+IF ( a < b ) 
+{
+	IF(c>b)
+		a = b + 1 * 5 + 6 * 2
+	
+	c=b=47
+}
 
-
+WHILE(a < 35)
+{
+	a=33}
 

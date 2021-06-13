@@ -1,4 +1,11 @@
 NOMBRE                              TIPO DE DATO     VALOR                               LONGITUD                           
 a                                   Integer                                              0                                  
 b                                   Integer                                              0                                  
-3                                   const_Integer    3                                   0                                  
+c                                   Integer                                              0                                  
+1                                   const_Integer    1                                   0                                  
+5                                   const_Integer    5                                   0                                  
+6                                   const_Integer    6                                   0                                  
+2                                   const_Integer    2                                   0                                  
+47                                  const_Integer    47                                  0                                  
+35                                  const_Integer    35                                  0                                  
+33                                  const_Integer    33                                  0                                  
