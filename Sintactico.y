@@ -20,6 +20,7 @@
 	#define VAR_STRING 5
 	#define CONST_STRING 6
 	#define COMPARACION 7
+	#define ES_AND 1
 	
 	int yyerror(char* mensaje);
 
@@ -266,43 +267,41 @@ asignacion:
 												};
 	
  seleccion:	
- 	bloque_if %prec NO_ELSE       
-	 {
-													if(_flagAnd==1)
-													{
-														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
-														_flagAnd=0;
-													}																										
-													buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
+ 	bloque_if 	%prec NO_ELSE      				 {
 													printf("Regla 21: seleccion -> bloque_if\n");
-													}
-	| 
-	bloque_if 
-												{
-													if(_flagAnd==1)
-													{
-														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
-														_flagAnd=0;
-													}																										
-													buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
-													crearTerceto("BI","" ,"");
-													apilar(&comparacionIndice, contadorTercetos-1, 0);	
-													}
-	bloque_else                     			{
+												}
+	| bloque_if bloque_else                     {
 													printf("Regla 22: seleccion -> bloque_if bloque_else\n");
-													};
+												};
 
 bloque_if:
-	IF PARA condicion PARC sentencia            {printf("Regla 23: bloque_if -> IF PARA condicion PARC sentencia\n");}
-	| IF PARA condicion PARC LLA bloque_cod LLC {printf("Regla 24: bloque_if -> IF PARA condicion PARC LLA bloque_cod LLC\n");};
+	IF PARA condicion PARC sentencia            {
+													if(verTipoTope(&comparacionIndice) == ES_AND)
+													{
+														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
+														//_flagAnd=0;
+													}																										
+													buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
+													printf("Regla 23: bloque_if -> IF PARA condicion PARC sentencia\n");
+												}
+	| IF PARA condicion PARC LLA bloque_cod LLC {	if(verTipoTope(&comparacionIndice) == ES_AND)
+													{
+														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
+														//_flagAnd=0;
+													}																										
+													buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
+													printf("Regla 24: bloque_if -> IF PARA condicion PARC LLA bloque_cod LLC\n");
+												};
 
 bloque_else:
-	ELSE sentencia                              {
+	ELSE 										{ apilar(&comparacionIndice,crearTerceto("BI","" ,""), 0);}
+		sentencia                               {
 													// Actualizo terceto con BI
 													buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
 													printf("Regla 25: bloque_else -> ELSE sentencia\n");
 													}
-	| ELSE LLA bloque_cod LLC                   {
+	| ELSE 										{ apilar(&comparacionIndice,crearTerceto("BI","" ,""), 0);}
+		LLA bloque_cod LLC                   {
 													// Actualizo terceto con BI
 													buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
 													printf("Regla 26: bloque_else -> ELSE LLA bloque_cod LLC\n");
@@ -324,13 +323,13 @@ condicion:
 													apilar(&comparacionIndice, contadorTercetos-1, 0);
 													}
 	| comparacion 								{
-													_flagAnd = 1;
+													// _flagAnd = 1;  //No sirve para if anidados
 													crearTerceto(varAssembleAux,"" ,"");
-													apilar(&comparacionIndice, contadorTercetos-1, 0);
+													apilar(&comparacionIndice, contadorTercetos-1, 0 ); 
 													}
 		AND comparacion              			{
 													crearTerceto(varAssembleAux,"" ,"");
-													apilar(&comparacionIndice, contadorTercetos-1, 0);
+													apilar(&comparacionIndice, contadorTercetos-1, ES_AND ); //Uso el tipo de la pila en vez del flagAnd
 													printf("Regla 30: condicion -> comparacion AND comparacion\n");
 													}
 	| comparacion 								{
