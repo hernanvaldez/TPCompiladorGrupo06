@@ -17,3 +17,7 @@ IF ( a < b && b < c)
 a=33
 }
 
+READ a
+WRITE b
+WRITE "Prueba WRT"
+

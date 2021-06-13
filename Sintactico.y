@@ -504,7 +504,8 @@ factor:
 salida:
 	WRITE ID                                    {
 	                                            BuscarEnLista(&lista_ts, yylval.string_val);
-	                                            printf("Regla 56: salida -> WRITE ID\n");}
+	                                            printf("Regla 56: salida -> WRITE ID\n");
+												crearTerceto("WRT",yylval.string_val,"");}
 	| WRITE CTE_STRING                          {
 	                                            dato.longitud = strlen(yytext)-2;
 	                                            strcpy(dato.nombre, yytext);
@@ -512,12 +513,14 @@ salida:
 	                                            strcpy(dato.valor, yytext);												
 	                                            strcpy(dato.tipodato, "const_String");
 	                                            insertar_en_ts(&lista_ts, &dato);
-	                                            printf("Regla 57: salida -> WRITE CTE_STRING\n");};
+	                                            printf("Regla 57: salida -> WRITE CTE_STRING\n");
+												crearTerceto("WRT",yytext,"");};
 	
 entrada:
 	READ ID                                     {
 	                                            BuscarEnLista(&lista_ts, yylval.string_val);
-	                                            printf("Regla 58: entrada -> READ ID\n");};
+	                                            printf("Regla 58: entrada -> READ ID\n");
+												crearTerceto("READ",yylval.string_val,"");};
 
 %%
 
