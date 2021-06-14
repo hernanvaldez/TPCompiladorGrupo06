@@ -21,6 +21,7 @@
 	#define CONST_STRING 6
 	#define COMPARACION 7
 	#define ES_AND 1
+	#define ES_INLIST 9
 	
 	int yyerror(char* mensaje);
 
@@ -119,6 +120,11 @@
 	t_pila comparadorIndice;
 
 	t_pila pilaDeNumerosDeTercetos;
+
+	// INLIST //
+	t_pila expInlistIndice;
+	t_pila compInListInd;
+	char idAux[20];
 
 	char varAssembleAux[10];
 
@@ -314,6 +320,7 @@ bloque_else:
 													};
 /*
 iteracion:
+asdasdew
 	WHILE 											{ apilar( &iteracionIndice , crearTerceto("ET","",""),0);}
 			PARA condicion PARC sentencia           {	
 														crearTerceto("BI",crearIndice(sacarDePila(&iteracionIndice)),"");
@@ -347,8 +354,12 @@ bloque_while:
 condicion:
 	comparacion                                 {
 													printf("Regla 29: condicion -> comparacion\n");
-													crearTerceto(varAssembleAux,"" ,"");
-													apilar(&comparacionIndice, contadorTercetos-1, 0);
+													// Si NO es una comp por INLIST crea el terceto
+													// INLIST NO SOPORTA AND, OR y NOT !!!!
+													if(!verTipoTope(&comparacionIndice) == ES_INLIST){
+														crearTerceto(varAssembleAux,"" ,"");
+														apilar(&comparacionIndice, contadorTercetos-1, 0);
+														}
 													}
 	| comparacion 								{
 													// _flagAnd = 1;  //No sirve para if anidados
@@ -393,14 +404,35 @@ comparacion:
 												//crearTerceto("CMP",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&pilaDeNumerosDeTercetos)));
 												} 
 												
-	| inlist                                    {printf("Regla 34: comparacion -> inlist\n");};
+	| inlist                                    {
+													while(!pilaVacia(compInListInd.prim))
+													{
+														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&compInListInd), contadorTercetos);													
+													}
+													printf("Regla 34: comparacion -> inlist\n");};
 
 inlist:
-	INLIST PARA ID PUNTO_COMA CORCHA lista_expr CORCHC PARC         {printf("Regla 35: inlist -> INLIST PARA ID PUNTO_COMA CORCHA lista_expr CORCHC PARC\n");};
+	INLIST PARA ID {strcpy(idAux,yylval.string_val);} 
+	PUNTO_COMA CORCHA lista_expr CORCHC PARC	{	
+													// Desapilo las expresiones del INLIST y armo las CMP creando por cada una un salto por Verdadero
+													while(!pilaVacia(expInlistIndice.prim))
+													{
+														crearTerceto("CMP",idAux,crearIndice(sacarDePila(&expInlistIndice)));
+														apilar(&compInListInd,crearTerceto("BEQ","",""),0);														
+													}
+													// Al terminar de desapilar creo salto por Falso
+													apilar(&comparacionIndice,crearTerceto("BNE","",""),ES_INLIST);													
+													printf("Regla 35: inlist -> INLIST PARA ID PUNTO_COMA CORCHA lista_expr CORCHC PARC\n");};
 	
 lista_expr:
-	lista_expr PUNTO_COMA expresion             {printf("Regla 36: lista_expr -> lista_expr PUNTO_COMA expresion\n");}
-	| expresion                                 {printf("Regla 37: lista_expr -> expresion\n");};
+	lista_expr PUNTO_COMA expresion             {	
+													// Apilo todas las expresiones de la comparacion INLIST													apilar(&expInlistIndice, sacarDePila(&expresionIndice), verTipoTope(&expresionIndice));
+													printf("Regla 36: lista_expr -> lista_expr PUNTO_COMA expresion\n");
+													}
+	| expresion                                 {
+													apilar(&expInlistIndice, sacarDePila(&expresionIndice), verTipoTope(&expresionIndice));
+													printf("Regla 37: lista_expr -> expresion\n");
+													};
 
 comparador:										// Utilice un charAux para guardar su respectivo branch
 	MENOR_IGUAL                                 {printf("Regla 38: comparador -> MENOR_IGUAL\n");
@@ -548,6 +580,9 @@ int main(int argc,char *argv[])
 	iniciarPila(&condicionIndice);
 	iniciarPila(&comparacionIndice);
 	iniciarPila(&comparadorIndice);
+
+	iniciarPila(&expInlistIndice);
+	iniciarPila(&compInListInd);
 	
 	iniciarPila(&pilaDeNumerosDeTercetos);
 

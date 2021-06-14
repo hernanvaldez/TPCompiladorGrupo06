@@ -14,3 +14,5 @@ f                                   String                                      
 33                                  const_Integer    33                                  0                                  
 "Prueba"                            const_String     Prueba                              6                                  
 "Prueba WRT"                        const_String     Prueba_WRT                          10                                 
+7                                   const_Integer    7                                   0                                  
+"condicion inlist"                  const_String     condicion_inlist                    16                                 
