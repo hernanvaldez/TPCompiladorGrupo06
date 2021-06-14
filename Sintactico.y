@@ -318,22 +318,7 @@ bloque_else:
 													buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
 													printf("Regla 26: bloque_else -> ELSE LLA bloque_cod LLC\n");
 													};
-/*
-iteracion:
-asdasdew
-	WHILE 											{ apilar( &iteracionIndice , crearTerceto("ET","",""),0);}
-			PARA condicion PARC sentencia           {	
-														crearTerceto("BI",crearIndice(sacarDePila(&iteracionIndice)),"");
-														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
-														printf("Regla 27: iteracion -> WHILE PARA condicion PARC sentencia\n");
-													}
-	| WHILE 										{ apilar( &iteracionIndice , crearTerceto("ET","",""),0);}
-			PARA condicion PARC LLA bloque_cod LLC  {
-														crearTerceto("BI",crearIndice(sacarDePila(&iteracionIndice)),"");
-														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
-														printf("Regla 28: iteracion -> WHILE PARA condicion PARC LLA bloque_cod LLC\n");
-													};
-*/
+
 // Cambie la regla por conflictos reduce/reduce
 iteracion:
 	WHILE 											{ apilar( &iteracionIndice , crearTerceto("ET","",""),0);} // Crea una etiqueta, y apila indice para BI al final del while
@@ -362,7 +347,7 @@ condicion:
 														}
 													}
 	| comparacion 								{
-													// _flagAnd = 1;  //No sirve para if anidados
+													
 													crearTerceto(varAssembleAux,"" ,"");
 													apilar(&comparacionIndice, contadorTercetos-1, 0 ); 
 													}
@@ -426,7 +411,8 @@ inlist:
 	
 lista_expr:
 	lista_expr PUNTO_COMA expresion             {	
-													// Apilo todas las expresiones de la comparacion INLIST													apilar(&expInlistIndice, sacarDePila(&expresionIndice), verTipoTope(&expresionIndice));
+													// Apilo todas las expresiones de la comparacion INLIST													
+													apilar(&expInlistIndice, sacarDePila(&expresionIndice), verTipoTope(&expresionIndice));
 													printf("Regla 36: lista_expr -> lista_expr PUNTO_COMA expresion\n");
 													}
 	| expresion                                 {

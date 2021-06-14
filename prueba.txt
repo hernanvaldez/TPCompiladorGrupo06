@@ -11,24 +11,8 @@ ENDDEC
 
 -/ Multiplicacion implicita NO esta contemplada: a=2x ; a=2(3) /-
 
-q=var2= 34
-a=-2
-a=(-2)
-a=(-2+5)
-a=-2-2-2 
-a=-2-2*2 
-a=-2*4-2 
-a=-(-2+4)
-a=-(-2*4)
-a=-(-2*4)-4-(-4+(5-(-7*4)))
-a=4-3
-a=(-4)+3
-a=-4+3
-a=-4*3
-a=4-(-3)
-g=5-4-3
 
-a=var1= 34
+
 
 b = "@sdADaSjfladfg"
 a=5
@@ -37,6 +21,7 @@ b = "asldk fh sjf"
 c = 99.99
 d = 99.
 base = .9999
+
 
 WHILE(a < 35 || a > 35)
 {
