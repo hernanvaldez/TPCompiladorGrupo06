@@ -95,6 +95,7 @@
 
 	// Variables auxiliares para tercetos //
 	int _flagAnd = 0;
+	int _aux;
 
 	// +++++++++++++++++ Indices +++++++++++++++++ //
 
@@ -263,10 +264,12 @@ sentencia:
 asignacion:
 	ID OP_ASIG expresion                        {printf("Regla 19: asignacion -> ID OP_ASIG expresion\n");
 												// verTipoTope mando expresionIndice para completar la funcion
-												apilar( &asignacionIndice, crearTerceto("=",$1,crearIndice(sacarDePila(&expresionIndice))), verCompatible("=",BuscarEnLista(&lista_ts, $1 ),verTipoTope(&expresionIndice)) );	}
+												apilar( &asignacionIndice, crearTerceto("=",$1,crearIndice(_aux=sacarDePila(&expresionIndice))), verCompatible("=",BuscarEnLista(&lista_ts, $1 ),verTipoTope(&expresionIndice)) );
+												
+													}
 	| ID OP_ASIG asignacion                     {printf("Regla 20: asignacion -> ID OP_ASIG asignacion\n");
 												// verTipoTope si esta bien
-												apilar( &asignacionIndice, crearTerceto("=",$1,crearIndice(sacarDePila(&asignacionIndice))),  verCompatible("=",BuscarEnLista(&lista_ts, $1 ),verTipoTope(&asignacionIndice)) );
+												apilar( &asignacionIndice, crearTerceto("=",$1,crearIndice(_aux)),  verCompatible("=",BuscarEnLista(&lista_ts, $1 ),verTipoTope(&asignacionIndice)) );
 												};
 	
  seleccion:	
@@ -504,7 +507,8 @@ factor:
 salida:
 	WRITE ID                                    {
 	                                            BuscarEnLista(&lista_ts, yylval.string_val);
-	                                            printf("Regla 56: salida -> WRITE ID\n");}
+	                                            printf("Regla 56: salida -> WRITE ID\n");
+												crearTerceto("WRT",yylval.string_val,"");}
 	| WRITE CTE_STRING                          {
 	                                            dato.longitud = strlen(yytext)-2;
 	                                            strcpy(dato.nombre, yytext);
@@ -512,12 +516,14 @@ salida:
 	                                            strcpy(dato.valor, yytext);												
 	                                            strcpy(dato.tipodato, "const_String");
 	                                            insertar_en_ts(&lista_ts, &dato);
-	                                            printf("Regla 57: salida -> WRITE CTE_STRING\n");};
+	                                            printf("Regla 57: salida -> WRITE CTE_STRING\n");
+												crearTerceto("WRT",yytext,"");};
 	
 entrada:
 	READ ID                                     {
 	                                            BuscarEnLista(&lista_ts, yylval.string_val);
-	                                            printf("Regla 58: entrada -> READ ID\n");};
+	                                            printf("Regla 58: entrada -> READ ID\n");
+												crearTerceto("READ",yylval.string_val,"");};
 
 %%
 
