@@ -29,6 +29,7 @@
 	extern char * yytext;
 
 	FILE  *yyin;
+	FILE * pfArchivoDataAsm;
 
 	// Estructuras para la tabla de simbolos
 
@@ -143,7 +144,14 @@
 										   //La posicion en la lista se lo da contadorTercetos. Variable que aumenta en 1
   	void guardarTercetosEnArchivo(t_lista_terceto *);
 	char* negarBranch(char*);	//Recibe el tipo de BRANCH y lo invierte  	
-	int verCompatible(char *,int, int);							   
+	int verCompatible(char *,int, int);
+
+
+	// Declaracion funciones tercera entrega //
+	void generarCodigoAssembler(t_lista *);
+	void generarCodigoAsmCabecera(void);
+	void generarCodigoAsmDeclaracionVariables(t_lista *);
+	void generarCodigoAsm(void);							   
 
 %}
 
@@ -186,7 +194,7 @@
 %%		
 
 inicio: 
-	programa                                    {printf("Compilacion Exitosa\n");};
+	programa                                    {printf("Compilacion Exitosa\n"); generarCodigoAssembler(&lista_ts);};
  
 programa:
 	seccion_declaracion bloque_cod              {printf("Regla 1: programa -> seccion_declaracion bloque_cod\n");}
@@ -878,4 +886,52 @@ char* negarBranch(char *branch)
 		strcpy(branchNOT,"BNE");
 	}
 	return branchNOT;
+}
+
+
+/////// ASSEMBLER /////////
+
+void generarCodigoAssembler(t_lista *pl)
+{
+  generarCodigoAsmCabecera();
+  generarCodigoAsmDeclaracionVariables(pl);
+  generarCodigoAsm();    
+}
+
+// Coloca solo la cabecera en el archivo .ASM
+void generarCodigoAsmCabecera(){
+	pfArchivoDataAsm = fopen("./Final.asm","wt");
+  	fprintf(pfArchivoDataAsm,".MODEL  LARGE \t\t;tipo de modelo de memoria usado\n");
+  	fprintf(pfArchivoDataAsm,".386\n");
+  	fprintf(pfArchivoDataAsm,".STACK 200h \t\t\t; bytes en el stack\n");
+}
+
+
+// Coloca las variables y constantes de la TS |||| FALTAN AGREGAR EN LA TS LAS VARIABLES AUXILIARES NUESTRAS
+void generarCodigoAsmDeclaracionVariables(t_lista *pl){
+	char cad_aux[30]="__";
+	fprintf(pfArchivoDataAsm,".DATA \t\t\t\t; comienzo de la zona de datos\n"); //Comienza area de datos
+
+	while(*pl){
+		if (!strcmp((*pl)->info.tipodato,"const_Integer")||!strcmp((*pl)->info.tipodato,"const_Float")){
+        	strcat(cad_aux,(*pl)->info.nombre);
+			fprintf(pfArchivoDataAsm, "%-30s\tdd\t\t\t\t%s\n", cad_aux, (*pl)->info.valor);
+      	}
+		else{
+			// Agregue esta condicion porque creo que las String se manejan distinto, pero no lo tengo claro todavia
+			if (!strcmp((*pl)->info.tipodato,"const_String")){
+        		fprintf(pfArchivoDataAsm, "%-30s\tdb\t\t\t\t%s\n", (*pl)->info.valor, (*pl)->info.nombre);
+			}
+			else{
+				fprintf(pfArchivoDataAsm, "%-30s\tdd\t\t\t\t?\n", (*pl)->info.nombre);
+			}
+		}
+		strcpy(cad_aux,"__");		
+		pl=&(*pl)->pSig;
+	}
+}
+
+void generarCodigoAsm(){
+	fprintf(pfArchivoDataAsm, "\n.CODE \n");
+	fclose(pfArchivoDataAsm);
 }
