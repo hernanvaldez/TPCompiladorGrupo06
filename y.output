@@ -69,37 +69,39 @@ Gramática
    41 comparacion: expresion comparador expresion
    42            | inlist
 
-   43 inlist: INLIST PARA ID PUNTO_COMA CORCHA lista_expr CORCHC PARC
+   43 $@6: /* vacío */
 
-   44 lista_expr: lista_expr PUNTO_COMA expresion
-   45           | expresion
+   44 inlist: INLIST PARA ID $@6 PUNTO_COMA CORCHA lista_expr CORCHC PARC
 
-   46 comparador: MENOR_IGUAL
-   47           | MAYOR_IGUAL
-   48           | MENOR
-   49           | MAYOR
-   50           | IGUAL
-   51           | DISTINTO
+   45 lista_expr: lista_expr PUNTO_COMA expresion
+   46           | expresion
 
-   52 expresion: expresion OP_SUMA termino
-   53          | expresion OP_RESTA termino
-   54          | termino
-   55          | OP_RESTA termino
+   47 comparador: MENOR_IGUAL
+   48           | MAYOR_IGUAL
+   49           | MENOR
+   50           | MAYOR
+   51           | IGUAL
+   52           | DISTINTO
 
-   56 termino: termino OP_MULT factor
-   57        | termino OP_DIV factor
-   58        | factor
+   53 expresion: expresion OP_SUMA termino
+   54          | expresion OP_RESTA termino
+   55          | termino
+   56          | OP_RESTA termino
 
-   59 factor: PARA expresion PARC
-   60       | ID
-   61       | CTE_ENTERA
-   62       | CTE_REAL
-   63       | CTE_STRING
+   57 termino: termino OP_MULT factor
+   58        | termino OP_DIV factor
+   59        | factor
 
-   64 salida: WRITE ID
-   65       | WRITE CTE_STRING
+   60 factor: PARA expresion PARC
+   61       | ID
+   62       | CTE_ENTERA
+   63       | CTE_REAL
+   64       | CTE_STRING
 
-   66 entrada: READ ID
+   65 salida: WRITE ID
+   66       | WRITE CTE_STRING
+
+   67 entrada: READ ID
 
 
 Terminales con las reglas donde aparecen
@@ -117,32 +119,32 @@ OP_ASIG (265) 21 22
 NOT (266) 40
 OR (267) 39
 AND (268) 37
-OP_RESTA (269) 53 55
-OP_SUMA (270) 52
-OP_DIV (271) 57
-OP_MULT (272) 56
-MENOR_IGUAL (273) 46
-MAYOR_IGUAL (274) 47
-MENOR (275) 48
-MAYOR (276) 49
-IGUAL (277) 50
-DISTINTO (278) 51
-INLIST (279) 43
+OP_RESTA (269) 54 56
+OP_SUMA (270) 53
+OP_DIV (271) 58
+OP_MULT (272) 57
+MENOR_IGUAL (273) 47
+MAYOR_IGUAL (274) 48
+MENOR (275) 49
+MAYOR (276) 50
+IGUAL (277) 51
+DISTINTO (278) 52
+INLIST (279) 44
 COMA (280) 9
-PUNTO_COMA (281) 43 44
+PUNTO_COMA (281) 44 45
 DOS_PUNTOS (282) 8
-CORCHA (283) 43
-CORCHC (284) 43
-PARA (285) 25 26 33 34 43 59
-PARC (286) 25 26 33 34 43 59
+CORCHA (283) 44
+CORCHC (284) 44
+PARA (285) 25 26 33 34 44 60
+PARC (286) 25 26 33 34 44 60
 LLA (287) 26 30 34
 LLC (288) 26 30 34
-READ (289) 66
-WRITE (290) 64 65
-ID (291) 9 10 21 22 43 60 64 66
-CTE_REAL (292) 62
-CTE_ENTERA (293) 61
-CTE_STRING (294) 63 65
+READ (289) 67
+WRITE (290) 65 66
+ID (291) 9 10 21 22 44 61 65 67
+CTE_REAL (292) 63
+CTE_ENTERA (293) 62
+CTE_STRING (294) 64 66
 NO_ELSE (295)
 ELSE (296) 28 30
 
@@ -196,22 +198,24 @@ $@5 (63)
 comparacion (64)
     en la izquierda: 41 42, en la derecha: 35 37 39 40
 inlist (65)
-    en la izquierda: 43, en la derecha: 42
-lista_expr (66)
-    en la izquierda: 44 45, en la derecha: 43 44
-comparador (67)
-    en la izquierda: 46 47 48 49 50 51, en la derecha: 41
-expresion (68)
-    en la izquierda: 52 53 54 55, en la derecha: 21 41 44 45 52 53
-    59
-termino (69)
-    en la izquierda: 56 57 58, en la derecha: 52 53 54 55 56 57
-factor (70)
-    en la izquierda: 59 60 61 62 63, en la derecha: 56 57 58
-salida (71)
-    en la izquierda: 64 65, en la derecha: 19
-entrada (72)
-    en la izquierda: 66, en la derecha: 20
+    en la izquierda: 44, en la derecha: 42
+$@6 (66)
+    en la izquierda: 43, en la derecha: 44
+lista_expr (67)
+    en la izquierda: 45 46, en la derecha: 44 45
+comparador (68)
+    en la izquierda: 47 48 49 50 51 52, en la derecha: 41
+expresion (69)
+    en la izquierda: 53 54 55 56, en la derecha: 21 41 45 46 53 54
+    60
+termino (70)
+    en la izquierda: 57 58 59, en la derecha: 53 54 55 56 57 58
+factor (71)
+    en la izquierda: 60 61 62 63 64, en la derecha: 57 58 59
+salida (72)
+    en la izquierda: 65 66, en la derecha: 19
+entrada (73)
+    en la izquierda: 67, en la derecha: 20
 
 
 estado 0
@@ -270,15 +274,15 @@ estado 3
 
 estado 4
 
-   66 entrada: READ . ID
+   67 entrada: READ . ID
 
     ID  desplazar e ir al estado 25
 
 
 estado 5
 
-   64 salida: WRITE . ID
-   65       | WRITE . CTE_STRING
+   65 salida: WRITE . ID
+   66       | WRITE . CTE_STRING
 
     ID          desplazar e ir al estado 26
     CTE_STRING  desplazar e ir al estado 27
@@ -477,23 +481,23 @@ estado 24
 
 estado 25
 
-   66 entrada: READ ID .
+   67 entrada: READ ID .
 
-    $default  reduce usando la regla 66 (entrada)
+    $default  reduce usando la regla 67 (entrada)
 
 
 estado 26
 
-   64 salida: WRITE ID .
+   65 salida: WRITE ID .
 
-    $default  reduce usando la regla 64 (salida)
+    $default  reduce usando la regla 65 (salida)
 
 
 estado 27
 
-   65 salida: WRITE CTE_STRING .
+   66 salida: WRITE CTE_STRING .
 
-    $default  reduce usando la regla 65 (salida)
+    $default  reduce usando la regla 66 (salida)
 
 
 estado 28
@@ -651,7 +655,7 @@ estado 40
 
 estado 41
 
-   55 expresion: OP_RESTA . termino
+   56 expresion: OP_RESTA . termino
 
     PARA        desplazar e ir al estado 43
     ID          desplazar e ir al estado 44
@@ -665,14 +669,14 @@ estado 41
 
 estado 42
 
-   43 inlist: INLIST . PARA ID PUNTO_COMA CORCHA lista_expr CORCHC PARC
+   44 inlist: INLIST . PARA ID $@6 PUNTO_COMA CORCHA lista_expr CORCHC PARC
 
     PARA  desplazar e ir al estado 67
 
 
 estado 43
 
-   59 factor: PARA . expresion PARC
+   60 factor: PARA . expresion PARC
 
     OP_RESTA    desplazar e ir al estado 41
     PARA        desplazar e ir al estado 43
@@ -688,30 +692,30 @@ estado 43
 
 estado 44
 
-   60 factor: ID .
-
-    $default  reduce usando la regla 60 (factor)
-
-
-estado 45
-
-   62 factor: CTE_REAL .
-
-    $default  reduce usando la regla 62 (factor)
-
-
-estado 46
-
-   61 factor: CTE_ENTERA .
+   61 factor: ID .
 
     $default  reduce usando la regla 61 (factor)
 
 
-estado 47
+estado 45
 
-   63 factor: CTE_STRING .
+   63 factor: CTE_REAL .
 
     $default  reduce usando la regla 63 (factor)
+
+
+estado 46
+
+   62 factor: CTE_ENTERA .
+
+    $default  reduce usando la regla 62 (factor)
+
+
+estado 47
+
+   64 factor: CTE_STRING .
+
+    $default  reduce usando la regla 64 (factor)
 
 
 estado 48
@@ -746,8 +750,8 @@ estado 50
 estado 51
 
    41 comparacion: expresion . comparador expresion
-   52 expresion: expresion . OP_SUMA termino
-   53          | expresion . OP_RESTA termino
+   53 expresion: expresion . OP_SUMA termino
+   54          | expresion . OP_RESTA termino
 
     OP_RESTA     desplazar e ir al estado 72
     OP_SUMA      desplazar e ir al estado 73
@@ -763,32 +767,32 @@ estado 51
 
 estado 52
 
-   54 expresion: termino .
-   56 termino: termino . OP_MULT factor
-   57        | termino . OP_DIV factor
+   55 expresion: termino .
+   57 termino: termino . OP_MULT factor
+   58        | termino . OP_DIV factor
 
     OP_DIV   desplazar e ir al estado 81
     OP_MULT  desplazar e ir al estado 82
 
-    $default  reduce usando la regla 54 (expresion)
+    $default  reduce usando la regla 55 (expresion)
 
 
 estado 53
 
-   58 termino: factor .
+   59 termino: factor .
 
-    $default  reduce usando la regla 58 (termino)
+    $default  reduce usando la regla 59 (termino)
 
 
 estado 54
 
    21 asignacion: ID . OP_ASIG expresion
    22           | ID . OP_ASIG asignacion
-   60 factor: ID .
+   61 factor: ID .
 
     OP_ASIG  desplazar e ir al estado 28
 
-    $default  reduce usando la regla 60 (factor)
+    $default  reduce usando la regla 61 (factor)
 
 
 estado 55
@@ -801,8 +805,8 @@ estado 55
 estado 56
 
    21 asignacion: ID OP_ASIG expresion .
-   52 expresion: expresion . OP_SUMA termino
-   53          | expresion . OP_RESTA termino
+   53 expresion: expresion . OP_SUMA termino
+   54          | expresion . OP_RESTA termino
 
     OP_RESTA  desplazar e ir al estado 72
     OP_SUMA   desplazar e ir al estado 73
@@ -888,28 +892,28 @@ estado 65
 
 estado 66
 
-   55 expresion: OP_RESTA termino .
-   56 termino: termino . OP_MULT factor
-   57        | termino . OP_DIV factor
+   56 expresion: OP_RESTA termino .
+   57 termino: termino . OP_MULT factor
+   58        | termino . OP_DIV factor
 
     OP_DIV   desplazar e ir al estado 81
     OP_MULT  desplazar e ir al estado 82
 
-    $default  reduce usando la regla 55 (expresion)
+    $default  reduce usando la regla 56 (expresion)
 
 
 estado 67
 
-   43 inlist: INLIST PARA . ID PUNTO_COMA CORCHA lista_expr CORCHC PARC
+   44 inlist: INLIST PARA . ID $@6 PUNTO_COMA CORCHA lista_expr CORCHC PARC
 
     ID  desplazar e ir al estado 86
 
 
 estado 68
 
-   52 expresion: expresion . OP_SUMA termino
-   53          | expresion . OP_RESTA termino
-   59 factor: PARA expresion . PARC
+   53 expresion: expresion . OP_SUMA termino
+   54          | expresion . OP_RESTA termino
+   60 factor: PARA expresion . PARC
 
     OP_RESTA  desplazar e ir al estado 72
     OP_SUMA   desplazar e ir al estado 73
@@ -953,7 +957,7 @@ estado 71
 
 estado 72
 
-   53 expresion: expresion OP_RESTA . termino
+   54 expresion: expresion OP_RESTA . termino
 
     PARA        desplazar e ir al estado 43
     ID          desplazar e ir al estado 44
@@ -967,7 +971,7 @@ estado 72
 
 estado 73
 
-   52 expresion: expresion OP_SUMA . termino
+   53 expresion: expresion OP_SUMA . termino
 
     PARA        desplazar e ir al estado 43
     ID          desplazar e ir al estado 44
@@ -981,44 +985,44 @@ estado 73
 
 estado 74
 
-   46 comparador: MENOR_IGUAL .
-
-    $default  reduce usando la regla 46 (comparador)
-
-
-estado 75
-
-   47 comparador: MAYOR_IGUAL .
+   47 comparador: MENOR_IGUAL .
 
     $default  reduce usando la regla 47 (comparador)
 
 
-estado 76
+estado 75
 
-   48 comparador: MENOR .
+   48 comparador: MAYOR_IGUAL .
 
     $default  reduce usando la regla 48 (comparador)
 
 
-estado 77
+estado 76
 
-   49 comparador: MAYOR .
+   49 comparador: MENOR .
 
     $default  reduce usando la regla 49 (comparador)
 
 
-estado 78
+estado 77
 
-   50 comparador: IGUAL .
+   50 comparador: MAYOR .
 
     $default  reduce usando la regla 50 (comparador)
 
 
-estado 79
+estado 78
 
-   51 comparador: DISTINTO .
+   51 comparador: IGUAL .
 
     $default  reduce usando la regla 51 (comparador)
+
+
+estado 79
+
+   52 comparador: DISTINTO .
+
+    $default  reduce usando la regla 52 (comparador)
 
 
 estado 80
@@ -1039,7 +1043,7 @@ estado 80
 
 estado 81
 
-   57 termino: termino OP_DIV . factor
+   58 termino: termino OP_DIV . factor
 
     PARA        desplazar e ir al estado 43
     ID          desplazar e ir al estado 44
@@ -1052,7 +1056,7 @@ estado 81
 
 estado 82
 
-   56 termino: termino OP_MULT . factor
+   57 termino: termino OP_MULT . factor
 
     PARA        desplazar e ir al estado 43
     ID          desplazar e ir al estado 44
@@ -1113,16 +1117,18 @@ estado 85
 
 estado 86
 
-   43 inlist: INLIST PARA ID . PUNTO_COMA CORCHA lista_expr CORCHC PARC
+   44 inlist: INLIST PARA ID . $@6 PUNTO_COMA CORCHA lista_expr CORCHC PARC
 
-    PUNTO_COMA  desplazar e ir al estado 100
+    $default  reduce usando la regla 43 ($@6)
+
+    $@6  ir al estado 100
 
 
 estado 87
 
-   59 factor: PARA expresion PARC .
+   60 factor: PARA expresion PARC .
 
-    $default  reduce usando la regla 59 (factor)
+    $default  reduce usando la regla 60 (factor)
 
 
 estado 88
@@ -1192,9 +1198,21 @@ estado 91
 
 estado 92
 
-   53 expresion: expresion OP_RESTA termino .
-   56 termino: termino . OP_MULT factor
-   57        | termino . OP_DIV factor
+   54 expresion: expresion OP_RESTA termino .
+   57 termino: termino . OP_MULT factor
+   58        | termino . OP_DIV factor
+
+    OP_DIV   desplazar e ir al estado 81
+    OP_MULT  desplazar e ir al estado 82
+
+    $default  reduce usando la regla 54 (expresion)
+
+
+estado 93
+
+   53 expresion: expresion OP_SUMA termino .
+   57 termino: termino . OP_MULT factor
+   58        | termino . OP_DIV factor
 
     OP_DIV   desplazar e ir al estado 81
     OP_MULT  desplazar e ir al estado 82
@@ -1202,23 +1220,11 @@ estado 92
     $default  reduce usando la regla 53 (expresion)
 
 
-estado 93
-
-   52 expresion: expresion OP_SUMA termino .
-   56 termino: termino . OP_MULT factor
-   57        | termino . OP_DIV factor
-
-    OP_DIV   desplazar e ir al estado 81
-    OP_MULT  desplazar e ir al estado 82
-
-    $default  reduce usando la regla 52 (expresion)
-
-
 estado 94
 
    41 comparacion: expresion comparador expresion .
-   52 expresion: expresion . OP_SUMA termino
-   53          | expresion . OP_RESTA termino
+   53 expresion: expresion . OP_SUMA termino
+   54          | expresion . OP_RESTA termino
 
     OP_RESTA  desplazar e ir al estado 72
     OP_SUMA   desplazar e ir al estado 73
@@ -1228,16 +1234,16 @@ estado 94
 
 estado 95
 
-   57 termino: termino OP_DIV factor .
+   58 termino: termino OP_DIV factor .
 
-    $default  reduce usando la regla 57 (termino)
+    $default  reduce usando la regla 58 (termino)
 
 
 estado 96
 
-   56 termino: termino OP_MULT factor .
+   57 termino: termino OP_MULT factor .
 
-    $default  reduce usando la regla 56 (termino)
+    $default  reduce usando la regla 57 (termino)
 
 
 estado 97
@@ -1290,9 +1296,9 @@ estado 99
 
 estado 100
 
-   43 inlist: INLIST PARA ID PUNTO_COMA . CORCHA lista_expr CORCHC PARC
+   44 inlist: INLIST PARA ID $@6 . PUNTO_COMA CORCHA lista_expr CORCHC PARC
 
-    CORCHA  desplazar e ir al estado 106
+    PUNTO_COMA  desplazar e ir al estado 106
 
 
 estado 101
@@ -1360,19 +1366,9 @@ estado 105
 
 estado 106
 
-   43 inlist: INLIST PARA ID PUNTO_COMA CORCHA . lista_expr CORCHC PARC
+   44 inlist: INLIST PARA ID $@6 PUNTO_COMA . CORCHA lista_expr CORCHC PARC
 
-    OP_RESTA    desplazar e ir al estado 41
-    PARA        desplazar e ir al estado 43
-    ID          desplazar e ir al estado 44
-    CTE_REAL    desplazar e ir al estado 45
-    CTE_ENTERA  desplazar e ir al estado 46
-    CTE_STRING  desplazar e ir al estado 47
-
-    lista_expr  ir al estado 109
-    expresion   ir al estado 110
-    termino     ir al estado 52
-    factor      ir al estado 53
+    CORCHA  desplazar e ir al estado 109
 
 
 estado 107
@@ -1391,28 +1387,7 @@ estado 108
 
 estado 109
 
-   43 inlist: INLIST PARA ID PUNTO_COMA CORCHA lista_expr . CORCHC PARC
-   44 lista_expr: lista_expr . PUNTO_COMA expresion
-
-    PUNTO_COMA  desplazar e ir al estado 111
-    CORCHC      desplazar e ir al estado 112
-
-
-estado 110
-
-   45 lista_expr: expresion .
-   52 expresion: expresion . OP_SUMA termino
-   53          | expresion . OP_RESTA termino
-
-    OP_RESTA  desplazar e ir al estado 72
-    OP_SUMA   desplazar e ir al estado 73
-
-    $default  reduce usando la regla 45 (lista_expr)
-
-
-estado 111
-
-   44 lista_expr: lista_expr PUNTO_COMA . expresion
+   44 inlist: INLIST PARA ID $@6 PUNTO_COMA CORCHA . lista_expr CORCHC PARC
 
     OP_RESTA    desplazar e ir al estado 41
     PARA        desplazar e ir al estado 43
@@ -1421,32 +1396,70 @@ estado 111
     CTE_ENTERA  desplazar e ir al estado 46
     CTE_STRING  desplazar e ir al estado 47
 
-    expresion  ir al estado 113
-    termino    ir al estado 52
-    factor     ir al estado 53
+    lista_expr  ir al estado 110
+    expresion   ir al estado 111
+    termino     ir al estado 52
+    factor      ir al estado 53
 
 
-estado 112
+estado 110
 
-   43 inlist: INLIST PARA ID PUNTO_COMA CORCHA lista_expr CORCHC . PARC
+   44 inlist: INLIST PARA ID $@6 PUNTO_COMA CORCHA lista_expr . CORCHC PARC
+   45 lista_expr: lista_expr . PUNTO_COMA expresion
 
-    PARC  desplazar e ir al estado 114
+    PUNTO_COMA  desplazar e ir al estado 112
+    CORCHC      desplazar e ir al estado 113
 
 
-estado 113
+estado 111
 
-   44 lista_expr: lista_expr PUNTO_COMA expresion .
-   52 expresion: expresion . OP_SUMA termino
-   53          | expresion . OP_RESTA termino
+   46 lista_expr: expresion .
+   53 expresion: expresion . OP_SUMA termino
+   54          | expresion . OP_RESTA termino
 
     OP_RESTA  desplazar e ir al estado 72
     OP_SUMA   desplazar e ir al estado 73
 
-    $default  reduce usando la regla 44 (lista_expr)
+    $default  reduce usando la regla 46 (lista_expr)
+
+
+estado 112
+
+   45 lista_expr: lista_expr PUNTO_COMA . expresion
+
+    OP_RESTA    desplazar e ir al estado 41
+    PARA        desplazar e ir al estado 43
+    ID          desplazar e ir al estado 44
+    CTE_REAL    desplazar e ir al estado 45
+    CTE_ENTERA  desplazar e ir al estado 46
+    CTE_STRING  desplazar e ir al estado 47
+
+    expresion  ir al estado 114
+    termino    ir al estado 52
+    factor     ir al estado 53
+
+
+estado 113
+
+   44 inlist: INLIST PARA ID $@6 PUNTO_COMA CORCHA lista_expr CORCHC . PARC
+
+    PARC  desplazar e ir al estado 115
 
 
 estado 114
 
-   43 inlist: INLIST PARA ID PUNTO_COMA CORCHA lista_expr CORCHC PARC .
+   45 lista_expr: lista_expr PUNTO_COMA expresion .
+   53 expresion: expresion . OP_SUMA termino
+   54          | expresion . OP_RESTA termino
 
-    $default  reduce usando la regla 43 (inlist)
+    OP_RESTA  desplazar e ir al estado 72
+    OP_SUMA   desplazar e ir al estado 73
+
+    $default  reduce usando la regla 45 (lista_expr)
+
+
+estado 115
+
+   44 inlist: INLIST PARA ID $@6 PUNTO_COMA CORCHA lista_expr CORCHC PARC .
+
+    $default  reduce usando la regla 44 (inlist)

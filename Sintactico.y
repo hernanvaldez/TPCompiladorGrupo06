@@ -122,6 +122,9 @@
 
 	char varAssembleAux[10];
 
+	// INLIST
+	char id_inList[TAM];
+	
 	// Declaracion funciones segunda entrega //
 
 	// Lista
@@ -335,11 +338,21 @@ iteracion:
 bloque_while:
 	PARA condicion PARC sentencia          			{	
 														crearTerceto("BI",crearIndice(sacarDePila(&iteracionIndice)),"");
+														if(verTipoTope(&comparacionIndice) == ES_AND)
+														{
+															buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
+															//_flagAnd=0;
+														}
 														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
 														printf("Regla 27: iteracion -> WHILE PARA condicion PARC sentencia\n");
 													}
 	| PARA condicion PARC LLA bloque_cod LLC  		{
 														crearTerceto("BI",crearIndice(sacarDePila(&iteracionIndice)),"");
+														if(verTipoTope(&comparacionIndice) == ES_AND)
+														{
+															buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
+															//_flagAnd=0;
+														}
 														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
 														printf("Regla 28: iteracion -> WHILE PARA condicion PARC LLA bloque_cod LLC\n");
 													};	
@@ -396,7 +409,8 @@ comparacion:
 	| inlist                                    {printf("Regla 34: comparacion -> inlist\n");};
 
 inlist:
-	INLIST PARA ID PUNTO_COMA CORCHA lista_expr CORCHC PARC         {printf("Regla 35: inlist -> INLIST PARA ID PUNTO_COMA CORCHA lista_expr CORCHC PARC\n");};
+	INLIST PARA ID {strcpy(id_inList,$3);}
+					PUNTO_COMA CORCHA lista_expr CORCHC PARC         {printf("Regla 35: inlist -> INLIST PARA ID PUNTO_COMA CORCHA lista_expr CORCHC PARC\n %s\n", id_inList);};
 	
 lista_expr:
 	lista_expr PUNTO_COMA expresion             {printf("Regla 36: lista_expr -> lista_expr PUNTO_COMA expresion\n");}
@@ -547,6 +561,7 @@ int main(int argc,char *argv[])
 	iniciarPila(&bloqueIfIndice);
 	iniciarPila(&condicionIndice);
 	iniciarPila(&comparacionIndice);
+	iniciarPila(&iteracionIndice);
 	iniciarPila(&comparadorIndice);
 	
 	iniciarPila(&pilaDeNumerosDeTercetos);
