@@ -21,6 +21,7 @@
 	#define CONST_STRING 6
 	#define COMPARACION 7
 	#define ES_AND 1
+	#define ES_INLIST 9
 	
 	int yyerror(char* mensaje);
 
@@ -28,6 +29,7 @@
 	extern char * yytext;
 
 	FILE  *yyin;
+	FILE * pfArchivoDataAsm;
 
 	// Estructuras para la tabla de simbolos
 
@@ -120,6 +122,11 @@
 
 	t_pila pilaDeNumerosDeTercetos;
 
+	// INLIST //
+	t_pila expInlistIndice;
+	t_pila compInListInd;
+	char idAux[20];
+
 	char varAssembleAux[10];
 
 	// INLIST
@@ -140,7 +147,14 @@
 										   //La posicion en la lista se lo da contadorTercetos. Variable que aumenta en 1
   	void guardarTercetosEnArchivo(t_lista_terceto *);
 	char* negarBranch(char*);	//Recibe el tipo de BRANCH y lo invierte  	
-	int verCompatible(char *,int, int);							   
+	int verCompatible(char *,int, int);
+
+
+	// Declaracion funciones tercera entrega //
+	void generarCodigoAssembler(t_lista *);
+	void generarCodigoAsmCabecera(void);
+	void generarCodigoAsmDeclaracionVariables(t_lista *);
+	void generarCodigoAsm(void);							   
 
 %}
 
@@ -183,7 +197,7 @@
 %%		
 
 inicio: 
-	programa                                    {printf("Compilacion Exitosa\n");};
+	programa                                    {printf("Compilacion Exitosa\n"); generarCodigoAssembler(&lista_ts);};
  
 programa:
 	seccion_declaracion bloque_cod              {printf("Regla 1: programa -> seccion_declaracion bloque_cod\n");}
@@ -315,21 +329,7 @@ bloque_else:
 													buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
 													printf("Regla 26: bloque_else -> ELSE LLA bloque_cod LLC\n");
 													};
-/*
-iteracion:
-	WHILE 											{ apilar( &iteracionIndice , crearTerceto("ET","",""),0);}
-			PARA condicion PARC sentencia           {	
-														crearTerceto("BI",crearIndice(sacarDePila(&iteracionIndice)),"");
-														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
-														printf("Regla 27: iteracion -> WHILE PARA condicion PARC sentencia\n");
-													}
-	| WHILE 										{ apilar( &iteracionIndice , crearTerceto("ET","",""),0);}
-			PARA condicion PARC LLA bloque_cod LLC  {
-														crearTerceto("BI",crearIndice(sacarDePila(&iteracionIndice)),"");
-														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
-														printf("Regla 28: iteracion -> WHILE PARA condicion PARC LLA bloque_cod LLC\n");
-													};
-*/
+
 // Cambie la regla por conflictos reduce/reduce
 iteracion:
 	WHILE 											{ apilar( &iteracionIndice , crearTerceto("ET","",""),0);} // Crea una etiqueta, y apila indice para BI al final del while
@@ -360,11 +360,15 @@ bloque_while:
 condicion:
 	comparacion                                 {
 													printf("Regla 29: condicion -> comparacion\n");
-													crearTerceto(varAssembleAux,"" ,"");
-													apilar(&comparacionIndice, contadorTercetos-1, 0);
+													// Si NO es una comp por INLIST crea el terceto
+													// INLIST NO SOPORTA AND, OR y NOT !!!!
+													if(!verTipoTope(&comparacionIndice) == ES_INLIST){
+														crearTerceto(varAssembleAux,"" ,"");
+														apilar(&comparacionIndice, contadorTercetos-1, 0);
+														}
 													}
 	| comparacion 								{
-													// _flagAnd = 1;  //No sirve para if anidados
+													
 													crearTerceto(varAssembleAux,"" ,"");
 													apilar(&comparacionIndice, contadorTercetos-1, 0 ); 
 													}
@@ -406,15 +410,36 @@ comparacion:
 												//crearTerceto("CMP",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&pilaDeNumerosDeTercetos)));
 												} 
 												
-	| inlist                                    {printf("Regla 34: comparacion -> inlist\n");};
+	| inlist                                    {
+													while(!pilaVacia(compInListInd.prim))
+													{
+														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&compInListInd), contadorTercetos);													
+													}
+													printf("Regla 34: comparacion -> inlist\n");};
 
 inlist:
-	INLIST PARA ID {strcpy(id_inList,$3);}
-					PUNTO_COMA CORCHA lista_expr CORCHC PARC         {printf("Regla 35: inlist -> INLIST PARA ID PUNTO_COMA CORCHA lista_expr CORCHC PARC\n %s\n", id_inList);};
+	INLIST PARA ID {strcpy(idAux,yylval.string_val);} 
+	PUNTO_COMA CORCHA lista_expr CORCHC PARC	{	
+													// Desapilo las expresiones del INLIST y armo las CMP creando por cada una un salto por Verdadero
+													while(!pilaVacia(expInlistIndice.prim))
+													{
+														crearTerceto("CMP",idAux,crearIndice(sacarDePila(&expInlistIndice)));
+														apilar(&compInListInd,crearTerceto("BEQ","",""),0);														
+													}
+													// Al terminar de desapilar creo salto por Falso
+													apilar(&comparacionIndice,crearTerceto("BNE","",""),ES_INLIST);													
+													printf("Regla 35: inlist -> INLIST PARA ID PUNTO_COMA CORCHA lista_expr CORCHC PARC\n");};
 	
 lista_expr:
-	lista_expr PUNTO_COMA expresion             {printf("Regla 36: lista_expr -> lista_expr PUNTO_COMA expresion\n");}
-	| expresion                                 {printf("Regla 37: lista_expr -> expresion\n");};
+	lista_expr PUNTO_COMA expresion             {	
+													// Apilo todas las expresiones de la comparacion INLIST													
+													apilar(&expInlistIndice, sacarDePila(&expresionIndice), verTipoTope(&expresionIndice));
+													printf("Regla 36: lista_expr -> lista_expr PUNTO_COMA expresion\n");
+													}
+	| expresion                                 {
+													apilar(&expInlistIndice, sacarDePila(&expresionIndice), verTipoTope(&expresionIndice));
+													printf("Regla 37: lista_expr -> expresion\n");
+													};
 
 comparador:										// Utilice un charAux para guardar su respectivo branch
 	MENOR_IGUAL                                 {printf("Regla 38: comparador -> MENOR_IGUAL\n");
@@ -563,6 +588,9 @@ int main(int argc,char *argv[])
 	iniciarPila(&comparacionIndice);
 	iniciarPila(&iteracionIndice);
 	iniciarPila(&comparadorIndice);
+
+	iniciarPila(&expInlistIndice);
+	iniciarPila(&compInListInd);
 	
 	iniciarPila(&pilaDeNumerosDeTercetos);
 
@@ -872,4 +900,52 @@ char* negarBranch(char *branch)
 		strcpy(branchNOT,"BNE");
 	}
 	return branchNOT;
+}
+
+
+/////// ASSEMBLER /////////
+
+void generarCodigoAssembler(t_lista *pl)
+{
+  generarCodigoAsmCabecera();
+  generarCodigoAsmDeclaracionVariables(pl);
+  generarCodigoAsm();    
+}
+
+// Coloca solo la cabecera en el archivo .ASM
+void generarCodigoAsmCabecera(){
+	pfArchivoDataAsm = fopen("./Final.asm","wt");
+  	fprintf(pfArchivoDataAsm,".MODEL  LARGE \t\t;tipo de modelo de memoria usado\n");
+  	fprintf(pfArchivoDataAsm,".386\n");
+  	fprintf(pfArchivoDataAsm,".STACK 200h \t\t\t; bytes en el stack\n");
+}
+
+
+// Coloca las variables y constantes de la TS |||| FALTAN AGREGAR EN LA TS LAS VARIABLES AUXILIARES NUESTRAS
+void generarCodigoAsmDeclaracionVariables(t_lista *pl){
+	char cad_aux[30]="__";
+	fprintf(pfArchivoDataAsm,".DATA \t\t\t\t; comienzo de la zona de datos\n"); //Comienza area de datos
+
+	while(*pl){
+		if (!strcmp((*pl)->info.tipodato,"const_Integer")||!strcmp((*pl)->info.tipodato,"const_Float")){
+        	strcat(cad_aux,(*pl)->info.nombre);
+			fprintf(pfArchivoDataAsm, "%-30s\tdd\t\t\t\t%s\n", cad_aux, (*pl)->info.valor);
+      	}
+		else{
+			// Agregue esta condicion porque creo que las String se manejan distinto, pero no lo tengo claro todavia
+			if (!strcmp((*pl)->info.tipodato,"const_String")){
+        		fprintf(pfArchivoDataAsm, "%-30s\tdb\t\t\t\t%s\n", (*pl)->info.valor, (*pl)->info.nombre);
+			}
+			else{
+				fprintf(pfArchivoDataAsm, "%-30s\tdd\t\t\t\t?\n", (*pl)->info.nombre);
+			}
+		}
+		strcpy(cad_aux,"__");		
+		pl=&(*pl)->pSig;
+	}
+}
+
+void generarCodigoAsm(){
+	fprintf(pfArchivoDataAsm, "\n.CODE \n");
+	fclose(pfArchivoDataAsm);
 }

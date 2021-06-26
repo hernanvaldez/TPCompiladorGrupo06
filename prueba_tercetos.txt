@@ -23,3 +23,8 @@ READ a
 WRITE b
 WRITE "Prueba WRT"
 
+IF(INLIST(a;[7*5;a/1]))
+{
+WRITE "condicion inlist"
+}
+
