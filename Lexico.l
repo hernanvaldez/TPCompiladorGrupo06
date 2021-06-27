@@ -101,7 +101,7 @@ COMENT_ERROR	\-\/
 
 int mensaje_error(char* mensaje)
 {
-	printf("Error lexico: %s\nLinea: %d\n", mensaje , yylineno);
+	printf("Error lexico: %s\nLinea: %d %s\n", mensaje , yylineno, yytext);
 	system ("Pause");
 	exit (1);
 }

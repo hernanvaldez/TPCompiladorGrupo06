@@ -473,7 +473,7 @@ expresion:
 												}
 	| OP_RESTA termino                          {
 													printf("Regla 47: expresion -> OP_RESTA termino\n");
-													apilar( &expresionIndice , crearTerceto("*",crearIndice(sacarDePila(&terminoIndice)),"-1"), verCompatible("-",verTipoTope(&factorIndice),CONST_INTEGER));
+													apilar( &expresionIndice , crearTerceto("*",crearIndice(sacarDePila(&terminoIndice)),"-1"), verCompatible("-",verTipoTope(&terminoIndice),CONST_INTEGER));
 													//expresionIndice = crearTerceto("-",crearIndice(terminoIndice),"");
 												};
 	
@@ -497,6 +497,7 @@ termino:
 factor:
 	PARA expresion PARC                         {
 													printf("Regla 51: factor -> PARA expresion PARC\n");
+													apilar( &factorIndice , sacarDePila(&expresionIndice), verTipoTope(&expresionIndice));
 													// CrearTerceto
 												}
 
@@ -854,13 +855,13 @@ int verCompatible(char *op,int izq, int der)
 	
 	if( tipo == 0 )
 	{
-		printf("Error semantico en linea %d: operacion %s con tipos incompatibles\n", yylineno, op );
+		printf("Error semantico en linea %d: operacion %s con tipos incompatibles\n %d %s %d \n", yylineno, op,izq, op , der );
 		system ("Pause");
 		exit (1);
 	}	
 	if( tipo == -1 )
 	{
-		printf("Error semantico en linea %d: operacion %s incompatible\n", yylineno, op );
+		printf("Error semantico en linea %d: operacion %s incompatible\n %d %s %d \n", yylineno, op,izq, op , der );
 		system ("Pause");
 		exit (1);
 	}	
