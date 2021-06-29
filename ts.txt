@@ -1,18 +1,24 @@
 NOMBRE                              TIPO DE DATO     VALOR                               LONGITUD                           
-a                                   Integer                                              0                                  
-b                                   Integer                                              0                                  
-c                                   Integer                                              0                                  
-d                                   Integer                                              0                                  
-e                                   String                                               0                                  
-f                                   String                                               0                                  
-4                                   const_Integer    4                                   0                                  
-1                                   const_Integer    1                                   0                                  
-5                                   const_Integer    5                                   0                                  
-6                                   const_Integer    6                                   0                                  
-2                                   const_Integer    2                                   0                                  
-47                                  const_Integer    47                                  0                                  
-33                                  const_Integer    33                                  0                                  
-"Prueba"                            const_String     Prueba                              6                                  
-"Prueba WRT"                        const_String     Prueba_WRT                          10                                 
-7                                   const_Integer    7                                   0                                  
-"condicion inlist"                  const_String     condicion_inlist                    16                                 
+_a                                  Integer                                              0                                  
+_b                                  Integer                                              0                                  
+_c                                  Integer                                              0                                  
+_d                                  Integer                                              0                                  
+_e                                  String                                               0                                  
+_f                                  String                                               0                                  
+CTE_4                               const_Integer    4                                   0                                  
+CTE_1                               const_Integer    1                                   0                                  
+CTE_5                               const_Integer    5                                   0                                  
+CTE_6                               const_Integer    6                                   0                                  
+CTE_2                               const_Integer    2                                   0                                  
+CTE_47                              const_Integer    47                                  0                                  
+CTE_33                              const_Integer    33                                  0                                  
+str0                                const_String     Prueba                              6                                  
+str1                                const_String     Prueba WRT                          10                                 
+CTE_7                               const_Integer    7                                   0                                  
+str2                                const_String     condicion inlist                    16                                 
+@aux28                              Integer                                              0                                  
+@aux29                              Integer                                              0                                  
+@aux32                              Integer                                              0                                  
+@aux33                              Integer                                              0                                  
+@aux53                              Integer                                              0                                  
+@aux56                              Integer                                              0                                  

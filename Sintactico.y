@@ -51,6 +51,7 @@
 	
 	// Variables auxiliares para insertar el tipo de datos a las variables.
 	int contadorVariablesDeclaradas;
+	int contadorCteString = 0;
 	char tipoDeDato[20];
 	void insertarTipoDeDato(t_lista *pl, int *cant);
 
@@ -59,6 +60,7 @@
 	// Declaracion funciones primera entrega
 
 	int compararPorNombre(const void *, const void *);
+	int compararPorValorString(const void *d1, const void *d2);
 
 	void crear_lista(t_lista *p);
 	int insertarEnListaEnOrdenSinDuplicados(t_lista *l_ts, t_info *d, t_cmp);
@@ -158,7 +160,7 @@
 
 	void recorrerTercetosParaAssembler(t_lista_terceto *pl);
 	char *quitarCorch(char *cad);
-	char *obtenerOperando(char *cad);
+	char *obtenerOperandoDeListaTercetos(char *cad);
 	int buscarYSacarDeLista(t_lista *pl, char* cadena );
 	int buscarYTraerTerceto(t_lista_terceto *pl, int indiceTerceto);
 %}
@@ -230,7 +232,9 @@ declaracion:
 
 lista_id:	
 	lista_id COMA ID                            {
-	                                            strcpy(dato.nombre, yylval.string_val);
+	                                            //strcpy(dato.nombre, yylval.string_val);
+												//las id se nombran _id
+												sprintf(dato.nombre, "_%s",yylval.string_val);
 	                                            strcpy(dato.valor, "");
 	                                            strcpy(dato.tipodato, "");
 	                                            dato.longitud = 0;
@@ -243,7 +247,9 @@ lista_id:
 												contadorVariablesDeclaradas++;
 	                                            printf("Declaracion: %s\n",yylval.string_val );printf("Regla 7: lista_id -> lista_id COMA ID\n");}
 	| ID                                        {
-	                                            strcpy(dato.nombre, yylval.string_val);
+	                                            //strcpy(dato.nombre, yylval.string_val);
+												//las id se nombran _id
+												sprintf(dato.nombre, "_%s",yylval.string_val);
 	                                            strcpy(dato.valor, "");
 	                                            strcpy(dato.tipodato, "");
 	                                            dato.longitud = 0;
@@ -285,13 +291,17 @@ sentencia:
 	
 asignacion:
 	ID OP_ASIG expresion                        {printf("Regla 19: asignacion -> ID OP_ASIG expresion\n");
+												//agrego _ al id
+												sprintf(dato.nombre, "_%s",$1);
 												// verTipoTope mando expresionIndice para completar la funcion
-												apilar( &asignacionIndice, crearTerceto("=",$1,crearIndice(_aux=sacarDePila(&expresionIndice))), verCompatible("=",BuscarEnLista(&lista_ts, $1 ),verTipoTope(&expresionIndice)) );
+												apilar( &asignacionIndice, crearTerceto("=",dato.nombre,crearIndice(_aux=sacarDePila(&expresionIndice))), verCompatible("=",BuscarEnLista(&lista_ts, dato.nombre ),verTipoTope(&expresionIndice)) );
 												
 													}
 	| ID OP_ASIG asignacion                     {printf("Regla 20: asignacion -> ID OP_ASIG asignacion\n");
+												//agrego _ al id
+												sprintf(dato.nombre, "_%s",$1);
 												// verTipoTope si esta bien
-												apilar( &asignacionIndice, crearTerceto("=",$1,crearIndice(_aux)),  verCompatible("=",BuscarEnLista(&lista_ts, $1 ),verTipoTope(&asignacionIndice)) );
+												apilar( &asignacionIndice, crearTerceto("=",dato.nombre ,crearIndice(_aux)),  verCompatible("=",BuscarEnLista(&lista_ts, dato.nombre ),verTipoTope(&asignacionIndice)) );
 												};
 	
  seleccion:	
@@ -425,10 +435,12 @@ comparacion:
 inlist:
 	INLIST PARA ID {strcpy(idAux,yylval.string_val);} 
 	PUNTO_COMA CORCHA lista_expr CORCHC PARC	{	
+													//agrego _ al id
+													sprintf(dato.nombre, "_%s",idAux);
 													// Desapilo las expresiones del INLIST y armo las CMP creando por cada una un salto por Verdadero
 													while(!pilaVacia(expInlistIndice.prim))
 													{
-														crearTerceto("CMP",idAux,crearIndice(sacarDePila(&expInlistIndice)));
+														crearTerceto("CMP",dato.nombre,crearIndice(sacarDePila(&expInlistIndice)));
 														apilar(&compInListInd,crearTerceto("BEQ","",""),0);														
 													}
 													// Al terminar de desapilar creo salto por Falso
@@ -510,65 +522,83 @@ factor:
 	                                            //BuscarEnLista(&lista_ts, yylval.string_val);
 	                                            printf("factor ID: %s\n",yylval.string_val);
 												printf("Regla 52: factor -> ID\n");
-												apilar( &factorIndice, crearTerceto(yylval.string_val,"",""), BuscarEnLista(&lista_ts, yylval.string_val) );
+												//agrego _ al id
+												sprintf(dato.nombre, "_%s",yylval.string_val);
+												apilar( &factorIndice, crearTerceto(dato.nombre,"",""), BuscarEnLista(&lista_ts, dato.nombre) );
 												//factorIndice = crearTerceto($1,"","");
 												}
 
 	| CTE_ENTERA                                {
 	                                            // strcpy(d.clave, guion_cadena(yytext));
 												char aux [50];
-	                                            strcpy(dato.nombre, yytext);
+	                                            //strcpy(dato.nombre, yytext);
+												//las cte enteras se nombran _numero
+												sprintf(dato.nombre, "CTE_%s",yytext);
 	                                            strcpy(dato.valor, yytext);
 	                                            strcpy(dato.tipodato, "const_Integer");
 	                                            dato.longitud = 0;
 	                                            insertar_en_ts(&lista_ts, &dato);
 	                                            printf("Regla 53: factor -> CTE_ENTERA\n");
-												apilar( &factorIndice, crearTerceto(yytext,"",""), CONST_INTEGER );
+												apilar( &factorIndice, crearTerceto(dato.nombre,"",""), CONST_INTEGER );
 												}
 
 	| CTE_REAL                                  {
 												char aux [50];
-	                                            strcpy(dato.nombre, yytext);
+	                                            //strcpy(dato.nombre, yytext);
+												//las cte real se nombran _numero
+												sprintf(dato.nombre, "CTE_%s",yytext);
 	                                            strcpy(dato.valor, yytext);
 	                                            strcpy(dato.tipodato, "const_Float");
 	                                            dato.longitud = 0;
 	                                            insertar_en_ts(&lista_ts, &dato);
 	                                            printf("Regla 54: factor -> CTE_REAL\n");
-												apilar( &factorIndice , crearTerceto(yytext,"",""), CONST_FLOAT);
+												apilar( &factorIndice , crearTerceto(dato.nombre,"",""), CONST_FLOAT);
 												// factorIndice = crearTerceto($1,"",""); //Falta pasar $1 a char*
 												}
 
 	| CTE_STRING                                {				
 	                                            dato.longitud = strlen(yytext)-2;
-	                                            strcpy(dato.nombre, yytext);
-	                                            reemplazar_blancos_por_guiones_y_quitar_comillas(yytext);
+												//las cte string se nombran str(numero)
+												sprintf(dato.nombre, "str%d",contadorCteString++ );
+												
+	                                            //reemplazar_blancos_por_guiones_y_quitar_comillas(yytext);
+												quitar_comillas(yytext);
 	                                            strcpy(dato.valor, yytext);												
 	                                            strcpy(dato.tipodato, "const_String");												
 	                                            insertar_en_ts(&lista_ts, &dato);
 	                                            printf("Regla 55: factor -> CTE_STRING\n");
-												apilar( &factorIndice , crearTerceto(yytext,"",""), CONST_STRING);
+												apilar( &factorIndice , crearTerceto(dato.nombre,"",""), CONST_STRING);
 												};
 	
 salida:
 	WRITE ID                                    {
-	                                            BuscarEnLista(&lista_ts, yylval.string_val);
+												//agrego _ al id
+												sprintf(dato.nombre, "_%s",yylval.string_val);
+	                                            BuscarEnLista(&lista_ts, dato.nombre);
 	                                            printf("Regla 56: salida -> WRITE ID\n");
-												crearTerceto("WRT",yylval.string_val,"");}
+												crearTerceto("WRT",dato.nombre,"");}
 	| WRITE CTE_STRING                          {
 	                                            dato.longitud = strlen(yytext)-2;
-	                                            strcpy(dato.nombre, yytext);
-	                                            reemplazar_blancos_por_guiones_y_quitar_comillas(yytext);
+	                                            //strcpy(dato.nombre, yytext);
+												
+												//las cte string se nombran str(numero)
+												sprintf(dato.nombre, "str%d",contadorCteString++ );
+												
+	                                            //reemplazar_blancos_por_guiones_y_quitar_comillas(yytext);
+												quitar_comillas(yytext);
 	                                            strcpy(dato.valor, yytext);												
 	                                            strcpy(dato.tipodato, "const_String");
 	                                            insertar_en_ts(&lista_ts, &dato);
 	                                            printf("Regla 57: salida -> WRITE CTE_STRING\n");
-												crearTerceto("WRT",yytext,"");};
+												crearTerceto("WRT",dato.nombre,"");};
 	
 entrada:
 	READ ID                                     {
-	                                            BuscarEnLista(&lista_ts, yylval.string_val);
+												//agrego _ al id
+												sprintf(dato.nombre, "_%s",yylval.string_val);
+	                                            BuscarEnLista(&lista_ts, dato.nombre);
 	                                            printf("Regla 58: entrada -> READ ID\n");
-												crearTerceto("READ",yylval.string_val,"");};
+												crearTerceto("READ",dato.nombre,"");};
 
 %%
 
@@ -625,6 +655,11 @@ int yyerror(char* mensaje)
 }
 
 int insertar_en_ts(t_lista *l_ts, t_info *d) {
+	
+	if(strcmp (d->tipodato, "const_String") == 0)
+	{
+		return insertarEnListaEnOrdenSinDuplicados(l_ts, d, compararPorValorString);
+	}
 	return insertarEnListaEnOrdenSinDuplicados(l_ts, d, compararPorNombre);
 	
 	// Un reinicio de la estructura dato para que vuelva a ser reutilizada sin problemas (quizas no hace falta) .
@@ -689,6 +724,18 @@ int BuscarEnLista(t_lista *pl, char* cadena )
 		{
 			return VAR_STRING;
 		}
+		if((strcmp("const_Integer",(*pl)->info.tipodato))==0)
+		{
+			return CONST_INTEGER;
+		}
+		if((strcmp("const_Float",(*pl)->info.tipodato))==0)
+		{
+			return CONST_FLOAT;
+		}
+		if((strcmp("const_String",(*pl)->info.tipodato))==0)
+		{
+			return CONST_STRING;
+		}
 	}
 	printf("\nVariable sin declarar: %s \n",cadena);
     exit(1);
@@ -700,6 +747,14 @@ int compararPorNombre(const void *d1, const void *d2)
     t_info *dato2=(t_info*)d2;
 
     return strcmp(dato1->nombre, dato2->nombre);
+}
+
+int compararPorValorString(const void *d1, const void *d2)
+{
+    t_info *dato1=(t_info*)d1;
+    t_info *dato2=(t_info*)d2;
+
+    return strcmp(dato1->valor, dato2->valor);
 }
 
 void grabar_lista(t_lista *pl){
@@ -941,7 +996,7 @@ void generarCodigoAsmDeclaracionVariables(t_lista *pl){
 		else{
 			// Agregue esta condicion porque creo que las String se manejan distinto, pero no lo tengo claro todavia
 			if (!strcmp((*pl)->info.tipodato,"const_String")){
-        		fprintf(pfArchivoDataAsm, "%-30s\tdb\t\t\t\t%s\n", (*pl)->info.valor, (*pl)->info.nombre);
+        		fprintf(pfArchivoDataAsm, "%-30s\tdb\t\t\t\t\"%s\"\n", (*pl)->info.nombre, (*pl)->info.valor);
 			}
 			else{
 				fprintf(pfArchivoDataAsm, "%-30s\tdd\t\t\t\t?\n", (*pl)->info.nombre);
@@ -963,8 +1018,10 @@ void recorrerTercetosParaAssembler(t_lista_terceto *pl)
   //Uso una lista para guardar los indices en donde hay que insertar etiquetas
   t_lista lista_etiquetas;
   crear_lista(&lista_etiquetas);
+  //char auxiliar para guardar el numero de etiqueta para los branch
   char etiqueta[30];
-
+  int tipoDeDatoAux1;
+  int tipoDeDatoAux2;
   while(*pl) {
 	  
 	  itoa((*pl)->info.numeroTerceto,etiqueta,10);
@@ -982,8 +1039,8 @@ void recorrerTercetosParaAssembler(t_lista_terceto *pl)
 	  //CMP
 	  if(strcmp((*pl)->info.primerElemento, "CMP") == 0 )
 	  {
-		fprintf(fptr,"\tFLD %s\n", obtenerOperando((*pl)->info.primerElemento));
-		fprintf(fptr,"\tFCOMP %s\n", obtenerOperando((*pl)->info.segundoElemento));
+		fprintf(fptr,"\tFLD %s\n", obtenerOperandoDeListaTercetos((*pl)->info.primerElemento));
+		fprintf(fptr,"\tFCOMP %s\n", obtenerOperandoDeListaTercetos((*pl)->info.segundoElemento));
 		fprintf(fptr,"\tFSTSW AX\n");
 		fprintf(fptr,"\tSAHF\n");
 		fprintf(fptr,"\tFFREE\n");
@@ -1064,12 +1121,137 @@ void recorrerTercetosParaAssembler(t_lista_terceto *pl)
 		insertarEnListaEnOrdenSinDuplicados(&lista_etiquetas, &dato, compararPorNombre);
 		fprintf(fptr,"\tJMP ET%s\n", etiqueta);
 	}
+	///////////////////// implementacion de WRITE //////////////
+	if(strcmp((*pl)->info.primerElemento,"WRT")==0)
+	{
+		//Busco el tipo de dato del elemento a imprimir
+		tipoDeDatoAux1=BuscarEnLista(&lista_ts, (*pl)->info.segundoElemento );
+		//Impresion de string 
+		if(tipoDeDatoAux1 == VAR_STRING || tipoDeDatoAux1 == CONST_STRING)
+		{
+			//////IMPLEMENTAR CODIGO IMPRIMIR CTE_STRING o VAR_STRING
+		}else{
+			//Impresion de numero 
+			
+			//////IMPLEMENTAR CODIGO IMPRIMIR CTE o VAR numericos
+		}
+	}
+	//////////////////// implementacion de READ //////////////////
+	if(strcmp((*pl)->info.primerElemento,"READ")==0)
+	{
+		//Busco el tipo de dato del elemento a imprimir
+		tipoDeDatoAux1=BuscarEnLista(&lista_ts, (*pl)->info.segundoElemento );
+		//Ingreso por pantalla de string 
+		if(tipoDeDatoAux1 == VAR_STRING || tipoDeDatoAux1 == CONST_STRING)
+		{
+			//////IMPLEMENTAR CODIGO INGRESO CTE_STRING o VAR_STRING
+		}else{
+			//Ingreso por pantalla de numero 
+			
+			//////IMPLEMENTAR CODIGO INGRESO CTE o VAR numericos
+		}
+	}
+	//////////////////// implementacion de ASIGNACION //////////////////
+	if(strcmp((*pl)->info.primerElemento,"=")==0)
+	{
+		//Busco el tipo de dato del elemento a imprimir
+		tipoDeDatoAux1=BuscarEnLista(&lista_ts, obtenerOperandoDeListaTercetos((*pl)->info.segundoElemento) );
+		//Ingreso por pantalla de string 
+		if(tipoDeDatoAux1 == VAR_STRING || tipoDeDatoAux1 == CONST_STRING)
+		{
+			//////IMPLEMENTAR CODIGO INGRESO CTE_STRING o VAR_STRING
+		}else{
+			//Ingreso por pantalla de numero 
+			
+			//////IMPLEMENTAR CODIGO INGRESO CTE o VAR numericos
+		}
+	}
+		
+	//////////////////// implementacion de operaciones aritmeticas (+, -, *, / ) //////////////////
+	if(strcmp((*pl)->info.primerElemento,"+")==0 || strcmp((*pl)->info.primerElemento,"-")==0 ||strcmp((*pl)->info.primerElemento,"*")==0 ||strcmp((*pl)->info.primerElemento,"/")==0)
+	{
+		//Busco el tipo de dato del primer operando
+		//printf("busca primerElemento %s\n", obtenerOperandoDeListaTercetos( (*pl)->info.segundoElemento));
+		tipoDeDatoAux1=BuscarEnLista(&lista_ts, obtenerOperandoDeListaTercetos( (*pl)->info.segundoElemento) );
+		//Busco el tipo de dato del segundo operando
+		//printf("busca primerElemento %s\n", obtenerOperandoDeListaTercetos( (*pl)->info.tercerElemento));
+		tipoDeDatoAux2=BuscarEnLista(&lista_ts, obtenerOperandoDeListaTercetos( (*pl)->info.tercerElemento) );
+		
+		//cargo primer operando
+		if(tipoDeDatoAux1 == VAR_INTEGER || tipoDeDatoAux1 == CONST_INTEGER)
+		{
+			//Si es un Int cargo con FILD
+			fprintf(fptr,"\tFILD %s\n", obtenerOperandoDeListaTercetos((*pl)->info.segundoElemento) );
+		}else{
+			//Si es un Float cargo con FLD
+			fprintf(fptr,"\tFLD %s\n", obtenerOperandoDeListaTercetos((*pl)->info.segundoElemento) );
+		}
+		
+		//cargo segundo operando
+		if(tipoDeDatoAux2 == VAR_INTEGER || tipoDeDatoAux2 == CONST_INTEGER)
+		{
+			//Si es un Int cargo con FILD
+			fprintf(fptr,"\tFILD %s\n", obtenerOperandoDeListaTercetos((*pl)->info.tercerElemento) );
+		}else{
+			//Si es un Float cargo con FLD
+			fprintf(fptr,"\tFLD %s\n", obtenerOperandoDeListaTercetos((*pl)->info.tercerElemento) );
+		}
+		
+		if(strcmp((*pl)->info.primerElemento,"+") == 0)
+		{
+		//Hago la suma con FADD
+		fprintf(fptr,"\tFADD\n");
+		}
+		
+		if(strcmp((*pl)->info.primerElemento,"-") == 0)
+		{
+		//Hago la resta con FSUB
+		fprintf(fptr,"\tFSUB\n");
+		}
+		
+		if(strcmp((*pl)->info.primerElemento,"*") == 0)
+		{
+		//Hago la multiplicacion con FMUL
+		fprintf(fptr,"\tFMUL\n");
+		}
+		
+		if(strcmp((*pl)->info.primerElemento,"/") == 0)
+		{
+		//Hago la division con FDIV
+		fprintf(fptr,"\tFDIV\n");
+		}
+		
+		//Creo una variable auxiliar para almacenar el resultado
+		sprintf(dato.nombre, "@aux%d",(*pl)->info.numeroTerceto );
+	    strcpy(dato.valor, "");
+	    dato.longitud = 0;
+	    
+		
+		//cargo el resultado en la variable auxiliar
+		if( verCompatible((*pl)->info.primerElemento ,tipoDeDatoAux1,tipoDeDatoAux2) <= CONST_INTEGER)
+		{
+			//Si es un Int cargo con FISTP
+			fprintf(fptr,"\tFISTP %s\n", dato.nombre ) ;
+			//agrego el tipo a la variable auxiliar
+			strcpy(dato.tipodato, "Integer");
+		}else{
+			//Si es un Float cargo con FSTP
+			fprintf(fptr,"\tFSTP %s\n", dato.nombre ) ;
+			//agrego el tipo a la variable auxiliar
+			strcpy(dato.tipodato, "Float");
+		}
+		//printf("terceto: %d %s %s %s\n",(*pl)->info.numeroTerceto, (*pl)->info.primerElemento, (*pl)->info.segundoElemento, (*pl)->info.tercerElemento );
+		//printf("crear var aux: %s\n",dato.nombre );
+		
+		//Cargo la variable auxiliar en tabla de simbolos
+		insertar_en_ts(&lista_ts, &dato);
+	}
 	
-	printf("etiqueta: %s\n",etiqueta);
 		pl=&(*pl)->pSig;
   }
   
   fclose(fptr);
+  printf("Termino de recorrer tercetos assembler\n");
 } 
 
 //quita comillas a una etiqueta
@@ -1081,10 +1263,10 @@ char *quitarCorch(char *cad)
 }
 
 //Recibe un *char que es un elemento de terceto y si es una cte o variable devuelve el mismo, y si es un indice determina el valor que corresponde 
-char *obtenerOperando(char *cad)
+char *obtenerOperandoDeListaTercetos(char *cad)
 {
 	//si el operando es un indice a un terceto tengo que buscar el valor
-	if(cad[1] == '[')
+	if(cad[0] == '[')
 	{
 		//cargo el numero de terceto que tengo que buscar
 		dato_terceto.numeroTerceto = atoi(quitarCorch(cad));
@@ -1095,12 +1277,16 @@ char *obtenerOperando(char *cad)
 		{
 			return dato_terceto.primerElemento ;
 		}
+		if(strcmp(dato_terceto.primerElemento,"=")==0) //Si el terceto es de una asignacion, vuelve a verificar cual es el dato que corresponde
+		{
+			return obtenerOperandoDeListaTercetos(dato_terceto.segundoElemento) ;
+		}
 		
 		//si el terceto es una operacion devuelve una variable auxiliar con el numero del terceto
-		sprintf(varAssembleAux, "@%d",dato_terceto.numeroTerceto );
+		sprintf(varAssembleAux, "@aux%d",dato_terceto.numeroTerceto );
 		return varAssembleAux;
 	}
-	
+	//El operando ya es una cte o una variable sola, entonces la devuelve
   return cad;
 }
 
@@ -1140,4 +1326,3 @@ int buscarYTraerTerceto(t_lista_terceto *pl, int indiceTerceto)
 
     return 0;
 }
-    
