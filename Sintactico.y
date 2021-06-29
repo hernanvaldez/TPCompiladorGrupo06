@@ -127,7 +127,7 @@
 	t_pila compInListInd;
 	char idAux[20];
 
-	char varAssembleAux[10];
+	char varAssembleAux[TAM];
 
 	// INLIST
 	char id_inList[TAM];
@@ -156,6 +156,11 @@
 	void generarCodigoAsmDeclaracionVariables(t_lista *);
 	void generarCodigoAsm(void);							   
 
+	void recorrerTercetosParaAssembler(t_lista_terceto *pl);
+	char *quitarCorch(char *cad);
+	char *obtenerOperando(char *cad);
+	int buscarYSacarDeLista(t_lista *pl, char* cadena );
+	int buscarYTraerTerceto(t_lista_terceto *pl, int indiceTerceto);
 %}
 
 %union {
@@ -908,6 +913,7 @@ char* negarBranch(char *branch)
 
 void generarCodigoAssembler(t_lista *pl)
 {
+	recorrerTercetosParaAssembler(&lista_terceto);
   generarCodigoAsmCabecera();
   generarCodigoAsmDeclaracionVariables(pl);
   generarCodigoAsm();    
@@ -950,3 +956,188 @@ void generarCodigoAsm(){
 	fprintf(pfArchivoDataAsm, "\n.CODE \n");
 	fclose(pfArchivoDataAsm);
 }
+
+void recorrerTercetosParaAssembler(t_lista_terceto *pl)
+{
+  FILE * fptr = fopen("codigoAssembler.txt","wt");
+  //Uso una lista para guardar los indices en donde hay que insertar etiquetas
+  t_lista lista_etiquetas;
+  crear_lista(&lista_etiquetas);
+  char etiqueta[30];
+
+  while(*pl) {
+	  
+	  itoa((*pl)->info.numeroTerceto,etiqueta,10);
+	  //Busca si hay una etiqueta de un branch en la lista de etiquetas, si esta crea la etiqueta
+	  if( strcmp((*pl)->info.primerElemento, "ET") != 0 && buscarYSacarDeLista(&lista_etiquetas,etiqueta) )
+	  {
+		  fprintf(fptr,"ET%d:\n", (*pl)->info.numeroTerceto);
+	  }
+	  
+	  //Crea etiquetas de while
+	  if(strcmp((*pl)->info.primerElemento, "ET") == 0 )
+	  {
+		fprintf(fptr,"ET%d:\n", (*pl)->info.numeroTerceto);
+	  }
+	  //CMP
+	  if(strcmp((*pl)->info.primerElemento, "CMP") == 0 )
+	  {
+		fprintf(fptr,"\tFLD %s\n", obtenerOperando((*pl)->info.primerElemento));
+		fprintf(fptr,"\tFCOMP %s\n", obtenerOperando((*pl)->info.segundoElemento));
+		fprintf(fptr,"\tFSTSW AX\n");
+		fprintf(fptr,"\tSAHF\n");
+		fprintf(fptr,"\tFFREE\n");
+	  }
+	  if(strcmp((*pl)->info.primerElemento,"BGT")==0)
+	{
+		//Obtengo el numero de indice del branch sin corchetes
+		strcpy(etiqueta,quitarCorch((*pl)->info.segundoElemento));
+		//cargo en dato el numero de etiqueta para poder cargarlo en la lista de etiquetas
+		strcpy(dato.nombre,etiqueta); strcpy(dato.valor, ""); strcpy(dato.tipodato, "");dato.longitud = 0;
+		//inserto en la lista asi puedo revisar cuando crear una etiqueta de un branch
+		insertarEnListaEnOrdenSinDuplicados(&lista_etiquetas, &dato, compararPorNombre);
+		fprintf(fptr,"\tJA ET%s\n", etiqueta);
+	}
+
+	if(strcmp((*pl)->info.primerElemento,"BLT")==0)
+	{
+		//Obtengo el numero de indice del branch sin corchetes
+		strcpy(etiqueta,quitarCorch((*pl)->info.segundoElemento));
+		//cargo en dato el numero de etiqueta para poder cargarlo en la lista de etiquetas
+		strcpy(dato.nombre,etiqueta); strcpy(dato.valor, ""); strcpy(dato.tipodato, "");dato.longitud = 0;
+		//inserto en la lista asi puedo revisar cuando crear una etiqueta de un branch
+		insertarEnListaEnOrdenSinDuplicados(&lista_etiquetas, &dato, compararPorNombre);
+		fprintf(fptr,"\tJB ET%s\n", etiqueta);
+	}
+
+	if(strcmp((*pl)->info.primerElemento,"BGE")==0)
+	{
+		//Obtengo el numero de indice del branch sin corchetes
+		strcpy(etiqueta,quitarCorch((*pl)->info.segundoElemento));
+		//cargo en dato el numero de etiqueta para poder cargarlo en la lista de etiquetas
+		strcpy(dato.nombre,etiqueta); strcpy(dato.valor, ""); strcpy(dato.tipodato, "");dato.longitud = 0;
+		//inserto en la lista asi puedo revisar cuando crear una etiqueta de un branch
+		insertarEnListaEnOrdenSinDuplicados(&lista_etiquetas, &dato, compararPorNombre);
+		fprintf(fptr,"\tJAE ET%s\n", etiqueta);
+	}
+
+	if(strcmp((*pl)->info.primerElemento,"BLE")==0)
+	{
+		//Obtengo el numero de indice del branch sin corchetes
+		strcpy(etiqueta,quitarCorch((*pl)->info.segundoElemento));
+		//cargo en dato el numero de etiqueta para poder cargarlo en la lista de etiquetas
+		strcpy(dato.nombre,etiqueta); strcpy(dato.valor, ""); strcpy(dato.tipodato, "");dato.longitud = 0;
+		//inserto en la lista asi puedo revisar cuando crear una etiqueta de un branch
+		insertarEnListaEnOrdenSinDuplicados(&lista_etiquetas, &dato, compararPorNombre);
+		fprintf(fptr,"\tJNA ET%s\n", etiqueta);
+	}
+
+	if(strcmp((*pl)->info.primerElemento,"BNE")==0)
+	{
+		//Obtengo el numero de indice del branch sin corchetes
+		strcpy(etiqueta,quitarCorch((*pl)->info.segundoElemento));
+		//cargo en dato el numero de etiqueta para poder cargarlo en la lista de etiquetas
+		strcpy(dato.nombre,etiqueta); strcpy(dato.valor, ""); strcpy(dato.tipodato, "");dato.longitud = 0;
+		//inserto en la lista asi puedo revisar cuando crear una etiqueta de un branch
+		insertarEnListaEnOrdenSinDuplicados(&lista_etiquetas, &dato, compararPorNombre);
+		fprintf(fptr,"\tJNE ET%s\n", etiqueta);
+	}
+
+	if(strcmp((*pl)->info.primerElemento,"BEQ")==0)
+	{
+		//Obtengo el numero de indice del branch sin corchetes
+		strcpy(etiqueta,quitarCorch((*pl)->info.segundoElemento));
+		//cargo en dato el numero de etiqueta para poder cargarlo en la lista de etiquetas
+		strcpy(dato.nombre,etiqueta); strcpy(dato.valor, ""); strcpy(dato.tipodato, "");dato.longitud = 0;
+		//inserto en la lista asi puedo revisar cuando crear una etiqueta de un branch
+		insertarEnListaEnOrdenSinDuplicados(&lista_etiquetas, &dato, compararPorNombre);
+		fprintf(fptr,"\tJE ET%s\n", etiqueta);
+	}
+	
+	if(strcmp((*pl)->info.primerElemento,"BI")==0)
+	{
+		//Obtengo el numero de indice del branch sin corchetes
+		strcpy(etiqueta,quitarCorch((*pl)->info.segundoElemento));
+		//cargo en dato el numero de etiqueta para poder cargarlo en la lista de etiquetas
+		strcpy(dato.nombre,etiqueta); strcpy(dato.valor, ""); strcpy(dato.tipodato, "");dato.longitud = 0;
+		//inserto en la lista asi puedo revisar cuando crear una etiqueta de un branch
+		insertarEnListaEnOrdenSinDuplicados(&lista_etiquetas, &dato, compararPorNombre);
+		fprintf(fptr,"\tJMP ET%s\n", etiqueta);
+	}
+	
+	printf("etiqueta: %s\n",etiqueta);
+		pl=&(*pl)->pSig;
+  }
+  
+  fclose(fptr);
+} 
+
+//quita comillas a una etiqueta
+char *quitarCorch(char *cad)
+{
+  strncpy( varAssembleAux, cad + 1 , strlen(cad) - 2 );
+  varAssembleAux[strlen(cad) - 2] = '\0';
+  return varAssembleAux;
+}
+
+//Recibe un *char que es un elemento de terceto y si es una cte o variable devuelve el mismo, y si es un indice determina el valor que corresponde 
+char *obtenerOperando(char *cad)
+{
+	//si el operando es un indice a un terceto tengo que buscar el valor
+	if(cad[1] == '[')
+	{
+		//cargo el numero de terceto que tengo que buscar
+		dato_terceto.numeroTerceto = atoi(quitarCorch(cad));
+		//carga el resto de los datos del terceto en dato_terceto
+		buscarYTraerTerceto(&lista_terceto, dato_terceto.numeroTerceto);
+		//si el terceto es una cte o una variable sola, la devuelve
+		if(strcmp(dato_terceto.segundoElemento,"")==0)
+		{
+			return dato_terceto.primerElemento ;
+		}
+		
+		//si el terceto es una operacion devuelve una variable auxiliar con el numero del terceto
+		sprintf(varAssembleAux, "@%d",dato_terceto.numeroTerceto );
+		return varAssembleAux;
+	}
+	
+  return cad;
+}
+
+//busca un numero de etiqueta en la lista de etiquetas y si esta lo saca
+int buscarYSacarDeLista(t_lista *pl, char* cadena )
+{
+	t_nodo *aux;
+    int cmp;
+
+    while(*pl && (cmp=strcmp(cadena,(*pl)->info.nombre))!=0)
+        pl=&(*pl)->pSig;
+    if(cmp==0)
+	{
+		aux =*pl;
+		*pl=(*pl)->pSig;
+		free(aux);
+		return 1;
+	}
+	return 0;
+}
+
+int buscarYTraerTerceto(t_lista_terceto *pl, int indiceTerceto)
+{
+    int cmp;
+	
+    while(*pl && (cmp = indiceTerceto - (*pl)->info.numeroTerceto) >0)
+        pl=&(*pl)->pSig;
+    if(*pl && cmp==0)
+    {
+		//Cargo en la variable dato_terceto los valores del terceto buscado
+		strcpy(dato_terceto.primerElemento,(*pl)->info.primerElemento);
+		strcpy(dato_terceto.segundoElemento,(*pl)->info.segundoElemento);
+		strcpy(dato_terceto.tercerElemento,(*pl)->info.tercerElemento);
+		
+        return 1;
+    }
+
+    return 0;
+}
+    

@@ -198,7 +198,7 @@
 	t_pila compInListInd;
 	char idAux[20];
 
-	char varAssembleAux[10];
+	char varAssembleAux[TAM];
 
 	// INLIST
 	char id_inList[TAM];
@@ -227,10 +227,15 @@
 	void generarCodigoAsmDeclaracionVariables(t_lista *);
 	void generarCodigoAsm(void);							   
 
+	void recorrerTercetosParaAssembler(t_lista_terceto *pl);
+	char *quitarCorch(char *cad);
+	char *obtenerOperando(char *cad);
+	int buscarYSacarDeLista(t_lista *pl, char* cadena );
+	int buscarYTraerTerceto(t_lista_terceto *pl, int indiceTerceto);
 
 
 /* Line 189 of yacc.c  */
-#line 234 "y.tab.c"
+#line 239 "y.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -347,7 +352,7 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 161 "Sintactico.y"
+#line 166 "Sintactico.y"
 
 	int int_val;
 	float float_val;
@@ -356,7 +361,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 360 "y.tab.c"
+#line 365 "y.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -368,7 +373,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 372 "y.tab.c"
+#line 377 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -679,13 +684,13 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   200,   200,   203,   204,   209,   210,   217,   218,   221,
-     227,   240,   255,   259,   262,   270,   271,   274,   276,   277,
-     278,   279,   282,   287,   293,   296,   301,   310,   320,   320,
-     326,   326,   335,   335,   339,   349,   361,   370,   370,   380,
-     380,   394,   400,   413,   421,   421,   434,   439,   445,   447,
-     449,   451,   453,   455,   459,   464,   469,   474,   481,   486,
-     491,   498,   504,   512,   524,   536,   548,   552,   563
+       0,   205,   205,   208,   209,   214,   215,   222,   223,   226,
+     232,   245,   260,   264,   267,   275,   276,   279,   281,   282,
+     283,   284,   287,   292,   298,   301,   306,   315,   325,   325,
+     331,   331,   340,   340,   344,   354,   366,   375,   375,   385,
+     385,   399,   405,   418,   426,   426,   439,   444,   450,   452,
+     454,   456,   458,   460,   464,   469,   474,   479,   486,   491,
+     496,   503,   509,   517,   529,   541,   553,   557,   568
 };
 #endif
 
@@ -1678,35 +1683,35 @@ yyreduce:
         case 2:
 
 /* Line 1455 of yacc.c  */
-#line 200 "Sintactico.y"
+#line 205 "Sintactico.y"
     {printf("Compilacion Exitosa\n"); generarCodigoAssembler(&lista_ts);}
     break;
 
   case 3:
 
 /* Line 1455 of yacc.c  */
-#line 203 "Sintactico.y"
+#line 208 "Sintactico.y"
     {printf("Regla 1: programa -> seccion_declaracion bloque_cod\n");}
     break;
 
   case 4:
 
 /* Line 1455 of yacc.c  */
-#line 204 "Sintactico.y"
+#line 209 "Sintactico.y"
     {printf("Regla 2: programa -> bloque_cod\n");}
     break;
 
   case 5:
 
 /* Line 1455 of yacc.c  */
-#line 209 "Sintactico.y"
+#line 214 "Sintactico.y"
     {printf("Regla 3: seccion_declaracion -> DECVAR bloque_dec ENDDEC\n");}
     break;
 
   case 6:
 
 /* Line 1455 of yacc.c  */
-#line 210 "Sintactico.y"
+#line 215 "Sintactico.y"
     {
 													printf("Error sintactico en linea %d: DECVAR ENDDEC no puede estar vacio\n", yylineno );
 													system ("Pause");
@@ -1717,21 +1722,21 @@ yyreduce:
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 217 "Sintactico.y"
+#line 222 "Sintactico.y"
     {printf("Regla 4: bloque_dec -> bloque_dec declaracion\n");}
     break;
 
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 218 "Sintactico.y"
+#line 223 "Sintactico.y"
     {printf("Regla 5: bloque_dec -> declaracion\n");}
     break;
 
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 221 "Sintactico.y"
+#line 226 "Sintactico.y"
     {
 												insertarTipoDeDato(&lista_ts, &contadorVariablesDeclaradas);
 												printf("Regla 6: declaracion -> lista_id DOS_PUNTOS t_dato\n");
@@ -1741,7 +1746,7 @@ yyreduce:
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 227 "Sintactico.y"
+#line 232 "Sintactico.y"
     {
 	                                            strcpy(dato.nombre, yylval.string_val);
 	                                            strcpy(dato.valor, "");
@@ -1760,7 +1765,7 @@ yyreduce:
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 240 "Sintactico.y"
+#line 245 "Sintactico.y"
     {
 	                                            strcpy(dato.nombre, yylval.string_val);
 	                                            strcpy(dato.valor, "");
@@ -1779,7 +1784,7 @@ yyreduce:
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 255 "Sintactico.y"
+#line 260 "Sintactico.y"
     {
 												strcpy(tipoDeDato,"Integer");
 												printf("Regla 9: t_dato -> ENTERO\n");
@@ -1789,7 +1794,7 @@ yyreduce:
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 259 "Sintactico.y"
+#line 264 "Sintactico.y"
     {strcpy(tipoDeDato,"Float");
 												printf("Regla 10: t_dato -> REAL\n");
 												}
@@ -1798,7 +1803,7 @@ yyreduce:
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 262 "Sintactico.y"
+#line 267 "Sintactico.y"
     {
 												strcpy(tipoDeDato,"String");
 												printf("Regla 11: t_dato -> STRING\n");
@@ -1808,21 +1813,21 @@ yyreduce:
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 270 "Sintactico.y"
+#line 275 "Sintactico.y"
     {printf("Regla 12: bloque_cod -> bloque_cod sentencia\n");}
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 271 "Sintactico.y"
+#line 276 "Sintactico.y"
     {printf("Regla 13: bloque_cod -> sentencia\n");}
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 274 "Sintactico.y"
+#line 279 "Sintactico.y"
     {printf("Regla 14: sentencia -> asignacion\n");
 												apilar( &sentenciaIndice , sacarDePila(&asignacionIndice), verTipoTope(&asignacionIndice));}
     break;
@@ -1830,35 +1835,35 @@ yyreduce:
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 276 "Sintactico.y"
+#line 281 "Sintactico.y"
     {printf("Regla 15: sentencia -> seleccion\n");}
     break;
 
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 277 "Sintactico.y"
+#line 282 "Sintactico.y"
     {printf("Regla 16: sentencia -> iteracion\n");}
     break;
 
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 278 "Sintactico.y"
+#line 283 "Sintactico.y"
     {printf("Regla 17: sentencia -> salida\n");}
     break;
 
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 279 "Sintactico.y"
+#line 284 "Sintactico.y"
     {printf("Regla 18: sentencia -> entrada\n");}
     break;
 
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 282 "Sintactico.y"
+#line 287 "Sintactico.y"
     {printf("Regla 19: asignacion -> ID OP_ASIG expresion\n");
 												// verTipoTope mando expresionIndice para completar la funcion
 												apilar( &asignacionIndice, crearTerceto("=",(yyvsp[(1) - (3)].string_val),crearIndice(_aux=sacarDePila(&expresionIndice))), verCompatible("=",BuscarEnLista(&lista_ts, (yyvsp[(1) - (3)].string_val) ),verTipoTope(&expresionIndice)) );
@@ -1869,7 +1874,7 @@ yyreduce:
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 287 "Sintactico.y"
+#line 292 "Sintactico.y"
     {printf("Regla 20: asignacion -> ID OP_ASIG asignacion\n");
 												// verTipoTope si esta bien
 												apilar( &asignacionIndice, crearTerceto("=",(yyvsp[(1) - (3)].string_val),crearIndice(_aux)),  verCompatible("=",BuscarEnLista(&lista_ts, (yyvsp[(1) - (3)].string_val) ),verTipoTope(&asignacionIndice)) );
@@ -1879,7 +1884,7 @@ yyreduce:
   case 24:
 
 /* Line 1455 of yacc.c  */
-#line 293 "Sintactico.y"
+#line 298 "Sintactico.y"
     {
 													printf("Regla 21: seleccion -> bloque_if\n");
 												}
@@ -1888,7 +1893,7 @@ yyreduce:
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 296 "Sintactico.y"
+#line 301 "Sintactico.y"
     {
 													printf("Regla 22: seleccion -> bloque_if bloque_else\n");
 												}
@@ -1897,7 +1902,7 @@ yyreduce:
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 301 "Sintactico.y"
+#line 306 "Sintactico.y"
     {
 													if(verTipoTope(&comparacionIndice) == ES_AND)
 													{
@@ -1912,7 +1917,7 @@ yyreduce:
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 310 "Sintactico.y"
+#line 315 "Sintactico.y"
     {	if(verTipoTope(&comparacionIndice) == ES_AND)
 													{
 														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
@@ -1926,14 +1931,14 @@ yyreduce:
   case 28:
 
 /* Line 1455 of yacc.c  */
-#line 320 "Sintactico.y"
+#line 325 "Sintactico.y"
     { apilar(&comparacionIndice,crearTerceto("BI","" ,""), 0);}
     break;
 
   case 29:
 
 /* Line 1455 of yacc.c  */
-#line 321 "Sintactico.y"
+#line 326 "Sintactico.y"
     {
 													// Actualizo terceto con BI
 													buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
@@ -1944,14 +1949,14 @@ yyreduce:
   case 30:
 
 /* Line 1455 of yacc.c  */
-#line 326 "Sintactico.y"
+#line 331 "Sintactico.y"
     { apilar(&comparacionIndice,crearTerceto("BI","" ,""), 0);}
     break;
 
   case 31:
 
 /* Line 1455 of yacc.c  */
-#line 327 "Sintactico.y"
+#line 332 "Sintactico.y"
     {
 													// Actualizo terceto con BI
 													buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
@@ -1962,14 +1967,14 @@ yyreduce:
   case 32:
 
 /* Line 1455 of yacc.c  */
-#line 335 "Sintactico.y"
+#line 340 "Sintactico.y"
     { apilar( &iteracionIndice , crearTerceto("ET","",""),0);}
     break;
 
   case 34:
 
 /* Line 1455 of yacc.c  */
-#line 339 "Sintactico.y"
+#line 344 "Sintactico.y"
     {	
 														crearTerceto("BI",crearIndice(sacarDePila(&iteracionIndice)),"");
 														if(verTipoTope(&comparacionIndice) == ES_AND)
@@ -1985,7 +1990,7 @@ yyreduce:
   case 35:
 
 /* Line 1455 of yacc.c  */
-#line 349 "Sintactico.y"
+#line 354 "Sintactico.y"
     {
 														crearTerceto("BI",crearIndice(sacarDePila(&iteracionIndice)),"");
 														if(verTipoTope(&comparacionIndice) == ES_AND)
@@ -2001,7 +2006,7 @@ yyreduce:
   case 36:
 
 /* Line 1455 of yacc.c  */
-#line 361 "Sintactico.y"
+#line 366 "Sintactico.y"
     {
 													printf("Regla 29: condicion -> comparacion\n");
 													// Si NO es una comp por INLIST crea el terceto
@@ -2016,7 +2021,7 @@ yyreduce:
   case 37:
 
 /* Line 1455 of yacc.c  */
-#line 370 "Sintactico.y"
+#line 375 "Sintactico.y"
     {
 													
 													crearTerceto(varAssembleAux,"" ,"");
@@ -2027,7 +2032,7 @@ yyreduce:
   case 38:
 
 /* Line 1455 of yacc.c  */
-#line 375 "Sintactico.y"
+#line 380 "Sintactico.y"
     {
 													crearTerceto(varAssembleAux,"" ,"");
 													apilar(&comparacionIndice, contadorTercetos-1, ES_AND ); //Uso el tipo de la pila en vez del flagAnd
@@ -2038,7 +2043,7 @@ yyreduce:
   case 39:
 
 /* Line 1455 of yacc.c  */
-#line 380 "Sintactico.y"
+#line 385 "Sintactico.y"
     {
 													crearTerceto(varAssembleAux,"" ,"");
 													apilar(&comparacionIndice, contadorTercetos-1, 0);
@@ -2050,7 +2055,7 @@ yyreduce:
   case 40:
 
 /* Line 1455 of yacc.c  */
-#line 386 "Sintactico.y"
+#line 391 "Sintactico.y"
     {
 													// Actualizo terceto con BI
 													buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos+1);
@@ -2064,7 +2069,7 @@ yyreduce:
   case 41:
 
 /* Line 1455 of yacc.c  */
-#line 394 "Sintactico.y"
+#line 399 "Sintactico.y"
     {
 													crearTerceto(negarBranch(varAssembleAux),"" ,"");
 													apilar(&comparacionIndice, contadorTercetos-1, 0);
@@ -2074,7 +2079,7 @@ yyreduce:
   case 42:
 
 /* Line 1455 of yacc.c  */
-#line 400 "Sintactico.y"
+#line 405 "Sintactico.y"
     {printf("Regla 33: comparacion -> expresion comparador expresion\n");
 												// uso esta pila como auxiliar para poder comparar las dos expresiones
 												apilar(&pilaDeNumerosDeTercetos, sacarDePila(&expresionIndice), verTipoTope(&expresionIndice));
@@ -2092,7 +2097,7 @@ yyreduce:
   case 43:
 
 /* Line 1455 of yacc.c  */
-#line 413 "Sintactico.y"
+#line 418 "Sintactico.y"
     {
 													while(!pilaVacia(compInListInd.prim))
 													{
@@ -2104,14 +2109,14 @@ yyreduce:
   case 44:
 
 /* Line 1455 of yacc.c  */
-#line 421 "Sintactico.y"
+#line 426 "Sintactico.y"
     {strcpy(idAux,yylval.string_val);}
     break;
 
   case 45:
 
 /* Line 1455 of yacc.c  */
-#line 422 "Sintactico.y"
+#line 427 "Sintactico.y"
     {	
 													// Desapilo las expresiones del INLIST y armo las CMP creando por cada una un salto por Verdadero
 													while(!pilaVacia(expInlistIndice.prim))
@@ -2127,7 +2132,7 @@ yyreduce:
   case 46:
 
 /* Line 1455 of yacc.c  */
-#line 434 "Sintactico.y"
+#line 439 "Sintactico.y"
     {	
 													// Apilo todas las expresiones de la comparacion INLIST													
 													apilar(&expInlistIndice, sacarDePila(&expresionIndice), verTipoTope(&expresionIndice));
@@ -2138,7 +2143,7 @@ yyreduce:
   case 47:
 
 /* Line 1455 of yacc.c  */
-#line 439 "Sintactico.y"
+#line 444 "Sintactico.y"
     {
 													apilar(&expInlistIndice, sacarDePila(&expresionIndice), verTipoTope(&expresionIndice));
 													printf("Regla 37: lista_expr -> expresion\n");
@@ -2148,7 +2153,7 @@ yyreduce:
   case 48:
 
 /* Line 1455 of yacc.c  */
-#line 445 "Sintactico.y"
+#line 450 "Sintactico.y"
     {printf("Regla 38: comparador -> MENOR_IGUAL\n");
 												strcpy(varAssembleAux, "BGT");}
     break;
@@ -2156,7 +2161,7 @@ yyreduce:
   case 49:
 
 /* Line 1455 of yacc.c  */
-#line 447 "Sintactico.y"
+#line 452 "Sintactico.y"
     {printf("Regla 39: comparador -> MAYOR_IGUAL\n");
 												strcpy(varAssembleAux, "BLT");}
     break;
@@ -2164,7 +2169,7 @@ yyreduce:
   case 50:
 
 /* Line 1455 of yacc.c  */
-#line 449 "Sintactico.y"
+#line 454 "Sintactico.y"
     {printf("Regla 40: comparador -> MENOR\n");
 												strcpy(varAssembleAux, "BGE");}
     break;
@@ -2172,7 +2177,7 @@ yyreduce:
   case 51:
 
 /* Line 1455 of yacc.c  */
-#line 451 "Sintactico.y"
+#line 456 "Sintactico.y"
     {printf("Regla 41: comparador -> MAYOR\n");
 												strcpy(varAssembleAux, "BLE");}
     break;
@@ -2180,7 +2185,7 @@ yyreduce:
   case 52:
 
 /* Line 1455 of yacc.c  */
-#line 453 "Sintactico.y"
+#line 458 "Sintactico.y"
     {printf("Regla 42: comparador -> IGUAL\n");
 												strcpy(varAssembleAux, "BNE");}
     break;
@@ -2188,7 +2193,7 @@ yyreduce:
   case 53:
 
 /* Line 1455 of yacc.c  */
-#line 455 "Sintactico.y"
+#line 460 "Sintactico.y"
     {printf("Regla 43: comparador -> DISTINTO\n");
 												strcpy(varAssembleAux, "BEQ");}
     break;
@@ -2196,7 +2201,7 @@ yyreduce:
   case 54:
 
 /* Line 1455 of yacc.c  */
-#line 459 "Sintactico.y"
+#line 464 "Sintactico.y"
     {
 													printf("Regla 44: expresion -> expresion OP_SUMA termino\n");
 													apilar( &expresionIndice , crearTerceto("+",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&terminoIndice))), verCompatible("+",verTipoTope(&expresionIndice),verTipoTope(&terminoIndice)) );
@@ -2207,7 +2212,7 @@ yyreduce:
   case 55:
 
 /* Line 1455 of yacc.c  */
-#line 464 "Sintactico.y"
+#line 469 "Sintactico.y"
     {
 													printf("Regla 45: expresion -> expresion OP_RESTA termino\n");
 													apilar( &expresionIndice , crearTerceto("-",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&terminoIndice))), verCompatible("-",verTipoTope(&expresionIndice),verTipoTope(&terminoIndice)));
@@ -2218,7 +2223,7 @@ yyreduce:
   case 56:
 
 /* Line 1455 of yacc.c  */
-#line 469 "Sintactico.y"
+#line 474 "Sintactico.y"
     {
 													printf("Regla 46: expresion -> termino\n");
 													apilar( &expresionIndice , sacarDePila(&terminoIndice), verTipoTope(&terminoIndice));
@@ -2229,7 +2234,7 @@ yyreduce:
   case 57:
 
 /* Line 1455 of yacc.c  */
-#line 474 "Sintactico.y"
+#line 479 "Sintactico.y"
     {
 													printf("Regla 47: expresion -> OP_RESTA termino\n");
 													apilar( &expresionIndice , crearTerceto("*",crearIndice(sacarDePila(&terminoIndice)),"-1"), verCompatible("-",verTipoTope(&terminoIndice),CONST_INTEGER));
@@ -2240,7 +2245,7 @@ yyreduce:
   case 58:
 
 /* Line 1455 of yacc.c  */
-#line 481 "Sintactico.y"
+#line 486 "Sintactico.y"
     {
 													printf("Regla 48: termino -> termino OP_MULT factor\n");
 													apilar( &terminoIndice , crearTerceto("*",crearIndice(sacarDePila(&terminoIndice)),crearIndice(sacarDePila(&factorIndice))), verCompatible("*",verTipoTope(&terminoIndice),verTipoTope(&factorIndice)));
@@ -2251,7 +2256,7 @@ yyreduce:
   case 59:
 
 /* Line 1455 of yacc.c  */
-#line 486 "Sintactico.y"
+#line 491 "Sintactico.y"
     {
 													printf("Regla 49: termino -> termino OP_DIV factor\n");
 													apilar( &terminoIndice , crearTerceto("/",crearIndice(sacarDePila(&terminoIndice)),crearIndice(sacarDePila(&factorIndice))), verCompatible("/",verTipoTope(&terminoIndice),verTipoTope(&factorIndice)));
@@ -2262,7 +2267,7 @@ yyreduce:
   case 60:
 
 /* Line 1455 of yacc.c  */
-#line 491 "Sintactico.y"
+#line 496 "Sintactico.y"
     {
 													printf("Regla 50: termino -> factor\n");
 													apilar( &terminoIndice , sacarDePila(&factorIndice), verTipoTope(&factorIndice));
@@ -2273,7 +2278,7 @@ yyreduce:
   case 61:
 
 /* Line 1455 of yacc.c  */
-#line 498 "Sintactico.y"
+#line 503 "Sintactico.y"
     {
 													printf("Regla 51: factor -> PARA expresion PARC\n");
 													apilar( &factorIndice , sacarDePila(&expresionIndice), verTipoTope(&expresionIndice));
@@ -2284,7 +2289,7 @@ yyreduce:
   case 62:
 
 /* Line 1455 of yacc.c  */
-#line 504 "Sintactico.y"
+#line 509 "Sintactico.y"
     {
 	                                            //BuscarEnLista(&lista_ts, yylval.string_val);
 	                                            printf("factor ID: %s\n",yylval.string_val);
@@ -2297,7 +2302,7 @@ yyreduce:
   case 63:
 
 /* Line 1455 of yacc.c  */
-#line 512 "Sintactico.y"
+#line 517 "Sintactico.y"
     {
 	                                            // strcpy(d.clave, guion_cadena(yytext));
 												char aux [50];
@@ -2314,7 +2319,7 @@ yyreduce:
   case 64:
 
 /* Line 1455 of yacc.c  */
-#line 524 "Sintactico.y"
+#line 529 "Sintactico.y"
     {
 												char aux [50];
 	                                            strcpy(dato.nombre, yytext);
@@ -2331,7 +2336,7 @@ yyreduce:
   case 65:
 
 /* Line 1455 of yacc.c  */
-#line 536 "Sintactico.y"
+#line 541 "Sintactico.y"
     {				
 	                                            dato.longitud = strlen(yytext)-2;
 	                                            strcpy(dato.nombre, yytext);
@@ -2340,14 +2345,14 @@ yyreduce:
 	                                            strcpy(dato.tipodato, "const_String");												
 	                                            insertar_en_ts(&lista_ts, &dato);
 	                                            printf("Regla 55: factor -> CTE_STRING\n");
-												apilar( &factorIndice , crearTerceto(dato.nombre,"",""), CONST_STRING);
+												apilar( &factorIndice , crearTerceto(yytext,"",""), CONST_STRING);
 												}
     break;
 
   case 66:
 
 /* Line 1455 of yacc.c  */
-#line 548 "Sintactico.y"
+#line 553 "Sintactico.y"
     {
 	                                            BuscarEnLista(&lista_ts, yylval.string_val);
 	                                            printf("Regla 56: salida -> WRITE ID\n");
@@ -2357,7 +2362,7 @@ yyreduce:
   case 67:
 
 /* Line 1455 of yacc.c  */
-#line 552 "Sintactico.y"
+#line 557 "Sintactico.y"
     {
 	                                            dato.longitud = strlen(yytext)-2;
 	                                            strcpy(dato.nombre, yytext);
@@ -2372,7 +2377,7 @@ yyreduce:
   case 68:
 
 /* Line 1455 of yacc.c  */
-#line 563 "Sintactico.y"
+#line 568 "Sintactico.y"
     {
 	                                            BuscarEnLista(&lista_ts, yylval.string_val);
 	                                            printf("Regla 58: entrada -> READ ID\n");
@@ -2382,7 +2387,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 2386 "y.tab.c"
+#line 2391 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2594,7 +2599,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 568 "Sintactico.y"
+#line 573 "Sintactico.y"
 
 
 int main(int argc,char *argv[])
@@ -2883,8 +2888,6 @@ int verCompatible(char *op,int izq, int der)
 		tipo = MAT_CMP[izq][der];
 	}
 	
-	printf("verCompatible: izq: %d ,op: %s ,der: %d ,tipo: %d \n", izq, op , der , tipo );
-	
 	if( tipo == 0 )
 	{
 		printf("Error semantico en linea %d: operacion %s con tipos incompatibles\n %d %s %d \n", yylineno, op,izq, op , der );
@@ -2940,6 +2943,7 @@ char* negarBranch(char *branch)
 
 void generarCodigoAssembler(t_lista *pl)
 {
+	recorrerTercetosParaAssembler(&lista_terceto);
   generarCodigoAsmCabecera();
   generarCodigoAsmDeclaracionVariables(pl);
   generarCodigoAsm();    
@@ -2983,3 +2987,187 @@ void generarCodigoAsm(){
 	fclose(pfArchivoDataAsm);
 }
 
+void recorrerTercetosParaAssembler(t_lista_terceto *pl)
+{
+  FILE * fptr = fopen("codigoAssembler.txt","wt");
+  //Uso una lista para guardar los indices en donde hay que insertar etiquetas
+  t_lista lista_etiquetas;
+  crear_lista(&lista_etiquetas);
+  char etiqueta[30];
+
+  while(*pl) {
+	  
+	  itoa((*pl)->info.numeroTerceto,etiqueta,10);
+	  //Busca si hay una etiqueta de un branch en la lista de etiquetas, si esta crea la etiqueta
+	  if( strcmp((*pl)->info.primerElemento, "ET") != 0 && buscarYSacarDeLista(&lista_etiquetas,etiqueta) )
+	  {
+		  fprintf(fptr,"ET%d:\n", (*pl)->info.numeroTerceto);
+	  }
+	  
+	  //Crea etiquetas de while
+	  if(strcmp((*pl)->info.primerElemento, "ET") == 0 )
+	  {
+		fprintf(fptr,"ET%d:\n", (*pl)->info.numeroTerceto);
+	  }
+	  //CMP
+	  if(strcmp((*pl)->info.primerElemento, "CMP") == 0 )
+	  {
+		fprintf(fptr,"\tFLD %s\n", obtenerOperando((*pl)->info.primerElemento));
+		fprintf(fptr,"\tFCOMP %s\n", obtenerOperando((*pl)->info.segundoElemento));
+		fprintf(fptr,"\tFSTSW AX\n");
+		fprintf(fptr,"\tSAHF\n");
+		fprintf(fptr,"\tFFREE\n");
+	  }
+	  if(strcmp((*pl)->info.primerElemento,"BGT")==0)
+	{
+		//Obtengo el numero de indice del branch sin corchetes
+		strcpy(etiqueta,quitarCorch((*pl)->info.segundoElemento));
+		//cargo en dato el numero de etiqueta para poder cargarlo en la lista de etiquetas
+		strcpy(dato.nombre,etiqueta); strcpy(dato.valor, ""); strcpy(dato.tipodato, "");dato.longitud = 0;
+		//inserto en la lista asi puedo revisar cuando crear una etiqueta de un branch
+		insertarEnListaEnOrdenSinDuplicados(&lista_etiquetas, &dato, compararPorNombre);
+		fprintf(fptr,"\tJA ET%s\n", etiqueta);
+	}
+
+	if(strcmp((*pl)->info.primerElemento,"BLT")==0)
+	{
+		//Obtengo el numero de indice del branch sin corchetes
+		strcpy(etiqueta,quitarCorch((*pl)->info.segundoElemento));
+		//cargo en dato el numero de etiqueta para poder cargarlo en la lista de etiquetas
+		strcpy(dato.nombre,etiqueta); strcpy(dato.valor, ""); strcpy(dato.tipodato, "");dato.longitud = 0;
+		//inserto en la lista asi puedo revisar cuando crear una etiqueta de un branch
+		insertarEnListaEnOrdenSinDuplicados(&lista_etiquetas, &dato, compararPorNombre);
+		fprintf(fptr,"\tJB ET%s\n", etiqueta);
+	}
+
+	if(strcmp((*pl)->info.primerElemento,"BGE")==0)
+	{
+		//Obtengo el numero de indice del branch sin corchetes
+		strcpy(etiqueta,quitarCorch((*pl)->info.segundoElemento));
+		//cargo en dato el numero de etiqueta para poder cargarlo en la lista de etiquetas
+		strcpy(dato.nombre,etiqueta); strcpy(dato.valor, ""); strcpy(dato.tipodato, "");dato.longitud = 0;
+		//inserto en la lista asi puedo revisar cuando crear una etiqueta de un branch
+		insertarEnListaEnOrdenSinDuplicados(&lista_etiquetas, &dato, compararPorNombre);
+		fprintf(fptr,"\tJAE ET%s\n", etiqueta);
+	}
+
+	if(strcmp((*pl)->info.primerElemento,"BLE")==0)
+	{
+		//Obtengo el numero de indice del branch sin corchetes
+		strcpy(etiqueta,quitarCorch((*pl)->info.segundoElemento));
+		//cargo en dato el numero de etiqueta para poder cargarlo en la lista de etiquetas
+		strcpy(dato.nombre,etiqueta); strcpy(dato.valor, ""); strcpy(dato.tipodato, "");dato.longitud = 0;
+		//inserto en la lista asi puedo revisar cuando crear una etiqueta de un branch
+		insertarEnListaEnOrdenSinDuplicados(&lista_etiquetas, &dato, compararPorNombre);
+		fprintf(fptr,"\tJNA ET%s\n", etiqueta);
+	}
+
+	if(strcmp((*pl)->info.primerElemento,"BNE")==0)
+	{
+		//Obtengo el numero de indice del branch sin corchetes
+		strcpy(etiqueta,quitarCorch((*pl)->info.segundoElemento));
+		//cargo en dato el numero de etiqueta para poder cargarlo en la lista de etiquetas
+		strcpy(dato.nombre,etiqueta); strcpy(dato.valor, ""); strcpy(dato.tipodato, "");dato.longitud = 0;
+		//inserto en la lista asi puedo revisar cuando crear una etiqueta de un branch
+		insertarEnListaEnOrdenSinDuplicados(&lista_etiquetas, &dato, compararPorNombre);
+		fprintf(fptr,"\tJNE ET%s\n", etiqueta);
+	}
+
+	if(strcmp((*pl)->info.primerElemento,"BEQ")==0)
+	{
+		//Obtengo el numero de indice del branch sin corchetes
+		strcpy(etiqueta,quitarCorch((*pl)->info.segundoElemento));
+		//cargo en dato el numero de etiqueta para poder cargarlo en la lista de etiquetas
+		strcpy(dato.nombre,etiqueta); strcpy(dato.valor, ""); strcpy(dato.tipodato, "");dato.longitud = 0;
+		//inserto en la lista asi puedo revisar cuando crear una etiqueta de un branch
+		insertarEnListaEnOrdenSinDuplicados(&lista_etiquetas, &dato, compararPorNombre);
+		fprintf(fptr,"\tJE ET%s\n", etiqueta);
+	}
+	
+	if(strcmp((*pl)->info.primerElemento,"BI")==0)
+	{
+		//Obtengo el numero de indice del branch sin corchetes
+		strcpy(etiqueta,quitarCorch((*pl)->info.segundoElemento));
+		//cargo en dato el numero de etiqueta para poder cargarlo en la lista de etiquetas
+		strcpy(dato.nombre,etiqueta); strcpy(dato.valor, ""); strcpy(dato.tipodato, "");dato.longitud = 0;
+		//inserto en la lista asi puedo revisar cuando crear una etiqueta de un branch
+		insertarEnListaEnOrdenSinDuplicados(&lista_etiquetas, &dato, compararPorNombre);
+		fprintf(fptr,"\tJMP ET%s\n", etiqueta);
+	}
+	
+	printf("etiqueta: %s\n",etiqueta);
+		pl=&(*pl)->pSig;
+  }
+  
+  fclose(fptr);
+} 
+
+//quita comillas a una etiqueta
+char *quitarCorch(char *cad)
+{
+  strncpy( varAssembleAux, cad + 1 , strlen(cad) - 2 );
+  varAssembleAux[strlen(cad) - 2] = '\0';
+  return varAssembleAux;
+}
+
+//Recibe un *char que es un elemento de terceto y si es una cte o variable devuelve el mismo, y si es un indice determina el valor que corresponde 
+char *obtenerOperando(char *cad)
+{
+	//si el operando es un indice a un terceto tengo que buscar el valor
+	if(cad[1] == '[')
+	{
+		//cargo el numero de terceto que tengo que buscar
+		dato_terceto.numeroTerceto = atoi(quitarCorch(cad));
+		//carga el resto de los datos del terceto en dato_terceto
+		buscarYTraerTerceto(&lista_terceto, dato_terceto.numeroTerceto);
+		//si el terceto es una cte o una variable sola, la devuelve
+		if(strcmp(dato_terceto.segundoElemento,"")==0)
+		{
+			return dato_terceto.primerElemento ;
+		}
+		
+		//si el terceto es una operacion devuelve una variable auxiliar con el numero del terceto
+		sprintf(varAssembleAux, "@%d",dato_terceto.numeroTerceto );
+		return varAssembleAux;
+	}
+	
+  return cad;
+}
+
+//busca un numero de etiqueta en la lista de etiquetas y si esta lo saca
+int buscarYSacarDeLista(t_lista *pl, char* cadena )
+{
+	t_nodo *aux;
+    int cmp;
+
+    while(*pl && (cmp=strcmp(cadena,(*pl)->info.nombre))!=0)
+        pl=&(*pl)->pSig;
+    if(cmp==0)
+	{
+		aux =*pl;
+		*pl=(*pl)->pSig;
+		free(aux);
+		return 1;
+	}
+	return 0;
+}
+
+int buscarYTraerTerceto(t_lista_terceto *pl, int indiceTerceto)
+{
+    int cmp;
+	
+    while(*pl && (cmp = indiceTerceto - (*pl)->info.numeroTerceto) >0)
+        pl=&(*pl)->pSig;
+    if(*pl && cmp==0)
+    {
+		//Cargo en la variable dato_terceto los valores del terceto buscado
+		strcpy(dato_terceto.primerElemento,(*pl)->info.primerElemento);
+		strcpy(dato_terceto.segundoElemento,(*pl)->info.segundoElemento);
+		strcpy(dato_terceto.tercerElemento,(*pl)->info.tercerElemento);
+		
+        return 1;
+    }
+
+    return 0;
+}
+    

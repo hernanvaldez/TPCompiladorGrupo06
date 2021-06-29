@@ -3,25 +3,21 @@
 .STACK 200h 			; bytes en el stack
 .DATA 				; comienzo de la zona de datos
 a                             	dd				?
-var1                          	dd				?
+b                             	dd				?
 c                             	dd				?
 d                             	dd				?
-base                          	dd				?
-b                             	dd				?
 e                             	dd				?
-__2                           	dd				2
+f                             	dd				?
 __4                           	dd				4
+__1                           	dd				1
 __5                           	dd				5
+__6                           	dd				6
+__2                           	dd				2
+__47                          	dd				47
+__33                          	dd				33
+Prueba                        	db				"Prueba"
+Prueba_WRT                    	db				"Prueba WRT"
 __7                           	dd				7
-__34                          	dd				34
-__3                           	dd				3
-sdADaSjfladfg                 	db				"sdADaSjfladfg"
-sjf                           	db				"sjf"
-__99.99                       	dd				99.99
-__99.                         	dd				99.
-__.9999                       	dd				.9999
-__35                          	dd				35
-Hola_mundo                    	db				"Hola mundo"
-correcto                      	db				"correcto"
+condicion_inlist              	db				"condicion inlist"
 
 .CODE 
