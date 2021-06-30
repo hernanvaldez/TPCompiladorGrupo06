@@ -163,6 +163,7 @@
 	char *obtenerOperandoDeListaTercetos(char *cad);
 	int buscarYSacarDeLista(t_lista *pl, char* cadena );
 	int buscarYTraerTerceto(t_lista_terceto *pl, int indiceTerceto);
+	void copiarCodigoDeArchAux();
 %}
 
 %union {
@@ -977,38 +978,61 @@ void generarCodigoAssembler(t_lista *pl)
 // Coloca solo la cabecera en el archivo .ASM
 void generarCodigoAsmCabecera(){
 	pfArchivoDataAsm = fopen("./Final.asm","wt");
+	
+	//Incluyo las macros para ingreso y salida de numeros y cadenas
+	fprintf(pfArchivoDataAsm,"include macros2.asm\n");
+	fprintf(pfArchivoDataAsm,"include number.asm\n");
+	fprintf(pfArchivoDataAsm,"\n");
+	
   	fprintf(pfArchivoDataAsm,".MODEL  LARGE \t\t;tipo de modelo de memoria usado\n");
   	fprintf(pfArchivoDataAsm,".386\n");
   	fprintf(pfArchivoDataAsm,".STACK 200h \t\t\t; bytes en el stack\n");
+	fprintf(pfArchivoDataAsm,"\n");
 }
 
 
 // Coloca las variables y constantes de la TS |||| FALTAN AGREGAR EN LA TS LAS VARIABLES AUXILIARES NUESTRAS
 void generarCodigoAsmDeclaracionVariables(t_lista *pl){
-	char cad_aux[30]="__";
+	//No uso char porque las variables ya estan renombradas
+	//char cad_aux[30]="__";
 	fprintf(pfArchivoDataAsm,".DATA \t\t\t\t; comienzo de la zona de datos\n"); //Comienza area de datos
 
 	while(*pl){
 		if (!strcmp((*pl)->info.tipodato,"const_Integer")||!strcmp((*pl)->info.tipodato,"const_Float")){
-        	strcat(cad_aux,(*pl)->info.nombre);
-			fprintf(pfArchivoDataAsm, "%-30s\tdd\t\t\t\t%s\n", cad_aux, (*pl)->info.valor);
+        	//strcat(cad_aux,(*pl)->info.nombre);
+			fprintf(pfArchivoDataAsm, "%-30s\tdd\t\t\t\t%s\n", (*pl)->info.nombre, (*pl)->info.valor);
       	}
 		else{
 			// Agregue esta condicion porque creo que las String se manejan distinto, pero no lo tengo claro todavia
 			if (!strcmp((*pl)->info.tipodato,"const_String")){
         		fprintf(pfArchivoDataAsm, "%-30s\tdb\t\t\t\t\"%s\"\n", (*pl)->info.nombre, (*pl)->info.valor);
 			}
-			else{
-				fprintf(pfArchivoDataAsm, "%-30s\tdd\t\t\t\t?\n", (*pl)->info.nombre);
+			// Aca ya se que se trata de una variable
+			if (!strcmp((*pl)->info.tipodato,"String")){
+				//si es una variable string reservo el lugar con TAM
+        		fprintf(pfArchivoDataAsm, "%-30s\tdb\t\t\t\t%d dup (?),'$'\n", (*pl)->info.nombre, TAM);
+			}else{
+				//Si es una variable Int o Float se declara igual
+				fprintf(pfArchivoDataAsm, "%-30s\tdd\t\t\t\t?\n", (*pl)->info.nombre );
 			}
 		}
-		strcpy(cad_aux,"__");		
+		//strcpy(cad_aux,"__");		
 		pl=&(*pl)->pSig;
 	}
 }
 
 void generarCodigoAsm(){
 	fprintf(pfArchivoDataAsm, "\n.CODE \n");
+	fprintf(pfArchivoDataAsm, "START:  ;etiqueta de inicio de programa\n");
+	fprintf(pfArchivoDataAsm, "\tmov AX,@DATA ;inicializa el segmento de datos\n");
+	fprintf(pfArchivoDataAsm, "\tmov DS,AX\n");
+	fprintf(pfArchivoDataAsm, "\tmov es,ax\n");
+	
+	copiarCodigoDeArchAux();
+	
+	fprintf(pfArchivoDataAsm, "\tmov ax,4c00h ;indica que finaliza la ejecución\n");
+	fprintf(pfArchivoDataAsm, "\tInt 21h ;llamada al sistema operativo\n");
+	fprintf(pfArchivoDataAsm, "\nEND START\n");
 	fclose(pfArchivoDataAsm);
 }
 
@@ -1022,13 +1046,15 @@ void recorrerTercetosParaAssembler(t_lista_terceto *pl)
   char etiqueta[30];
   int tipoDeDatoAux1;
   int tipoDeDatoAux2;
+  int ultimoTerceto;
   while(*pl) {
 	  
+	  ultimoTerceto =(*pl)->info.numeroTerceto;
 	  itoa((*pl)->info.numeroTerceto,etiqueta,10);
 	  //Busca si hay una etiqueta de un branch en la lista de etiquetas, si esta crea la etiqueta
 	  if( strcmp((*pl)->info.primerElemento, "ET") != 0 && buscarYSacarDeLista(&lista_etiquetas,etiqueta) )
 	  {
-		  fprintf(fptr,"ET%d:\n", (*pl)->info.numeroTerceto);
+		  fprintf(fptr,"ET%s:\n", etiqueta);
 	  }
 	  
 	  //Crea etiquetas de while
@@ -1250,6 +1276,13 @@ void recorrerTercetosParaAssembler(t_lista_terceto *pl)
 		pl=&(*pl)->pSig;
   }
   
+	itoa(ultimoTerceto + 1 ,etiqueta,10);
+	//Busca si hay una etiqueta de un branch en la lista de etiquetas, si esta crea la etiqueta
+	  if( buscarYSacarDeLista(&lista_etiquetas,etiqueta) )
+	  {
+		  fprintf(fptr,"ET%s:\n", etiqueta);
+	  }
+  
   fclose(fptr);
   printf("Termino de recorrer tercetos assembler\n");
 } 
@@ -1325,4 +1358,35 @@ int buscarYTraerTerceto(t_lista_terceto *pl, int indiceTerceto)
     }
 
     return 0;
+}
+
+
+// Funcion para concatenar el archivo auxiliar de codigo assembler al archivo Final.asm
+void copiarCodigoDeArchAux()
+{
+	// Variable auxiliar para copiar de un archivo a otro
+	char buf[100];
+	
+    // declaring file pointers
+    FILE * fptr = fopen("codigoAssembler.txt","rt");
+	
+    // si no hay archivo return
+    if (!fptr) {
+        printf("No se puede abrir el archivo codigoAssembler.txt\n");
+        return;
+    }    
+ 
+    // escribo el contenido de codigoAssembler.txt en Final.asm
+    while (fgets(buf, sizeof(buf), fptr))
+	{
+        fprintf(pfArchivoDataAsm, "%s", buf);
+		
+    }
+	
+	//cierro el archivo auxiliar
+	fclose(fptr);
+	
+	//borro el archivo auxiliar
+	remove("codigoAssembler.txt");
+    
 }
