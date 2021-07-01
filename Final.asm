@@ -1,4 +1,4 @@
-include macros2.asm
+include macros.asm
 include number.asm
 
 .MODEL  LARGE 		;tipo de modelo de memoria usado
@@ -19,13 +19,10 @@ CTE_6                         	dd				6
 CTE_2                         	dd				2
 CTE_47                        	dd				47
 CTE_33                        	dd				33
-str0                          	db				"Prueba"
-str0                          	dd				?
-str1                          	db				"Prueba WRT"
-str1                          	dd				?
+str0                          	db				"Prueba",'$'
+str1                          	db				"Prueba WRT",'$'
 CTE_7                         	dd				7
-str2                          	db				"condicion inlist"
-str2                          	dd				?
+str2                          	db				"condicion inlist",'$'
 @aux28                        	dd				?
 @aux29                        	dd				?
 @aux32                        	dd				?
@@ -39,40 +36,46 @@ START:  ;etiqueta de inicio de programa
 	mov DS,AX
 	mov es,ax
 ET0:
-	FLD CMP
-	FCOMP _a
+	FLD _a
+	FLD CTE_4
+	FCOMP
 	FSTSW AX
 	SAHF
 	FFREE
 	JE ET8
-	FLD CMP
-	FCOMP _a
+	FLD _a
+	FLD _c
+	FCOMP
 	FSTSW AX
 	SAHF
 	FFREE
 	JE ET8
 	JNE ET48
 ET8:
-	FLD CMP
-	FCOMP _a
+	FLD _a
+	FLD _b
+	FCOMP
 	FSTSW AX
 	SAHF
 	FFREE
 	JAE ET40
-	FLD CMP
-	FCOMP _b
+	FLD _b
+	FLD _c
+	FCOMP
 	FSTSW AX
 	SAHF
 	FFREE
 	JAE ET40
-	FLD CMP
-	FCOMP _c
+	FLD _c
+	FLD _b
+	FCOMP
 	FSTSW AX
 	SAHF
 	FFREE
 	JNA ET35
-	FLD CMP
-	FCOMP _a
+	FLD _a
+	FLD _b
+	FCOMP
 	FSTSW AX
 	SAHF
 	FFREE
@@ -93,11 +96,37 @@ ET8:
 	FILD @aux32
 	FADD
 	FISTP @aux33
+	FILD @aux33
+	FISTP _a
 ET35:
+	FILD CTE_47
+	FISTP _b
+	FILD CTE_47
+	FISTP _c
+	FILD CTE_47
+	FISTP _a
 	JMP ET8
 ET40:
+	FILD CTE_33
+	FISTP _b
+	FILD CTE_33
+	FISTP _d
+	FILD CTE_33
+	FISTP _a
+	LEA DI, _f 	; Muevo a registro DI el comienzo de la cadena destino
+	LEA SI, str0 	; Muevo a registro SI el comienzo de la cadena fuente
+	STRCPY ; Macro, copia un string con maximo 31 caracteres
+	LEA DI, _e 	; Muevo a registro DI el comienzo de la cadena destino
+	LEA SI, str0 	; Muevo a registro SI el comienzo de la cadena fuente
+	STRCPY ; Macro, copia un string con maximo 31 caracteres
 	JMP ET0
 ET48:
+	GetInteger _a
+	newLine 1
+	DisplayInteger _b
+	newLine 1
+	displayString str1
+	newLine 1
 	FILD CTE_7
 	FILD CTE_5
 	FMUL
@@ -106,20 +135,24 @@ ET48:
 	FILD CTE_1
 	FDIV
 	FISTP @aux56
-	FLD CMP
-	FCOMP _a
+	FLD _a
+	FLD @aux56
+	FCOMP
 	FSTSW AX
 	SAHF
 	FFREE
 	JE ET62
-	FLD CMP
-	FCOMP _a
+	FLD _a
+	FLD @aux53
+	FCOMP
 	FSTSW AX
 	SAHF
 	FFREE
 	JE ET62
 	JNE ET63
 ET62:
+	displayString str2
+	newLine 1
 ET63:
 	mov ax,4c00h ;indica que finaliza la ejecución
 	Int 21h ;llamada al sistema operativo

@@ -980,7 +980,7 @@ void generarCodigoAsmCabecera(){
 	pfArchivoDataAsm = fopen("./Final.asm","wt");
 	
 	//Incluyo las macros para ingreso y salida de numeros y cadenas
-	fprintf(pfArchivoDataAsm,"include macros2.asm\n");
+	fprintf(pfArchivoDataAsm,"include macros.asm\n");
 	fprintf(pfArchivoDataAsm,"include number.asm\n");
 	fprintf(pfArchivoDataAsm,"\n");
 	
@@ -1005,15 +1005,16 @@ void generarCodigoAsmDeclaracionVariables(t_lista *pl){
 		else{
 			// Agregue esta condicion porque creo que las String se manejan distinto, pero no lo tengo claro todavia
 			if (!strcmp((*pl)->info.tipodato,"const_String")){
-        		fprintf(pfArchivoDataAsm, "%-30s\tdb\t\t\t\t\"%s\"\n", (*pl)->info.nombre, (*pl)->info.valor);
-			}
-			// Aca ya se que se trata de una variable
-			if (!strcmp((*pl)->info.tipodato,"String")){
-				//si es una variable string reservo el lugar con TAM
-        		fprintf(pfArchivoDataAsm, "%-30s\tdb\t\t\t\t%d dup (?),'$'\n", (*pl)->info.nombre, TAM);
+        		fprintf(pfArchivoDataAsm, "%-30s\tdb\t\t\t\t\"%s\",'$'\n", (*pl)->info.nombre, (*pl)->info.valor);
 			}else{
-				//Si es una variable Int o Float se declara igual
-				fprintf(pfArchivoDataAsm, "%-30s\tdd\t\t\t\t?\n", (*pl)->info.nombre );
+				// Aca ya se que se trata de una variable
+				if (!strcmp((*pl)->info.tipodato,"String")){
+					//si es una variable string reservo el lugar con TAM
+					fprintf(pfArchivoDataAsm, "%-30s\tdb\t\t\t\t%d dup (?),'$'\n", (*pl)->info.nombre, TAM);
+				}else{
+					//Si es una variable Int o Float se declara igual
+					fprintf(pfArchivoDataAsm, "%-30s\tdd\t\t\t\t?\n", (*pl)->info.nombre );
+				}
 			}
 		}
 		//strcpy(cad_aux,"__");		
@@ -1065,8 +1066,9 @@ void recorrerTercetosParaAssembler(t_lista_terceto *pl)
 	  //CMP
 	  if(strcmp((*pl)->info.primerElemento, "CMP") == 0 )
 	  {
-		fprintf(fptr,"\tFLD %s\n", obtenerOperandoDeListaTercetos((*pl)->info.primerElemento));
-		fprintf(fptr,"\tFCOMP %s\n", obtenerOperandoDeListaTercetos((*pl)->info.segundoElemento));
+		fprintf(fptr,"\tFLD %s\n", obtenerOperandoDeListaTercetos((*pl)->info.segundoElemento));
+		fprintf(fptr,"\tFLD %s\n", obtenerOperandoDeListaTercetos((*pl)->info.tercerElemento));
+		fprintf(fptr,"\tFCOMP\n");
 		fprintf(fptr,"\tFSTSW AX\n");
 		fprintf(fptr,"\tSAHF\n");
 		fprintf(fptr,"\tFFREE\n");
@@ -1155,41 +1157,82 @@ void recorrerTercetosParaAssembler(t_lista_terceto *pl)
 		//Impresion de string 
 		if(tipoDeDatoAux1 == VAR_STRING || tipoDeDatoAux1 == CONST_STRING)
 		{
-			//////IMPLEMENTAR CODIGO IMPRIMIR CTE_STRING o VAR_STRING
+			//////Macro displayString
+			fprintf(fptr,"\tdisplayString %s\n", obtenerOperandoDeListaTercetos((*pl)->info.segundoElemento));
 		}else{
 			//Impresion de numero 
-			
-			//////IMPLEMENTAR CODIGO IMPRIMIR CTE o VAR numericos
+			if(tipoDeDatoAux1 == VAR_INTEGER || tipoDeDatoAux1 == CONST_INTEGER)
+			{
+				//////Macro DisplayInteger
+				fprintf(fptr,"\tDisplayInteger %s\n", obtenerOperandoDeListaTercetos((*pl)->info.segundoElemento));
+			}else{
+				//////Macro DisplayFloat con 2 espacios decimales
+				fprintf(fptr,"\tDisplayFloat %s,2\n", obtenerOperandoDeListaTercetos((*pl)->info.segundoElemento));
+			}
 		}
+		////////Macro newLine, hace un salto de linea
+		fprintf(fptr,"\tnewLine 1\n");
 	}
 	//////////////////// implementacion de READ //////////////////
 	if(strcmp((*pl)->info.primerElemento,"READ")==0)
 	{
-		//Busco el tipo de dato del elemento a imprimir
+		//Busco el tipo de dato del elemento a ingresar
 		tipoDeDatoAux1=BuscarEnLista(&lista_ts, (*pl)->info.segundoElemento );
 		//Ingreso por pantalla de string 
-		if(tipoDeDatoAux1 == VAR_STRING || tipoDeDatoAux1 == CONST_STRING)
+		if(tipoDeDatoAux1 == VAR_STRING)
 		{
-			//////IMPLEMENTAR CODIGO INGRESO CTE_STRING o VAR_STRING
+			//////Macro getString
+			fprintf(fptr,"\tgetString %s\n", obtenerOperandoDeListaTercetos((*pl)->info.segundoElemento));
 		}else{
 			//Ingreso por pantalla de numero 
-			
-			//////IMPLEMENTAR CODIGO INGRESO CTE o VAR numericos
+			if(tipoDeDatoAux1 == VAR_INTEGER )
+			{
+				//////Macro GetInteger
+				fprintf(fptr,"\tGetInteger %s\n", obtenerOperandoDeListaTercetos((*pl)->info.segundoElemento));
+			}else{
+				//////Macro GetFloat 
+				fprintf(fptr,"\tGetFloat %s,2\n", obtenerOperandoDeListaTercetos((*pl)->info.segundoElemento));
+			}
 		}
+		////////Macro newLine, hace un salto de linea
+		fprintf(fptr,"\tnewLine 1\n");
 	}
 	//////////////////// implementacion de ASIGNACION //////////////////
 	if(strcmp((*pl)->info.primerElemento,"=")==0)
 	{
-		//Busco el tipo de dato del elemento a imprimir
-		tipoDeDatoAux1=BuscarEnLista(&lista_ts, obtenerOperandoDeListaTercetos((*pl)->info.segundoElemento) );
-		//Ingreso por pantalla de string 
-		if(tipoDeDatoAux1 == VAR_STRING || tipoDeDatoAux1 == CONST_STRING)
+		//Busco el tipo de dato del primer operando
+		tipoDeDatoAux1=BuscarEnLista(&lista_ts, obtenerOperandoDeListaTercetos( (*pl)->info.segundoElemento) );
+		//Busco el tipo de dato del segundo operando
+		tipoDeDatoAux2=BuscarEnLista(&lista_ts, obtenerOperandoDeListaTercetos( (*pl)->info.tercerElemento) );
+		
+		//Asignacion de string 
+		if(tipoDeDatoAux1 == VAR_STRING)
 		{
-			//////IMPLEMENTAR CODIGO INGRESO CTE_STRING o VAR_STRING
+			//Asignacion de string 
+			fprintf(fptr,"\tLEA DI, %s 	; Muevo a registro DI el comienzo de la cadena destino\n", obtenerOperandoDeListaTercetos((*pl)->info.segundoElemento));
+			fprintf(fptr,"\tLEA SI, %s 	; Muevo a registro SI el comienzo de la cadena fuente\n", obtenerOperandoDeListaTercetos((*pl)->info.tercerElemento));
+			//LLamo a macro STRCPY
+			fprintf(fptr,"\tSTRCPY ; Macro, copia un string con maximo 31 caracteres\n");
 		}else{
-			//Ingreso por pantalla de numero 
-			
-			//////IMPLEMENTAR CODIGO INGRESO CTE o VAR numericos
+			//Asignacion de numero 
+			if(tipoDeDatoAux1 == VAR_INTEGER )
+			{
+				//Si es un Int cargo con FILD
+				fprintf(fptr,"\tFILD %s\n", obtenerOperandoDeListaTercetos((*pl)->info.tercerElemento) );
+				//Si es un Int guardo con FISTP
+				fprintf(fptr,"\tFISTP %s\n", obtenerOperandoDeListaTercetos((*pl)->info.segundoElemento) );
+			}else{
+				if(tipoDeDatoAux2 == VAR_INTEGER )
+				{
+					//Si es un Int cargo con FILD
+					fprintf(fptr,"\tFILD %s\n", obtenerOperandoDeListaTercetos((*pl)->info.tercerElemento) );
+				}else{
+					//Si es un Float cargo con FLD
+					fprintf(fptr,"\tFLD %s\n", obtenerOperandoDeListaTercetos((*pl)->info.tercerElemento) );
+				}
+				//Si es un Float guardo con FSTP
+				fprintf(fptr,"\tFSTP %s\n", obtenerOperandoDeListaTercetos((*pl)->info.segundoElemento) );
+			}
 		}
 	}
 		
@@ -1197,10 +1240,8 @@ void recorrerTercetosParaAssembler(t_lista_terceto *pl)
 	if(strcmp((*pl)->info.primerElemento,"+")==0 || strcmp((*pl)->info.primerElemento,"-")==0 ||strcmp((*pl)->info.primerElemento,"*")==0 ||strcmp((*pl)->info.primerElemento,"/")==0)
 	{
 		//Busco el tipo de dato del primer operando
-		//printf("busca primerElemento %s\n", obtenerOperandoDeListaTercetos( (*pl)->info.segundoElemento));
 		tipoDeDatoAux1=BuscarEnLista(&lista_ts, obtenerOperandoDeListaTercetos( (*pl)->info.segundoElemento) );
 		//Busco el tipo de dato del segundo operando
-		//printf("busca primerElemento %s\n", obtenerOperandoDeListaTercetos( (*pl)->info.tercerElemento));
 		tipoDeDatoAux2=BuscarEnLista(&lista_ts, obtenerOperandoDeListaTercetos( (*pl)->info.tercerElemento) );
 		
 		//cargo primer operando
@@ -1266,8 +1307,6 @@ void recorrerTercetosParaAssembler(t_lista_terceto *pl)
 			//agrego el tipo a la variable auxiliar
 			strcpy(dato.tipodato, "Float");
 		}
-		//printf("terceto: %d %s %s %s\n",(*pl)->info.numeroTerceto, (*pl)->info.primerElemento, (*pl)->info.segundoElemento, (*pl)->info.tercerElemento );
-		//printf("crear var aux: %s\n",dato.nombre );
 		
 		//Cargo la variable auxiliar en tabla de simbolos
 		insertar_en_ts(&lista_ts, &dato);
