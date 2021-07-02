@@ -4,26 +4,12 @@ _var1                               Integer                                     
 _c                                  Float                                                0                                  
 _d                                  Float                                                0                                  
 _base                               Float                                                0                                  
-_b                                  String                                               0                                  
-_e                                  String                                               0                                  
-_q                                  String                                               0                                  
-_w                                  String                                               0                                  
-str0                                const_String     @sdADaSjfladfg                      14                                 
-CTE_5                               const_Integer    5                                   0                                  
-CTE_99_                             const_Float      99.                                 0                                  
-CTE_99_45                           const_Float      99.45                               0                                  
-CTE__999                            const_Float      .999                                0                                  
-CTE_35                              const_Integer    35                                  0                                  
-CTE_33                              const_Integer    33                                  0                                  
-str1                                const_String     a es distinto de 35                 19                                 
-CTE_4                               const_Integer    4                                   0                                  
-CTE_1                               const_Integer    1                                   0                                  
-str2                                const_String     a es igual a 35                     15                                 
-CTE_34                              const_Integer    34                                  0                                  
-str3                                const_String     condicion inlist                    16                                 
-str4                                const_String     NO inlist                           9                                  
-str5                                const_String     Hola mundo                          10                                 
-str6                                const_String     correcto                            8                                  
-str7                                const_String     Chau mundo                          10                                 
-@aux39                              Integer                                              0                                  
-@aux51                              Integer                                              0                                  
+_nombre                             String                                               0                                  
+str0                                const_String     -suma dos enteros-                  18                                 
+str1                                const_String     Ingrese 1er numero int              22                                 
+str2                                const_String     Ingrese segundo numero int          26                                 
+str3                                const_String     resultado:                          11                                 
+str4                                const_String     Ingrese su nombre:                  19                                 
+str5                                const_String     Hola                                5                                  
+str6                                const_String     Termino programa                    16                                 
+@aux10                              Integer                                              0                                  

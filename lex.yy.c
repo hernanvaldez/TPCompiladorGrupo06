@@ -943,7 +943,7 @@ YY_RULE_SETUP
 case 40:
 YY_RULE_SETUP
 #line 95 "Lexico.l"
-{printf("\t\tcomentario: %s\n", yytext);}
+
 	YY_BREAK
 case 41:
 YY_RULE_SETUP

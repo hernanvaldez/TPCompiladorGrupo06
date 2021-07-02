@@ -65,9 +65,9 @@ Gramática
 
    39 condicion: comparacion $@5 OR comparacion
    40          | NOT comparacion
-   41          | inlist
 
-   42 comparacion: expresion comparador expresion
+   41 comparacion: expresion comparador expresion
+   42            | inlist
 
    43 $@6: /* vacío */
 
@@ -195,23 +195,23 @@ $@3 (60)
 bloque_while (61)
     en la izquierda: 33 34, en la derecha: 32
 condicion (62)
-    en la izquierda: 35 37 39 40 41, en la derecha: 25 26 33 34
+    en la izquierda: 35 37 39 40, en la derecha: 25 26 33 34
 $@4 (63)
     en la izquierda: 36, en la derecha: 37
 $@5 (64)
     en la izquierda: 38, en la derecha: 39
 comparacion (65)
-    en la izquierda: 42, en la derecha: 35 37 39 40
+    en la izquierda: 41 42, en la derecha: 35 37 39 40
 inlist (66)
-    en la izquierda: 44, en la derecha: 41
+    en la izquierda: 44, en la derecha: 42
 $@6 (67)
     en la izquierda: 43, en la derecha: 44
 lista_expr (68)
     en la izquierda: 45 46, en la derecha: 44 45
 comparador (69)
-    en la izquierda: 47 48 49 50 51 52, en la derecha: 42
+    en la izquierda: 47 48 49 50 51 52, en la derecha: 41
 expresion (70)
-    en la izquierda: 53 54 55 56, en la derecha: 21 42 45 46 53 54
+    en la izquierda: 53 54 55 56, en la derecha: 21 41 45 46 53 54
     60
 termino (71)
     en la izquierda: 57 58 59, en la derecha: 53 54 55 56 57 58
@@ -665,6 +665,7 @@ estado 42
    40 condicion: NOT . comparacion
 
     OP_RESTA    desplazar e ir al estado 43
+    INLIST      desplazar e ir al estado 44
     PARA        desplazar e ir al estado 45
     ID          desplazar e ir al estado 46
     CTE_REAL    desplazar e ir al estado 47
@@ -672,6 +673,7 @@ estado 42
     CTE_STRING  desplazar e ir al estado 49
 
     comparacion  ir al estado 68
+    inlist       ir al estado 52
     expresion    ir al estado 53
     termino      ir al estado 54
     factor       ir al estado 55
@@ -766,14 +768,14 @@ estado 51
 
 estado 52
 
-   41 condicion: inlist .
+   42 comparacion: inlist .
 
-    $default  reduce usando la regla 41 (condicion)
+    $default  reduce usando la regla 42 (comparacion)
 
 
 estado 53
 
-   42 comparacion: expresion . comparador expresion
+   41 comparacion: expresion . comparador expresion
    53 expresion: expresion . OP_SUMA termino
    54          | expresion . OP_RESTA termino
 
@@ -1062,7 +1064,7 @@ estado 82
 
 estado 83
 
-   42 comparacion: expresion comparador . expresion
+   41 comparacion: expresion comparador . expresion
 
     OP_RESTA    desplazar e ir al estado 43
     PARA        desplazar e ir al estado 45
@@ -1206,6 +1208,7 @@ estado 94
    37 condicion: comparacion $@4 AND . comparacion
 
     OP_RESTA    desplazar e ir al estado 43
+    INLIST      desplazar e ir al estado 44
     PARA        desplazar e ir al estado 45
     ID          desplazar e ir al estado 46
     CTE_REAL    desplazar e ir al estado 47
@@ -1213,6 +1216,7 @@ estado 94
     CTE_STRING  desplazar e ir al estado 49
 
     comparacion  ir al estado 106
+    inlist       ir al estado 52
     expresion    ir al estado 53
     termino      ir al estado 54
     factor       ir al estado 55
@@ -1223,6 +1227,7 @@ estado 95
    39 condicion: comparacion $@5 OR . comparacion
 
     OP_RESTA    desplazar e ir al estado 43
+    INLIST      desplazar e ir al estado 44
     PARA        desplazar e ir al estado 45
     ID          desplazar e ir al estado 46
     CTE_REAL    desplazar e ir al estado 47
@@ -1230,6 +1235,7 @@ estado 95
     CTE_STRING  desplazar e ir al estado 49
 
     comparacion  ir al estado 107
+    inlist       ir al estado 52
     expresion    ir al estado 53
     termino      ir al estado 54
     factor       ir al estado 55
@@ -1261,14 +1267,14 @@ estado 97
 
 estado 98
 
-   42 comparacion: expresion comparador expresion .
+   41 comparacion: expresion comparador expresion .
    53 expresion: expresion . OP_SUMA termino
    54          | expresion . OP_RESTA termino
 
     OP_RESTA  desplazar e ir al estado 75
     OP_SUMA   desplazar e ir al estado 76
 
-    $default  reduce usando la regla 42 (comparacion)
+    $default  reduce usando la regla 41 (comparacion)
 
 
 estado 99

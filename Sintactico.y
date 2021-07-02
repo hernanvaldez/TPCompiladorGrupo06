@@ -133,7 +133,7 @@
 	char varAssembleAux[TAM];
 
 	// INLIST
-	char id_inList[TAM];
+	char aux_inList[TAM];
 	
 	// Declaracion funciones segunda entrega //
 
@@ -208,7 +208,7 @@
 %%		
 
 inicio: 
-	programa                                    {printf("Compilacion Exitosa\n"); generarCodigoAssembler(&lista_ts);};
+	programa                                    { generarCodigoAssembler(&lista_ts);printf("Compilacion Exitosa\n");};
  
 programa:
 	seccion_declaracion bloque_cod              {printf("Regla 1: programa -> seccion_declaracion bloque_cod\n");}
@@ -326,20 +326,9 @@ asignacion:
 
 bloque_if:
 	IF PARA condicion PARC sentencia            {
-													/*if(verTipoTope(&comparacionIndice) == ES_AND)
-													{
-														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
-														//_flagAnd=0;
-													}																										
-													buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos); */
 													printf("Regla 23: bloque_if -> IF PARA condicion PARC sentencia\n");
 												}
-	| IF PARA condicion PARC LLA bloque_cod LLC {	/*if(verTipoTope(&comparacionIndice) == ES_AND)
-													{
-														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);
-														//_flagAnd=0;
-													}																										
-													buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos);*/
+	| IF PARA condicion PARC LLA bloque_cod LLC {	
 													printf("Regla 24: bloque_if -> IF PARA condicion PARC LLA bloque_cod LLC\n");
 												};
 
@@ -405,47 +394,69 @@ bloque_while:
 condicion:
 	comparacion                                 {
 													printf("Regla 29: condicion -> comparacion\n");
-													// Si NO es una comp por INLIST crea el terceto
-													// INLIST NO SOPORTA AND, OR y NOT !!!!
+													
+													// INLIST AHORA SOPORTA AND, OR y NOT !!!!
+													//desapilo indice auxiliar inlist
+													if(verTipoTope(&comparacionIndice) == ES_INLIST){
+														sacarDePila(&comparacionIndice);
+													}
 													//if(!verTipoTope(&comparacionIndice) == ES_INLIST){
 														crearTerceto(varAssembleAux,"" ,"");
 														apilar(&comparacionIndice, contadorTercetos-1, 0);
 														//}
 													}
 	| comparacion 								{
-													
+													//desapilo indice auxiliar inlist
+													if(verTipoTope(&comparacionIndice) == ES_INLIST){
+														sacarDePila(&comparacionIndice);
+													}
 													crearTerceto(varAssembleAux,"" ,"");
 													apilar(&comparacionIndice, contadorTercetos-1, 0 ); 
 													}
 		AND comparacion              			{
+													//desapilo indice auxiliar inlist
+													if(verTipoTope(&comparacionIndice) == ES_INLIST){
+														sacarDePila(&comparacionIndice);
+													}
 													crearTerceto(varAssembleAux,"" ,"");
 													apilar(&comparacionIndice, contadorTercetos-1, ES_AND ); //Uso el tipo de la pila en vez del flagAnd
 													printf("Regla 30: condicion -> comparacion AND comparacion\n");
 													}
 	| comparacion 								{
-													crearTerceto(varAssembleAux,"" ,"");
-													apilar(&comparacionIndice, contadorTercetos-1, 0);
+													
+													//desapilo indice auxiliar inlist
+													if(verTipoTope(&comparacionIndice) == ES_INLIST){
+														sacarDePila(&comparacionIndice);
+													}
+													sprintf(aux_inList, "[%d]",contadorTercetos + 2);
+													//creo un salto a la siguiente comparacion
+													crearTerceto(varAssembleAux,aux_inList ,"");
+													/////
 													crearTerceto("BI","" ,"");
 													apilar(&comparacionIndice, contadorTercetos-1, 0);
 													}
 		OR comparacion                			{
+													//desapilo indice auxiliar inlist
+													if(verTipoTope(&comparacionIndice) == ES_INLIST){
+														sacarDePila(&comparacionIndice);
+													}
 													// Actualizo terceto con BI
 													buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos+1);
+													//La primera comparacion no necesita actualizacion
 													// Actualizo terceto de la 1ra CMP del OR
-													buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos-1);
+													//buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&comparacionIndice), contadorTercetos-1);
 													crearTerceto(varAssembleAux,"" ,"");
 													apilar(&comparacionIndice, contadorTercetos-1, 0);
 													printf("Regla 31: condicion -> comparacion OR comparacion\n");}
 	| NOT comparacion                           {
+													//desapilo indice auxiliar inlist
+													if(verTipoTope(&comparacionIndice) == ES_INLIST){
+														sacarDePila(&comparacionIndice);
+														sprintf(aux_inList, "[%d]",contadorTercetos + 2);
+													}
 													crearTerceto(negarBranch(varAssembleAux),"" ,"");
 													apilar(&comparacionIndice, contadorTercetos-1, 0);
-													printf("Regla 32: condicion -> NOT comparacion\n");}
-	| inlist                                    {
-													while(!pilaVacia(compInListInd.prim))
-													{
-														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&compInListInd), contadorTercetos);													
-													}
-													printf("Regla 34: comparacion -> inlist\n");};
+													printf("Regla 32: condicion -> NOT comparacion\n");};
 	
 comparacion:
 	expresion comparador expresion              {printf("Regla 33: comparacion -> expresion comparador expresion\n");
@@ -456,19 +467,13 @@ comparacion:
 												//No apilo porque no le encontre uso
 												crearTerceto("CMP",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&pilaDeNumerosDeTercetos)) ); 
 												
-												//Para el WHILE uso otra pila porque el comparador guarda mal el numero si se anidan sentencias de control
-												//apilar(&comparadorIndice,crearTerceto("CMP",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&pilaDeNumerosDeTercetos)) ), 0);
-												//crearTerceto("CMP",crearIndice(sacarDePila(&expresionIndice)),crearIndice(sacarDePila(&pilaDeNumerosDeTercetos)));
-												} 
-    ;
-/*												
+												} 												
 	| inlist                                    {
 													while(!pilaVacia(compInListInd.prim))
 													{
 														buscarEnListaDeTercetosOrdenada(&lista_terceto, sacarDePila(&compInListInd), contadorTercetos);													
 													}
 													printf("Regla 34: comparacion -> inlist\n");};
-*/
 inlist:
 	INLIST PARA ID {strcpy(idAux,yylval.string_val);} 
 	PUNTO_COMA CORCHA lista_expr CORCHC PARC	{	
@@ -480,8 +485,12 @@ inlist:
 														crearTerceto("CMP",dato.nombre,crearIndice(sacarDePila(&expInlistIndice)));
 														apilar(&compInListInd,crearTerceto("BEQ","",""),0);														
 													}
-													// Al terminar de desapilar creo salto por Falso
-													apilar(&comparacionIndice,crearTerceto("BNE","",""),ES_INLIST);													
+													
+													////////
+													strcpy(varAssembleAux, "BNE");
+													//apilo solo para ver si es inlist en regla "condicion:"
+													apilar(&comparacionIndice,contadorTercetos,ES_INLIST);
+													////////////
 													printf("Regla 35: inlist -> INLIST PARA ID PUNTO_COMA CORCHA lista_expr CORCHC PARC\n");};
 	
 lista_expr:
@@ -527,7 +536,14 @@ expresion:
 												}
 	| OP_RESTA termino                          {
 													printf("Regla 47: expresion -> OP_RESTA termino\n");
-													apilar( &expresionIndice , crearTerceto("*",crearIndice(sacarDePila(&terminoIndice)),"-1"), verCompatible("-",verTipoTope(&terminoIndice),CONST_INTEGER));
+													///////////cargo una variable auxiliar en tabla de simbolos para el operador negativo
+													strcpy(dato.nombre, "@NEG");
+													itoa(-1,dato.valor,10);
+													strcpy(dato.tipodato, "const_Integer");
+													dato.longitud = 0;
+													insertar_en_ts(&lista_ts, &dato);
+													///////////
+													apilar( &expresionIndice , crearTerceto("*",crearIndice(sacarDePila(&terminoIndice)),dato.nombre), verCompatible("-",verTipoTope(&terminoIndice),CONST_INTEGER));
 													//expresionIndice = crearTerceto("-",crearIndice(terminoIndice),"");
 												};
 	
@@ -566,9 +582,8 @@ factor:
 												}
 
 	| CTE_ENTERA                                {
-	                                            // strcpy(d.clave, guion_cadena(yytext));
-												char aux [50];
-	                                            //strcpy(dato.nombre, yytext);
+	                                            char aux [50];
+	                                            
 												//las cte enteras se nombran _numero
 												sprintf(dato.nombre, "CTE_%s",yytext);
 	                                            strcpy(dato.valor, yytext);
@@ -593,7 +608,6 @@ factor:
 	                                            insertar_en_ts(&lista_ts, &dato);
 	                                            printf("Regla 54: factor -> CTE_REAL\n");
 												apilar( &factorIndice , crearTerceto(dato.nombre,"",""), CONST_FLOAT);
-												// factorIndice = crearTerceto($1,"",""); //Falta pasar $1 a char*
 												}
 
 	| CTE_STRING                                {				
@@ -602,6 +616,7 @@ factor:
 												sprintf(dato.nombre, "str%d",contadorCteString++ );
 												
 	                                            //reemplazar_blancos_por_guiones_y_quitar_comillas(yytext);
+												//solo quito comillas para guardar el valor de la cte string
 												quitar_comillas(yytext);
 	                                            strcpy(dato.valor, yytext);												
 	                                            strcpy(dato.tipodato, "const_String");												
@@ -609,30 +624,7 @@ factor:
 	                                            printf("Regla 55: factor -> CTE_STRING\n");
 												apilar( &factorIndice , crearTerceto(dato.nombre,"",""), CONST_STRING);
 												};
-	
-/*salida:
-	WRITE ID                                    {
-												//agrego _ al id
-												sprintf(dato.nombre, "_%s",yylval.string_val);
-	                                            BuscarEnLista(&lista_ts, dato.nombre);
-	                                            printf("Regla 56: salida -> WRITE ID\n");
-												crearTerceto("WRT",dato.nombre,"");}
-	| WRITE CTE_STRING                          {
-	                                            dato.longitud = strlen(yytext)-2;
-	                                            //strcpy(dato.nombre, yytext);
-												
-												//las cte string se nombran str(numero)
-												sprintf(dato.nombre, "str%d",contadorCteString++ );
-												
-	                                            //reemplazar_blancos_por_guiones_y_quitar_comillas(yytext);
-												quitar_comillas(yytext);
-	                                            strcpy(dato.valor, yytext);												
-	                                            strcpy(dato.tipodato, "const_String");
-	                                            insertar_en_ts(&lista_ts, &dato);
-	                                            printf("Regla 57: salida -> WRITE CTE_STRING\n");
-												crearTerceto("WRT",dato.nombre,"");};
-*/
-/////////////
+
 // cambie el WRITE para que tome varios argumentos con con el simbolo +
 // la palabra reservada NEWLINE imprime un salto de linea
 salida:
@@ -647,12 +639,12 @@ lista_imp:
 												crearTerceto("WRT",dato.nombre,"");}
 	| CTE_STRING                          {
 	                                            dato.longitud = strlen(yytext)-2;
-	                                            //strcpy(dato.nombre, yytext);
 												
 												//las cte string se nombran str(numero)
 												sprintf(dato.nombre, "str%d",contadorCteString++ );
 												
 	                                            //reemplazar_blancos_por_guiones_y_quitar_comillas(yytext);
+												//solo quito comillas para guardar el valor de la cte string
 												quitar_comillas(yytext);
 	                                            strcpy(dato.valor, yytext);												
 	                                            strcpy(dato.tipodato, "const_String");
@@ -733,12 +725,6 @@ int insertar_en_ts(t_lista *l_ts, t_info *d) {
 		return insertarEnListaEnOrdenSinDuplicados(l_ts, d, compararPorValorString);
 	}
 	return insertarEnListaEnOrdenSinDuplicados(l_ts, d, compararPorNombre);
-	
-	// Un reinicio de la estructura dato para que vuelva a ser reutilizada sin problemas (quizas no hace falta) .
-	//strcpy(d->nombre,"\0");
-	//strcpy(d->tipodato,"\0");
-	//strcpy(d->valor,"\0");	
-	//d->longitud=0;
 }
 
 void crear_lista(t_lista *p) {
@@ -1058,10 +1044,12 @@ char* negarBranch(char *branch)
 
 void generarCodigoAssembler(t_lista *pl)
 {
+	//genero el codigo assembler en un archivo auxiliar
 	recorrerTercetosParaAssembler(&lista_terceto);
-  generarCodigoAsmCabecera();
-  generarCodigoAsmDeclaracionVariables(pl);
-  generarCodigoAsm();    
+	
+	generarCodigoAsmCabecera();
+	generarCodigoAsmDeclaracionVariables(pl);
+	generarCodigoAsm();    
 }
 
 // Coloca solo la cabecera en el archivo .ASM
@@ -1259,8 +1247,6 @@ void recorrerTercetosParaAssembler(t_lista_terceto *pl)
 				fprintf(fptr,"\tDisplayFloat %s,2\n", obtenerOperandoDeListaTercetos((*pl)->info.segundoElemento));
 			}
 		}
-		////////Macro newLine, hace un salto de linea
-		//fprintf(fptr,"\tnewLine 1\n");
 	}
 	////############
 	
@@ -1290,7 +1276,7 @@ void recorrerTercetosParaAssembler(t_lista_terceto *pl)
 				fprintf(fptr,"\tGetInteger %s\n", obtenerOperandoDeListaTercetos((*pl)->info.segundoElemento));
 			}else{
 				//////Macro GetFloat 
-				fprintf(fptr,"\tGetFloat %s,2\n", obtenerOperandoDeListaTercetos((*pl)->info.segundoElemento));
+				fprintf(fptr,"\tGetFloat %s\n", obtenerOperandoDeListaTercetos((*pl)->info.segundoElemento));
 			}
 		}
 		////////Macro newLine, hace un salto de linea
@@ -1392,7 +1378,6 @@ void recorrerTercetosParaAssembler(t_lista_terceto *pl)
 	    strcpy(dato.valor, "");
 	    dato.longitud = 0;
 	    
-		
 		//cargo el resultado en la variable auxiliar
 		if( verCompatible((*pl)->info.primerElemento ,tipoDeDatoAux1,tipoDeDatoAux2) <= CONST_INTEGER)
 		{
@@ -1422,7 +1407,7 @@ void recorrerTercetosParaAssembler(t_lista_terceto *pl)
 	  }
   
   fclose(fptr);
-  printf("Termino de recorrer tercetos assembler\n");
+  printf("Termino de recorrer tercetos para el codigo assembler\n");
 } 
 
 //quita comillas a una etiqueta

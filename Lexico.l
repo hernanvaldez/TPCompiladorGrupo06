@@ -92,7 +92,7 @@ COMENT_ERROR	\-\/
 					mensaje_error("constante string de mas de 30 caracteres");
 					}
 
-{COMENTARIO}		{printf("\t\tcomentario: %s\n", yytext);}
+{COMENTARIO}		
 {COMENT_ERROR}		{mensaje_error("Caracter invalido en comentario");}
 " "
 "\n"

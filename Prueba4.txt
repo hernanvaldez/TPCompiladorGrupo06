@@ -5,11 +5,8 @@ DECVAR
 	
 ENDDEC
 
--/ operador negacion unaria solo se puede usar despues de "=" o "(" /-
--/ Ejemplo:    a=-2   ; a=(-2)    /-
 
--/ Multiplicacion implicita NO esta contemplada: a=2x ; a=2(3) /-
-
-a = (7 * 4)
+a=-(-2*4)-4-(-4+(5-(-7*4)))
+WRITE a + NEWLINE
 
 

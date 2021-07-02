@@ -31,7 +31,7 @@ IF(a < 35 || a > 35 )
 		a=4
 	}
 
-	WHILE(a < 35 )
+	WHILE(NOT a > 35 )
 	{
 		WRITE a + NEWLINE
 		a= a + 1
@@ -42,22 +42,22 @@ IF(a < 35 || a > 35 )
 }
 
 a = 34
-IF(INLIST(a;[35;a-1]))
+IF(NOT INLIST(a;[35;a-1]) )
 {
 	WRITE "condicion inlist" + NEWLINE
 }ELSE{
 	WRITE "NO inlist" + NEWLINE
 }
 
-IF(a != 35)
+IF(NOT a == 35)
 {
 	WRITE "Hola mundo" + NEWLINE -/ donde “Hola mundo” debe ser una cte string /-
-a = 35
+a = 5
 	-/ Esto es un comentario /-
-	IF (a == 35 )
+	IF (a == 35 || a==4 )
 	{
 		b = "correcto"
-		WRITE "Chau mundo" + NEWLINE
+		WRITE b + NEWLINE
 	} -/ 	asignacion string /-
 }ELSE{
 	WRITE "Chau mundo" + NEWLINE
@@ -65,6 +65,6 @@ a = 35
 
 
 READ base -/ donde base es una variable /-
-WRITE a-/ donde var1 es una variable numerica definida previamente /-
+WRITE base -/ donde base una variable float definida previamente /-
 
 
