@@ -15,14 +15,15 @@
 
 DIGITO			[0-9]
 LETRA			[a-zA-Z]
-SIMBOLO			[" "|\t|"#"|"$"|"%"|"?"|"¿"|"°"|","|";"|"!"|"¡"|"\\"|"@"|"."|":"|"_"|"\-"|"\/"|"="|"“"|"”"|"("|")"]
+SIMBOLO			[" "|'\t'|"#"|"%"|"?"|"¿"|"°"|","|";"|"!"|"¡"|"\\"|"@"|"."|":"|"_"|'\-'|'/'|"="|"“"|"”"|"("|")"]
+SIMBOLOCOMENTARIO			[" "|'\t'|"#"|"%"|"?"|"¿"|"°"|","|";"|"!"|"¡"|"\\"|"@"|"."|":"|"_"|'\-'|'+'|'*'|'/'|"["|'\]'|'{'|'}'|"="|"“"|"”"|"("|")"]
 ID				{LETRA}({LETRA}|{DIGITO})*
 CTE_ENTERA		{DIGITO}+
 CTE_REAL		{DIGITO}+"."{DIGITO}*|{DIGITO}*"."{DIGITO}+
 CTE_STRING		\"({LETRA}|{DIGITO}|{SIMBOLO})*\"
 /*CTE_STRING		\".*\" */
-COMENTARIO		\-\/({LETRA}|{DIGITO}|{SIMBOLO})*\/\-
-COMENT_ERROR	\-\/
+COMENTARIO		\-\/({LETRA}|{DIGITO}|{SIMBOLOCOMENTARIO})*\/\-
+COMENT_ERROR	\-\/ 
 /*COMENTARIO		\-\/.*\/\- */
 
 %%
@@ -38,6 +39,7 @@ COMENT_ERROR	\-\/
 "IF"			{ return IF;}
 "ELSE"			{ return ELSE;}
 "INLIST"		{ return INLIST;}
+"NEWLINE"		{ return NEWLINE;}
 "&&"			{ return AND;}
 "||"			{ return OR;}
 "NOT"			{ return NOT;}
@@ -62,7 +64,7 @@ COMENT_ERROR	\-\/
 "!="			{ return DISTINTO;}
 "=="			{ return IGUAL;}
 
-{ID}		   		{if(strlen(yytext) <= 30){
+{ID}		   		{if(strlen(yytext) <= 31){
 						yylval.string_val = strdup(yytext);
 						return ID;
 						}
@@ -83,15 +85,15 @@ COMENT_ERROR	\-\/
 					mensaje_error("constante entera demasiado grande");
 					}
 
-{CTE_STRING}		{if(strlen(yytext)<=30){
+{CTE_STRING}		{if(strlen(yytext)<=33){
 						
 						return CTE_STRING;
 						}
 					mensaje_error("constante string de mas de 30 caracteres");
 					}
 
-{COMENTARIO}
-{COMENT_ERROR}		{mensaje_error("Caracter invalido");}
+{COMENTARIO}		{printf("\t\tcomentario: %s\n", yytext);}
+{COMENT_ERROR}		{mensaje_error("Caracter invalido en comentario");}
 " "
 "\n"
 "\t"

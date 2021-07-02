@@ -1,0 +1,31 @@
+DECVAR
+	a,var1 : INTEGER
+	c,d,base : FLOAT
+	nombre : STRING
+	
+ENDDEC
+
+-/ operador negacion unaria solo se puede usar despues de "=" o "(" /-
+-/ Ejemplo:    a=-2   ; a=(-2)    /-
+
+-/ Multiplicacion implicita NO esta contemplada: a=2x ; a=2(3) /-
+
+WRITE "-suma dos enteros-" + NEWLINE
+WRITE "Ingrese 1er numero int" + NEWLINE
+READ a
+
+WRITE "Ingrese segundo numero int" + NEWLINE
+READ var1
+
+c = a = a + var1
+
+WRITE "resultado: " + c + NEWLINE
+
+WRITE "Ingrese su nombre: "
+READ nombre
+
+
+WRITE NEWLINE + "Hola "
+WRITE nombre + NEWLINE
+
+WRITE "Termino programa"

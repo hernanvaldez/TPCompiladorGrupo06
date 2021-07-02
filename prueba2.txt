@@ -7,6 +7,15 @@ ENDDEC
 
 -/operador/-
 
--/operadorÜ/-
+-/operador/-
 
 a=0
+
+IF( a == 0)
+{
+WRITE "a == 0" + NEWLINE
+}ELSE{
+WRITE "a != 0" + NEWLINE
+}
+
+WRITE "Termino" + NEWLINE

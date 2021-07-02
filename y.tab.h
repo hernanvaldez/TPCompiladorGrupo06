@@ -72,12 +72,13 @@
      LLC = 288,
      READ = 289,
      WRITE = 290,
-     ID = 291,
-     CTE_REAL = 292,
-     CTE_ENTERA = 293,
-     CTE_STRING = 294,
-     NO_ELSE = 295,
-     ELSE = 296
+     NEWLINE = 291,
+     ID = 292,
+     CTE_REAL = 293,
+     CTE_ENTERA = 294,
+     CTE_STRING = 295,
+     NO_ELSE = 296,
+     ELSE = 297
    };
 #endif
 /* Tokens.  */
@@ -114,12 +115,13 @@
 #define LLC 288
 #define READ 289
 #define WRITE 290
-#define ID 291
-#define CTE_REAL 292
-#define CTE_ENTERA 293
-#define CTE_STRING 294
-#define NO_ELSE 295
-#define ELSE 296
+#define NEWLINE 291
+#define ID 292
+#define CTE_REAL 293
+#define CTE_ENTERA 294
+#define CTE_STRING 295
+#define NO_ELSE 296
+#define ELSE 297
 
 
 
@@ -129,7 +131,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 169 "Sintactico.y"
+#line 170 "Sintactico.y"
 
 	int int_val;
 	float float_val;
@@ -138,7 +140,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 142 "y.tab.h"
+#line 144 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

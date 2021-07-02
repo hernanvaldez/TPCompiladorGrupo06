@@ -1,24 +1,29 @@
 NOMBRE                              TIPO DE DATO     VALOR                               LONGITUD                           
 _a                                  Integer                                              0                                  
-_b                                  Integer                                              0                                  
-_c                                  Integer                                              0                                  
-_d                                  Integer                                              0                                  
+_var1                               Integer                                              0                                  
+_c                                  Float                                                0                                  
+_d                                  Float                                                0                                  
+_base                               Float                                                0                                  
+_b                                  String                                               0                                  
 _e                                  String                                               0                                  
-_f                                  String                                               0                                  
+_q                                  String                                               0                                  
+_w                                  String                                               0                                  
+str0                                const_String     @sdADaSjfladfg                      14                                 
+CTE_5                               const_Integer    5                                   0                                  
+CTE_99_                             const_Float      99.                                 0                                  
+CTE_99_45                           const_Float      99.45                               0                                  
+CTE__999                            const_Float      .999                                0                                  
+CTE_35                              const_Integer    35                                  0                                  
+CTE_33                              const_Integer    33                                  0                                  
+str1                                const_String     a es distinto de 35                 19                                 
 CTE_4                               const_Integer    4                                   0                                  
 CTE_1                               const_Integer    1                                   0                                  
-CTE_5                               const_Integer    5                                   0                                  
-CTE_6                               const_Integer    6                                   0                                  
-CTE_2                               const_Integer    2                                   0                                  
-CTE_47                              const_Integer    47                                  0                                  
-CTE_33                              const_Integer    33                                  0                                  
-str0                                const_String     Prueba                              6                                  
-str1                                const_String     Prueba WRT                          10                                 
-CTE_7                               const_Integer    7                                   0                                  
-str2                                const_String     condicion inlist                    16                                 
-@aux28                              Integer                                              0                                  
-@aux29                              Integer                                              0                                  
-@aux32                              Integer                                              0                                  
-@aux33                              Integer                                              0                                  
-@aux53                              Integer                                              0                                  
-@aux56                              Integer                                              0                                  
+str2                                const_String     a es igual a 35                     15                                 
+CTE_34                              const_Integer    34                                  0                                  
+str3                                const_String     condicion inlist                    16                                 
+str4                                const_String     NO inlist                           9                                  
+str5                                const_String     Hola mundo                          10                                 
+str6                                const_String     correcto                            8                                  
+str7                                const_String     Chau mundo                          10                                 
+@aux39                              Integer                                              0                                  
+@aux51                              Integer                                              0                                  

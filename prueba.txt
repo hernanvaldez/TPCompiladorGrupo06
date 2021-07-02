@@ -7,8 +7,8 @@ ENDDEC
 
 
 -/ operador negacion unaria solo se puede usar despues de igual o PARA /-
--/ Ejemplo:    a=-2   ; a=(-2)    /-
 
+-/ Ejemplo:    a=-2   ; a=(-2)    /-
 -/ Multiplicacion implicita NO esta contemplada: a=2x ; a=2(3) /-
 
 
@@ -16,43 +16,55 @@ ENDDEC
 
 b = "@sdADaSjfladfg"
 a=5
-b = "@sdADaSjfla%dfg"
-b = "asldk fh sjf"
-c = 99.99
-d = 99.
-base = .9999
+
+c = 99.
+d = 99.45
+base = .999
 
 
-WHILE(a < 35 || a > 35)
+IF(a < 35 || a > 35 )
 {
 	IF( a != 35){
 		a=33
-WRITE "a"
+		WRITE "a es distinto de 35" + NEWLINE
 	}ELSE{
 		a=4
 	}
-	WHILE(a < 35 || a > 35)
-	{a= a +1}
-WRITE "b"
+
+	WHILE(a < 35 )
+	{
+		WRITE a + NEWLINE
+		a= a + 1
+		WRITE a + NEWLINE
+	}
+
+	WRITE "a es igual a 35" + NEWLINE
 }
 
-IF(INLIST(a;[7*5;a/1]))
+a = 34
+IF(INLIST(a;[35;a-1]))
 {
-WRITE "condicion inlist"
+	WRITE "condicion inlist" + NEWLINE
+}ELSE{
+	WRITE "NO inlist" + NEWLINE
 }
 
-IF(a ==45)
+IF(a != 35)
 {
-	WRITE "Hola mundo" -/ donde “Hola mundo” debe ser una cte string /-
+	WRITE "Hola mundo" + NEWLINE -/ donde “Hola mundo” debe ser una cte string /-
+a = 35
 	-/ Esto es un comentario /-
 	IF (a == 35 )
-	{b = "correcto"} -/ 	asignacion string /-
+	{
+		b = "correcto"
+		WRITE "Chau mundo" + NEWLINE
+	} -/ 	asignacion string /-
 }ELSE{
-	WRITE "Chau mundo"
+	WRITE "Chau mundo" + NEWLINE
 }
 
 
 READ base -/ donde base es una variable /-
-WRITE var1 -/ donde var1 es una variable numerica definida previamente /-
+WRITE a-/ donde var1 es una variable numerica definida previamente /-
 
 
